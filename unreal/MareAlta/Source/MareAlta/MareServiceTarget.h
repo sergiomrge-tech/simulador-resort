@@ -1,0 +1,47 @@
+#pragma once
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "MareServiceTarget.generated.h"
+class UStaticMeshComponent;
+class APlayerController;
+
+/** Physical interaction point; invisible station targets only supplement the visible imported equipment. */
+UCLASS()
+class MAREALTA_API AMareServiceTarget : public AActor
+{
+ GENERATED_BODY()
+public:
+ AMareServiceTarget();
+ virtual void BeginPlay() override;
+ /** 10/11: the door leaf is fitted to its frame here too, so the level shows it in the editor as it is in the game
+  *  (Sergio saw the gap over the home door in the editor viewport and took it for the old defect back). */
+ virtual void OnConstruction(const FTransform& Transform) override;
+ void FitDoorLeaf();
+ virtual void Tick(float DeltaSeconds) override;
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FName Action=TEXT("Fridge");
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FString Label=TEXT("Geladeira");
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FVector FocusOffset=FVector::ZeroVector;
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") float Reach=240.f;
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") float OcclusionTolerance=70.f;
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Door") bool bAutoClose=false;
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") int32 DataIndex=-1;
+ /** Elevator: where E takes the player (feet-level capsule centre) and the yaw to face on arrival. */
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FVector TeleportTo=FVector::ZeroVector;
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") float TeleportYaw=0.f;
+ UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Door") TObjectPtr<UStaticMeshComponent> DoorMesh;
+ /** Uses the target from a validated player interaction. */
+ UFUNCTION(BlueprintCallable,Category="Interaction") void Use(APlayerController* Controller);
+ UFUNCTION(BlueprintPure,Category="Door") bool IsOpen()const{return bOpened;}
+ /** Restore the saved leaf without toggling an interaction. */
+ void RestoreDoorState(bool bOpen);
+ FString Prompt()const;
+ bool CanClose(const FVector& PlayerLocation)const;
+ UFUNCTION(BlueprintPure,Category="Interaction")
+ static AMareServiceTarget* FindFocused(APlayerController* Controller);
+private:
+ bool bOpened=false;
+ bool bWasInside=false;
+ /** RoomDoor (C16): the guest who opened for room service, and how long until they go back in. */
+ TWeakObjectPtr<class AMarePerson> DoorGuest;float GuestLeft=0;
+ float DoorAngle=0.f;
+};

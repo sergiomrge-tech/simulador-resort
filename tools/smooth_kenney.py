@@ -5,7 +5,7 @@ uso: python3 tools/smooth_kenney.py <pasta_do_pack/GLB format> <saida> nome1 nom
 import sys, os, math
 import bpy
 
-HARD = ("barrel", "crate", "boat", "ship", "flag", "paddle", "palm", "structure")
+HARD = ("plate", "bowl", "utensil", "cooking", "barrel", "crate", "boat", "ship", "flag", "paddle", "palm", "structure")
 
 def process(src, out, name):
     bpy.ops.wm.read_factory_settings(use_empty=True)

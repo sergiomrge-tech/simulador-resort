@@ -1,0 +1,852 @@
+{
+ "_doc": "Business counters (gameplay plan: one short hands-on task per village business, port of the Godot minigame). counter = E target [x,y,z,yaw] in world cm (Godot biz_world.gd counter point, converted Godot(x,y,z) m -> UE(x*100, z*100)); guest = where the waiting customer stands, beside the counter front (so the player can step in), facing the counter. steps = the three timing rounds. reward multipliers by hits 0..3 of max(hourly rate, base hour). Game-room machines (requires = expansion instead of an owned business, base = reward for 3/3 before multipliers, open = hours) use the same task.",
+ "rewards": [
+  0.3,
+  0.8,
+  1.4,
+  2.2
+ ],
+ "fame_per_hit": 2,
+ "businesses": {
+  "sorveteria": {
+   "vendor": [4672, -1955, 0, 67],
+   "title": "Montar a casquinha",
+   "steps": [
+    "Bola de baunilha na casquinha!",
+    "Agora a de morango!",
+    "Calda de chocolate por cima!"
+   ],
+   "counter": [
+    4785,
+    -1767,
+    110,
+    67
+   ],
+   "guest": [
+    4706,
+    -1646,
+    0,
+    247
+   ],
+   "icecream": {
+    "_doc": "Ice cream shop hands-on (CHECKLIST_EXPANSOES 3.1, MareIceCream.cpp + SMareIceCreamGame): customers queue at the counter (arrivals per open hour, x hot_mult on the 'calor' day, x rain_mult in the rain, at most queue_max; after patience_minutes they give up). Each order (1-3 scoops of 'flavors' + one of 'toppings') is shown for show_seconds, then the player builds it from memory: holding a tub grows the scoop (full size in grow_seconds); 'right' is the good size window. Hits: right flavors, all scoops the right size, right topping; pay[hits] x (scoops x price_per_scoop + topping_price) plus tip_perfect at 3/3. The shop also fills the pool cooler with homemade popsicles (popsicle_supply per open hour, up to popsicle_cap, popsicle_cost each, sold at homemade_mult x the pool price).",
+    "flavors": [
+     {
+      "id": "coco",
+      "name": "coco",
+      "color": [
+       0.95,
+       0.93,
+       0.86
+      ]
+     },
+     {
+      "id": "acai",
+      "name": "açaí",
+      "color": [
+       0.36,
+       0.11,
+       0.36
+      ]
+     },
+     {
+      "id": "morango",
+      "name": "morango",
+      "color": [
+       0.95,
+       0.47,
+       0.56
+      ]
+     },
+     {
+      "id": "chocolate",
+      "name": "chocolate",
+      "color": [
+       0.4,
+       0.23,
+       0.12
+      ]
+     },
+     {
+      "id": "manga",
+      "name": "manga",
+      "color": [
+       1.0,
+       0.72,
+       0.22
+      ]
+     },
+     {
+      "id": "limao",
+      "name": "limão",
+      "color": [
+       0.76,
+       0.9,
+       0.46
+      ]
+     }
+    ],
+    "toppings": [
+     {
+      "id": "chocolate",
+      "name": "calda de chocolate",
+      "color": [
+       0.3,
+       0.16,
+       0.08
+      ]
+     },
+     {
+      "id": "caramelo",
+      "name": "calda de caramelo",
+      "color": [
+       0.85,
+       0.55,
+       0.2
+      ]
+     },
+     {
+      "id": "morango",
+      "name": "calda de morango",
+      "color": [
+       0.85,
+       0.15,
+       0.22
+      ]
+     },
+     {
+      "id": "granulado",
+      "name": "granulado",
+      "color": [
+       0.5,
+       0.35,
+       0.6
+      ]
+     },
+     {
+      "id": "nenhuma",
+      "name": "sem cobertura",
+      "color": [
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "scoops": [
+     1,
+     3
+    ],
+    "show_seconds": 3,
+    "grow_seconds": 1.6,
+    "right": [
+     0.7,
+     1.0
+    ],
+    "arrivals": [
+     1,
+     3
+    ],
+    "hot_mult": 2,
+    "rain_mult": 0.4,
+    "queue_max": 6,
+    "patience_minutes": 45,
+    "price_per_scoop": 6,
+    "topping_price": 2,
+    "pay": [
+     0.3,
+     0.7,
+     1.0,
+     1.25
+    ],
+    "tip_perfect": 5,
+    "fame_per_hit": 1,
+    "popsicle_supply": 4,
+    "popsicle_cap": 12,
+    "popsicle_cost": 2,
+    "homemade_mult": 1.4
+   },
+   "levels": [
+    {
+     "cost": 1200,
+     "fame": 3,
+     "name": "balcão de sabores especiais",
+     "price_mult": 1.3,
+     "blurb": "Casquinhas de até 4 bolas. O pedido aparece por menos tempo e a faixa de tamanho correto fica menor.",
+     "set": {
+      "scoops": [
+       1,
+       4
+      ],
+      "show_seconds": 2.4,
+      "right": [
+       0.75,
+       1.0
+      ]
+     }
+    },
+    {
+     "cost": 2600,
+     "fame": 5,
+     "name": "gelateria artesanal",
+     "price_mult": 1.6,
+     "blurb": "Pedidos de 2 a 4 bolas, visíveis por 1,8 s. A bola cresce mais rápido e a faixa correta é bem estreita.",
+     "set": {
+      "scoops": [
+       2,
+       4
+      ],
+      "show_seconds": 1.8,
+      "grow_seconds": 1.3,
+      "right": [
+       0.8,
+       0.97
+      ]
+     }
+    }
+   ]
+  },
+  "aluguel": {
+   "vendor": [6730, -2040, 0, 90],
+   "title": "Encerar a prancha",
+   "steps": [
+    "Passe a parafina na prancha!",
+    "Aperte o colete do cliente!",
+    "Empurre o caiaque na água!"
+   ],
+   "counter": [
+    6730,
+    -1880,
+    110,
+    90
+   ],
+   "guest": [
+    6610,
+    -1800,
+    0,
+    270
+   ],
+   "rental": {
+    "_doc": "Board and kayak rental hands-on (CHECKLIST_EXPANSOES 3.3, MareRental.cpp + SMareRentalGame + MareRentalWorld): customers queue (arrivals per open hour, x hot_mult on a hot day, x tide_mult on the high tide (surfers), x rain_mult in the rain, closed in the storm, queue_max, patience_minutes) asking for an item for 30 or 60 game minutes (price30 per half hour). Waxing (wax_turns full circles) before renting adds wax_tip x the price. When the time runs out (or at closing) the item comes back, with a dent at dent_chance: fining a dent pays 'fine', fining a clean one costs unfair_fame. While a kayak is out, adrift_chance per hour sets one adrift in the adrift_from/to area (drifting drift_speed cm/s offshore); towed to 'shore' (within shore_radius) it pays rescue_reward. World cm.",
+    "items": {
+     "prancha": {
+      "name": "uma prancha",
+      "price30": 10
+     },
+     "caiaque": {
+      "name": "um caiaque",
+      "price30": 14
+     }
+    },
+    "arrivals": [
+     1,
+     3
+    ],
+    "hot_mult": 1.5,
+    "tide_mult": 1.4,
+    "rain_mult": 0.3,
+    "queue_max": 5,
+    "patience_minutes": 40,
+    "wax_turns": 5,
+    "wax_tip": 0.3,
+    "dent_chance": 0.3,
+    "fine": 20,
+    "unfair_fame": 2,
+    "adrift_chance": 0.25,
+    "adrift_from": [
+     5600,
+     -6000
+    ],
+    "adrift_to": [
+     6600,
+     -5000
+    ],
+    "drift_speed": 8,
+    "shore": [
+     6650,
+     -3400
+    ],
+    "shore_radius": 900,
+    "rescue_reward": 30,
+    "sea_z": -30,
+    "kayak_mesh": "/Game/Custom/Rental/Rental_kayak/Rental_kayak.Rental_kayak"
+   },
+   "levels": [
+    {
+     "cost": 1300,
+     "fame": 4,
+     "name": "pranchas novas",
+     "price_mult": 1.3,
+     "blurb": "Parafina com 7 voltas e mais pranchas voltando amassadas para conferir.",
+     "set": {
+      "wax_turns": 7,
+      "dent_chance": 0.4
+     }
+    },
+    {
+     "cost": 2800,
+     "fame": 6,
+     "name": "escolinha de caiaque",
+     "price_mult": 1.6,
+     "blurb": "Parafina com 9 voltas, mais amassados e caiaques que se soltam com mais frequência.",
+     "set": {
+      "wax_turns": 9,
+      "dent_chance": 0.45,
+      "adrift_chance": 0.35
+     }
+    }
+   ]
+  },
+  "surfe": {
+   "vendor": [-4490, -2060, 0, 79],
+   "title": "Aula na areia",
+   "steps": [
+    "Remada! (aluno deitado na prancha)",
+    "Hora de levantar!",
+    "Equilíbrio na onda!"
+   ],
+   "counter": [
+    -4572,
+    -1963,
+    110,
+    79
+   ],
+   "guest": [
+    -4675,
+    -1862,
+    0,
+    259
+   ],
+   "levels": [
+    {
+     "cost": 1800,
+     "fame": 5,
+     "name": "pranchas de aula novas",
+     "price_mult": 1.3,
+     "blurb": "Aulas mais caras.",
+     "set": {}
+    },
+    {
+     "cost": 3600,
+     "fame": 7,
+     "name": "escola com certificado",
+     "price_mult": 1.6,
+     "blurb": "Aulas bem mais caras.",
+     "set": {}
+    }
+   ]
+  },
+  "food_truck": {
+   "title": "Fritar o pastel",
+   "vendor": [2705, 2945, 0, 90],
+   "steps": [
+    "Massa na chapa!",
+    "Recheio de camarão!",
+    "Tire da fritura no ponto!"
+   ],
+   "counter": [
+    2620,
+    3275,
+    110,
+    90
+   ],
+   "guest": [
+    2500,
+    3355,
+    0,
+    270
+   ],
+   "pastel": {
+    "_doc": "Food truck hands-on (CHECKLIST_EXPANSOES 3.2, MarePastel.cpp + SMarePastelGame): customers queue (arrivals per open hour, x party_mult on a party day, at most queue_max, patience_minutes). Each order is a pastel with a filling and, sometimes (cana_chance), a sugar-cane juice. The player picks the filling, seals the edge by dragging along it (seal_px of mouse travel, or left/right taps), dips it in the oil and takes it out: raw before golden_from s, golden until golden_to, then browning, burnt after burnt_s (a ding and the sizzle mark the golden point). The juice is pressed by turning the mill crank (crank_turns full turns: circles with the mouse or left/right taps). Hits: right filling, sealed before the oil (an open one leaks), golden; pay[hits] x filling price, plus the juice when pressed and tip_perfect at 3/3.",
+    "fillings": [
+     {
+      "id": "carne",
+      "name": "carne",
+      "price": 9,
+      "color": [
+       0.45,
+       0.25,
+       0.15
+      ]
+     },
+     {
+      "id": "queijo",
+      "name": "queijo",
+      "price": 8,
+      "color": [
+       0.98,
+       0.85,
+       0.45
+      ]
+     },
+     {
+      "id": "pizza",
+      "name": "pizza",
+      "price": 9,
+      "color": [
+       0.85,
+       0.3,
+       0.2
+      ]
+     },
+     {
+      "id": "camarao",
+      "name": "camarão",
+      "price": 12,
+      "color": [
+       0.98,
+       0.55,
+       0.42
+      ]
+     }
+    ],
+    "cana_price": 6,
+    "cana_chance": 0.5,
+    "seal_px": 1400,
+    "seal_taps": 14,
+    "crank_turns": 4,
+    "crank_taps": 16,
+    "golden_from": 5.5,
+    "golden_to": 8.5,
+    "burnt_s": 11.5,
+    "arrivals": [
+     1,
+     3
+    ],
+    "party_mult": 2,
+    "party_events": [
+     "quermesse",
+     "junina",
+     "show_dj"
+    ],
+    "rain_mult": 0.6,
+    "queue_max": 6,
+    "patience_minutes": 40,
+    "pay": [
+     0.3,
+     0.7,
+     1.0,
+     1.25
+    ],
+    "tip_perfect": 4,
+    "fame_per_hit": 1
+   },
+   "levels": [
+    {
+     "cost": 1500,
+     "fame": 5,
+     "name": "chapa dupla",
+     "price_mult": 1.3,
+     "blurb": "Ponto dourado mais curto (6 a 8 s), borda que pede mais passadas e mais pedidos de caldo de cana.",
+     "set": {
+      "golden_from": 6.0,
+      "golden_to": 8.0,
+      "seal_taps": 18,
+      "cana_chance": 0.65
+     }
+    },
+    {
+     "cost": 3200,
+     "fame": 6,
+     "name": "pastelaria de feira",
+     "price_mult": 1.6,
+     "blurb": "Ponto dourado de 6,3 a 7,6 s, queima mais cedo, borda difícil e moenda com mais voltas.",
+     "set": {
+      "golden_from": 6.3,
+      "golden_to": 7.6,
+      "burnt_s": 10.0,
+      "seal_taps": 22,
+      "crank_turns": 6,
+      "cana_chance": 0.75
+     }
+    }
+   ]
+  },
+  "souvenir": {
+   "vendor": [8310, 4008, 0, -90],
+   "title": "Lojinha de souvenires",
+   "steps": [
+    "Dobre as laterais do papel!",
+    "Dobre o fundo e o topo!",
+    "Fita na cor pedida!"
+   ],
+   "counter": [
+    8150,
+    3880,
+    110,
+    -180
+   ],
+   "guest": [
+    8070,
+    3760,
+    0,
+    0
+   ],
+   "shop": {
+    "_doc": "Souvenir shop hands-on (CHECKLIST_EXPANSOES 3.5, MareSouvenir.cpp + SMareSouvenirGame). Crafts are bought from the village makers (each needs its chapter done and makes 'daily' pieces a day) into the back room and placed on the shelf slots; every open hour 'browsers' tourists (more with fame, x event_mult on carnaval) look at the slots from the window inwards and buy from a slot with chance buy_chance x slot mult x craft appeal, so the window sells most. A buyer asks for gift wrap with gift_chance and waits in line (queue_max, patience_minutes): fold the paper in the right order (folds), pick the ribbon asked (shown for memo_s seconds) and hand it over under fast_s for the third hit; wrap_fee x pay[hits], tip_perfect at 3/3. Postcards are printed from the player's album photos (card_cost each, card_price + subject_bonus per subject in frame, up to 2) and sell to browsers with card_chance. The shop's sales replace the old passive hourly income.",
+    "crafts": [
+     {
+      "id": "ima",
+      "name": "ímã de geladeira de jangada",
+      "maker": "Dona Rita",
+      "chapter": "",
+      "cost": 3,
+      "price": 9,
+      "appeal": 1.0,
+      "daily": 12,
+      "color": [
+       0.2,
+       0.55,
+       0.85
+      ]
+     },
+     {
+      "id": "colar",
+      "name": "colar de conchas",
+      "maker": "Dona Rita",
+      "chapter": "",
+      "cost": 6,
+      "price": 16,
+      "appeal": 1.0,
+      "daily": 8,
+      "color": [
+       0.95,
+       0.88,
+       0.78
+      ]
+     },
+     {
+      "id": "jangada",
+      "name": "jangadinha de madeira",
+      "maker": "Seu Severino",
+      "chapter": "pier",
+      "cost": 14,
+      "price": 34,
+      "appeal": 0.85,
+      "daily": 4,
+      "color": [
+       0.62,
+       0.42,
+       0.24
+      ]
+     },
+     {
+      "id": "garrafa",
+      "name": "garrafinha de areia colorida",
+      "maker": "Padre Robson",
+      "chapter": "prainha",
+      "cost": 8,
+      "price": 22,
+      "appeal": 1.1,
+      "daily": 6,
+      "color": [
+       0.95,
+       0.6,
+       0.3
+      ]
+     },
+     {
+      "id": "cocada",
+      "name": "pote de cocada caseira",
+      "maker": "Dona Cecília",
+      "chapter": "sabores",
+      "cost": 5,
+      "price": 14,
+      "appeal": 1.25,
+      "daily": 10,
+      "color": [
+       0.98,
+       0.93,
+       0.8
+      ]
+     },
+     {
+      "id": "mascara",
+      "name": "máscara de carnaval",
+      "maker": "Prefeita Tuanny",
+      "chapter": "carnaval",
+      "cost": 11,
+      "price": 28,
+      "appeal": 1.0,
+      "daily": 5,
+      "color": [
+       0.75,
+       0.2,
+       0.55
+      ]
+     }
+    ],
+    "slots": [
+     {
+      "id": "vitrine",
+      "name": "vitrine da frente",
+      "where": "na vitrine",
+      "mult": 1.6
+     },
+     {
+      "id": "balcao",
+      "name": "balcão do caixa",
+      "where": "no balcão",
+      "mult": 1.2
+     },
+     {
+      "id": "meio",
+      "name": "prateleira do meio",
+      "where": "no meio",
+      "mult": 0.85
+     },
+     {
+      "id": "fundo",
+      "name": "prateleira do fundo",
+      "where": "no fundo",
+      "mult": 0.45
+     }
+    ],
+    "start_shelf": [
+     [
+      "ima",
+      6
+     ],
+     [
+      "colar",
+      4
+     ],
+     [
+      "",
+      0
+     ],
+     [
+      "",
+      0
+     ]
+    ],
+    "slot_cap": 10,
+    "buy_batch": 4,
+    "browsers": [
+     1,
+     3
+    ],
+    "fame_browsers": 0.15,
+    "event_mult": {
+     "carnaval": 2.0,
+     "quermesse": 1.4,
+     "show_dj": 1.3
+    },
+    "buy_chance": 0.3,
+    "gift_chance": 0.45,
+    "queue_max": 4,
+    "patience_minutes": 45,
+    "folds": [
+     {
+      "id": "laterais",
+      "name": "Dobrar as laterais"
+     },
+     {
+      "id": "fundo",
+      "name": "Dobrar o fundo"
+     },
+     {
+      "id": "topo",
+      "name": "Dobrar o topo"
+     }
+    ],
+    "ribbons": [
+     {
+      "id": "vermelha",
+      "name": "vermelha",
+      "color": [
+       0.82,
+       0.12,
+       0.14
+      ]
+     },
+     {
+      "id": "azul",
+      "name": "azul",
+      "color": [
+       0.14,
+       0.36,
+       0.78
+      ]
+     },
+     {
+      "id": "amarela",
+      "name": "amarela",
+      "color": [
+       0.98,
+       0.8,
+       0.16
+      ]
+     },
+     {
+      "id": "verde",
+      "name": "verde",
+      "color": [
+       0.16,
+       0.6,
+       0.3
+      ]
+     },
+     {
+      "id": "dourada",
+      "name": "dourada",
+      "color": [
+       0.83,
+       0.65,
+       0.3
+      ]
+     }
+    ],
+    "memo_s": 3,
+    "fast_s": 15,
+    "wrap_fee": 6,
+    "pay": [
+     0.0,
+     0.5,
+     0.8,
+     1.0
+    ],
+    "tip_perfect": 5,
+    "fame_per_hit": 1,
+    "card_cost": 1.5,
+    "card_batch": 5,
+    "card_price": 5,
+    "subject_bonus": 2,
+    "card_chance": 0.35,
+    "card_max": 30
+   },
+   "levels": [
+    {
+     "cost": 1500,
+     "fame": 6,
+     "name": "vitrine iluminada",
+     "price_mult": 1.25,
+     "blurb": "A cor da fita aparece por 2 s e o embrulho caprichado tem de sair em 12 s.",
+     "set": {
+      "memo_s": 2.0,
+      "fast_s": 12
+     }
+    },
+    {
+     "cost": 3000,
+     "fame": 7,
+     "name": "ateliê de presentes",
+     "price_mult": 1.5,
+     "blurb": "Fita mostrada por 1,5 s e embrulho caprichado em 9 s.",
+     "set": {
+      "memo_s": 1.5,
+      "fast_s": 9
+     }
+    }
+   ]
+  },
+  "pebolim": {
+   "title": "Pebolim contra um hóspede",
+   "requires": "salao_jogos",
+   "open": [
+    10,
+    24
+   ],
+   "base": 30,
+   "name": "Pebolim",
+   "steps": [
+    "Defesa! Segure o goleiro na hora certa!",
+    "Passe para o meio-campo!",
+    "Chute ao gol!"
+   ],
+   "counter": [
+    -2050,
+    6395,
+    120,
+    -90
+   ],
+   "guest": [
+    -1925,
+    6450,
+    0,
+    180
+   ]
+  },
+  "fliperama": {
+   "title": "Maré Attack (fliperama)",
+   "requires": "salao_jogos",
+   "open": [
+    10,
+    24
+   ],
+   "base": 14,
+   "name": "Fliperama",
+   "steps": [
+    "Desvie da primeira onda!",
+    "Pegue o coco dourado!",
+    "Chefão: o caranguejo gigante!"
+   ],
+   "counter": [
+    -1950,
+    6700,
+    120,
+    90
+   ],
+   "guest": [
+    -2025,
+    6620,
+    0,
+    90
+   ],
+   "arcade": {
+    "_doc": "Playable cabinets of the game room (UMareArcade, MareArcade.cpp): points needed for each business hit (0-3, PlayBusiness 'fliperama' when a game ends) and the fame for beating a machine's record.",
+    "jangada": {
+     "name": "Corrida de Jangada",
+     "hits_at": [
+      250,
+      600,
+      1100
+     ]
+    },
+    "record_fame": 2,
+    "pinball": {
+     "name": "Pinball do Farol",
+     "hits_at": [
+      1500,
+      4000,
+      8000
+     ]
+    }
+   }
+  }
+ },
+ "game_room": {
+  "_doc": "Machines placed in the Grand Hotel game room (world cm [x, y, z floor, yaw]) and the night tokens.",
+  "foosball": [
+   -2050,
+   6450,
+   45,
+   0
+  ],
+  "arcades": [
+   [
+    -1950,
+    6780,
+    45,
+    180
+   ],
+   [
+    -2100,
+    6780,
+    45,
+    180
+   ]
+  ],
+  "token_hours": [
+   18,
+   23
+  ],
+  "token_price": 5,
+  "night_players": [
+   2,
+   6
+  ]
+ },
+ "clerk_share": 0.6,
+ "_doc_common": "CHECKLIST_EXPANSOES 3.6 (MareBizCommon.cpp): every business has levels 1-3 (businesses.<id>.levels[0] is level 2, [1] level 3: cost, fame, name, blurb, price_mult on every price, set = hands-on values laid over the base ones, so each level asks more of the player). The clerk (hired by default, wage per day in definitions.json) serves whoever the player leaves in line at clerk_share of the full price and no fame; without him the line gives up. Serving in person pays 100% x the grade + tip + fame. Businesses without a line (surf school) pay hour x clerk_share per open hour with the clerk."
+}

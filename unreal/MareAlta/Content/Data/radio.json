@@ -1,0 +1,181 @@
+{
+ "_doc": "Radio (UMareAudioWorld, UMareHomeWorld; Sergio 07/11: 'coloque opção de mudar música no rádio, um na casa, no quiosque e no hotel'). stations: the dial in order (id = audio.json sound, name shown in the phone and on the sets; 'off' = switched off), used by the phone's Rádio card (anterior / próxima / desligar) for the background radio. The first 10 stations are always loaded; the others (the CC0 Open Lo-Fi tracks, tools/ue58/radio_tracks.json) are streamed only while tuned. stereos: the physical sets; E on one plays the next track there (after the last one it switches off): id, action (ServiceTarget, must start with 'Home'), at [x, y, z] world cm (z = 0: placed on the first surface found tracing down from probe cm, default 220: above the counter, under the roof), boombox = spawn the boombox model (the house has its own), yaw, unlock (expansion that must be owned, empty = always), default = track when first switched on. 07/11 (Sergio: 'as músicas precisam ser mais animadas'): eleven upbeat CC0 tracks from OpenGameArt (radio_up_*, mare_radio_up.py) right after Aloha FM.",
+ "stations": [
+  {
+   "id": "radio_havaiana",
+   "name": "Aloha FM · havaiana"
+  },
+  {
+   "id": "radio_up_07",
+   "name": "Feel Good Summer Tune · Skrjablin"
+  },
+  {
+   "id": "radio_up_10",
+   "name": "Reggae · pro-sensory"
+  },
+  {
+   "id": "radio_up_08",
+   "name": "Happy Ukulele Island · Tarush Singhal"
+  },
+  {
+   "id": "radio_up_05",
+   "name": "Bossa Town · Karate Studios"
+  },
+  {
+   "id": "radio_up_02",
+   "name": "Funky House · Of Far Different Nature"
+  },
+  {
+   "id": "radio_up_11",
+   "name": "Mad Bossa · spring-spring"
+  },
+  {
+   "id": "radio_up_06",
+   "name": "Vintage Hawaii · OpenGameArt"
+  },
+  {
+   "id": "radio_up_09",
+   "name": "Summer Sunday · celestialghost8"
+  },
+  {
+   "id": "radio_up_03",
+   "name": "Feel Good Island Loop · OpenGameArt"
+  },
+  {
+   "id": "radio_up_01",
+   "name": "Tropical Loop · wipics"
+  },
+  {
+   "id": "radio_up_04",
+   "name": "Beach Sports Theme · OpenGameArt"
+  },
+  {
+   "id": "radio_havaiana_onda",
+   "name": "Aloha FM · onda alegre"
+  },
+  {
+   "id": "radio_havaiana_lua",
+   "name": "Aloha FM · luar"
+  },
+  {
+   "id": "music_tema",
+   "name": "Tema Maré Alta"
+  },
+  {
+   "id": "reggae_praia",
+   "name": "Reggae da Praia"
+  },
+  {
+   "id": "radio_reggae_roots",
+   "name": "Reggae Roots"
+  },
+  {
+   "id": "radio_calypso",
+   "name": "Calipso Caribe"
+  },
+  {
+   "id": "radio_beach_pop",
+   "name": "Praia Pop · ukulele"
+  },
+  {
+   "id": "music_bossa",
+   "name": "Bossa praiana"
+  },
+  {
+   "id": "music_relax",
+   "name": "Brisa instrumental"
+  },
+  {
+   "id": "radio_cc0_01",
+   "name": "Cafe Da Tarde · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_02",
+   "name": "Cassette Pastel Nights · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_03",
+   "name": "Savanna Slow Glow · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_04",
+   "name": "Midnight Steam and Mango Skin · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_05",
+   "name": "Dusk on Red Earth · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_06",
+   "name": "End Scene Glow · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_07",
+   "name": "Palm Breeze Nap · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_08",
+   "name": "Hammock in the Shade · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_09",
+   "name": "Block Party Slow Jam · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_10",
+   "name": "Breezy Afternoon Terrace · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_11",
+   "name": "Sunset Offbeat · B. Tahir"
+  },
+  {
+   "id": "radio_cc0_12",
+   "name": "Burnt Sunset Groove · B. Tahir"
+  },
+  {
+   "id": "off",
+   "name": "Desligada"
+  }
+ ],
+ "always_loaded": 10,
+ "stereos": [
+  {
+   "id": "home",
+   "action": "HomeStereo",
+   "at": [
+    4475,
+    2111,
+    108
+   ],
+   "boombox": false,
+   "default": "music_relax"
+  },
+  {
+   "id": "kiosk",
+   "action": "HomeStereoKiosk",
+   "at": [
+    3590,
+    -1515,
+    0
+   ],
+   "boombox": true,
+   "yaw": 180,
+   "unlock": "",
+   "default": "radio_cc0_01"
+  },
+  {
+   "id": "hotel",
+   "action": "HomeStereoHotel",
+   "at": [
+    -2445,
+    6790,
+    0
+   ],
+   "boombox": true,
+   "yaw": 180,
+   "unlock": "grand_hotel",
+   "default": "radio_cc0_07"
+  }
+ ]
+}

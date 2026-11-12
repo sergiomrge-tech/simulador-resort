@@ -5,12 +5,12 @@ render_mode unshaded, fog_disabled, depth_draw_never, depth_test_disabled, cull_
 
 uniform sampler2D depth_tex : hint_depth_texture, filter_nearest, repeat_disable;
 uniform sampler2D normal_tex : hint_normal_roughness_texture, filter_nearest, repeat_disable;
-uniform vec4 line_color : source_color = vec4(0.16, 0.09, 0.06, 0.85);
-uniform float thickness = 1.25;
-uniform float depth_sensitivity = 0.06;
-uniform float normal_sensitivity = 0.55;
-uniform float fade_start = 35.0;
-uniform float fade_end = 85.0;
+uniform vec4 line_color : source_color = vec4(0.20, 0.18, 0.15, 0.46);
+uniform float thickness = 0.8;
+uniform float depth_sensitivity = 0.085;
+uniform float normal_sensitivity = 0.85;
+uniform float fade_start = 18.0;
+uniform float fade_end = 65.0;
 
 void vertex() {
 	POSITION = vec4(VERTEX.xy, 1.0, 1.0);

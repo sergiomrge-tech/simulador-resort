@@ -4,7 +4,7 @@ extends Node3D
 signal arrived
 
 const SKINS: = [Color(0.95, 0.78, 0.62), Color(0.8, 0.58, 0.42), Color(0.62, 0.42, 0.28), Color(0.42, 0.28, 0.18)]
-const SHIRTS: = [Color(0.95, 0.45, 0.2), Color(0.15, 0.55, 0.75), Color(0.95, 0.85, 0.3), Color(0.9, 0.9, 0.88), Color(0.85, 0.25, 0.35), Color(0.3, 0.7, 0.45), Color(0.55, 0.35, 0.7)]
+const SHIRTS: = [Color(0.70, 0.34, 0.26), Color(0.18, 0.52, 0.54), Color(0.85, 0.74, 0.55), Color(0.86, 0.83, 0.74), Color(0.16, 0.34, 0.46), Color(0.36, 0.55, 0.43), Color(0.32, 0.47, 0.65)]
 const SHORTS: = [Color(0.15, 0.25, 0.5), Color(0.85, 0.8, 0.65), Color(0.2, 0.2, 0.22), Color(0.3, 0.55, 0.65), Color(0.75, 0.3, 0.2)]
 const HAIRS: = [Color(0.08, 0.06, 0.05), Color(0.3, 0.18, 0.08), Color(0.75, 0.6, 0.35), Color(0.6, 0.57, 0.54), Color(0.5, 0.2, 0.1), Color(0.9, 0.78, 0.5), Color(0.18, 0.12, 0.08)]
 const NAMES: = ["Ana", "João", "Maria", "Pedro", "Luiza", "Rafael", "Camila", "Bruno", "Juliana", "Thiago", "Beatriz", "Lucas", "Fernanda", "Gabriel", "Larissa", "Diego"]
@@ -35,8 +35,12 @@ var _skel: Skeleton3D
 var _look_pt: Marker3D
 var _cup: Node3D
 var _food: Node3D
+var _meal: Node3D
+var _meal_scale: float=1.0
 var _eating: = false
 var _eat_t: = 0.0
+var _service_time: float=0.0
+var _service_kind: String=""
 ## true = leva o copo/coco à boca em vez da comida (v0.7.1)
 var _consume_drink: = false
 var _mesh_insts: Array = []
@@ -175,6 +179,11 @@ func _build_anim(model: Node3D) -> void :
 		eat.set_script(load("res://scripts/eat_arm.gd"))
 		eat.guest = self
 		_skel.add_child(eat)
+		var work := SkeletonModifier3D.new()
+		work.set_script(load("res://scripts/work_arm.gd"))
+		work.guest = self
+		_skel.add_child(work)
+		_skel.skeleton_updated.connect(_sync_consumed_dish)
 	var sm: = AnimationNodeStateMachine.new()
 	var specs: = {
 		"Idle": "Idle_Loop", "Talk": "Idle_Talking_Loop", "Walk": "Walk_Loop", "Jog": "Jog_Fwd_Loop", 
@@ -238,66 +247,14 @@ func _arm_tree() -> void :
 
 func _make_cup() -> Node3D:
 	var n: = Node3D.new()
-	var cup: = MeshInstance3D.new()
-	var cm: = CylinderMesh.new()
-	cm.top_radius = 0.034
-	cm.bottom_radius = 0.026
-	cm.height = 0.08
-	cm.radial_segments = 8
-	cup.mesh = cm
-	var mat: = StandardMaterial3D.new()
-	mat.albedo_color = Color(0.15, 0.55, 0.42)
-	mat.roughness = 0.18
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.albedo_color.a = 0.85
-	cup.material_override = mat
-	cup.position = Vector3(0.0, 0.06, 0.06)
-	cup.rotation.x = 0.4
-	n.add_child(cup)
+	var cup: = Real.place(n, "g:cup_plastic", Vector3(0.0, 0.02, 0.06), 0.11)
+	if cup:
+		cup.rotation.x = 0.4
 	return n
 
 func _make_food() -> Node3D:
 	var n: = Node3D.new()
-	var shell: = StandardMaterial3D.new()
-	shell.albedo_color = Color(0.46, 0.28, 0.13)
-	shell.roughness = 0.62
-	var s: = MeshInstance3D.new()
-	var sm: = SphereMesh.new()
-	sm.radius = 0.042
-	sm.height = 0.068
-	sm.radial_segments = 10
-	sm.rings = 6
-	s.mesh = sm
-	s.material_override = shell
-	s.position = Vector3(0.0, 0.045, 0.06)
-	n.add_child(s)
-	var top: = MeshInstance3D.new()
-	var tm: = SphereMesh.new()
-	tm.radius = 0.02
-	tm.height = 0.02
-	tm.radial_segments = 8
-	tm.rings = 4
-	top.mesh = tm
-	var wm: = StandardMaterial3D.new()
-	wm.albedo_color = Color(0.96, 0.94, 0.88)
-	wm.roughness = 0.4
-	top.material_override = wm
-	top.position = Vector3(0.0, 0.075, 0.06)
-	n.add_child(top)
-	var straw: = MeshInstance3D.new()
-	var cm: = CylinderMesh.new()
-	cm.top_radius = 0.004
-	cm.bottom_radius = 0.004
-	cm.height = 0.09
-	cm.radial_segments = 6
-	straw.mesh = cm
-	var rm: = StandardMaterial3D.new()
-	rm.albedo_color = Color(0.86, 0.18, 0.14)
-	rm.roughness = 0.4
-	straw.material_override = rm
-	straw.position = Vector3(0.01, 0.1, 0.055)
-	straw.rotation.z = -0.65
-	n.add_child(straw)
+	Real.place(n, "g:coxinha", Vector3(0.0, 0.02, 0.06), 0.085)
 	n.visible = false
 	return n
 
@@ -355,7 +312,11 @@ func _update_look() -> void :
 		face.y = 0.0
 		if dist > 0.45 and dist < 8.0 and face.length() > 0.01 and face.normalized().dot(to / dist) > -0.2:
 			ahead = pl.global_position + Vector3(0, 1.45, 0)
+	ahead.y += sin(float(Time.get_ticks_msec()) * 0.0011 + float(gid)) * 0.018
 	_look_pt.global_position = ahead
+	for brow in _hair_parts:
+		if str(brow.name).to_lower().contains("brow"):
+			brow.position.y = -0.003 if state == "kwait" else (0.002 if state == "keat" else 0.0)
 
 func play(an: String) -> void :
 	if _anim == null:
@@ -398,6 +359,12 @@ func is_moving() -> bool:
 	return not _route.is_empty()
 
 func _process(delta: float) -> void :
+	_local_block_frame=-1
+	if _service_time>0:
+		_service_time-=delta
+		if _service_time<=0 and not get_meta("hand_carry",false):
+			for key in ["work_target","work_kind"]:
+				if has_meta(key):remove_meta(key)
 	if _eating:
 		_eat_t += delta
 	var prev: = position
@@ -591,7 +558,101 @@ func _expand_route(route: Array) -> Array:
 				_push_pt(out, w)
 		_push_pt(out, pt)
 		cursor = pt
-	return out
+	# Antes só a piscina tinha desvio; mesas e casas prendiam o NPC na borda.
+	var safe: Array = []
+	cursor = position
+	for target in out:
+		for waypoint in _around_blocks(cursor, target):
+			_push_pt(safe, waypoint)
+		cursor = target
+	return safe
+
+func _hits_rect(a: Vector2, b: Vector2, rect: Rect2) -> bool:
+	var delta: = b - a
+	var lo: = 0.0
+	var hi: = 1.0
+	for axis in 2:
+		if absf(delta[axis]) < 0.00001:
+			if a[axis] < rect.position[axis] or a[axis] > rect.end[axis]:
+				return false
+		else:
+			var t0: float = (rect.position[axis] - a[axis]) / delta[axis]
+			var t1: float = (rect.end[axis] - a[axis]) / delta[axis]
+			lo = maxf(lo, minf(t0, t1))
+			hi = minf(hi, maxf(t0, t1))
+			if lo > hi:
+				return false
+	return hi > 0.00001 and lo < 0.99999
+
+func _blocks_clear(a: Vector2, b: Vector2, obstacles: Array) -> bool:
+	for rect in obstacles:
+		if _hits_rect(a, b, rect):
+			return false
+	return true
+
+func _around_blocks(from: Vector3, to: Vector3, search_margin: float = 3.0) -> Array:
+	var a: = Vector2(from.x, from.z)
+	var b: = Vector2(to.x, to.z)
+	var obstacles: Array = []
+	for raw in block_rects:
+		var rect: Rect2 = raw
+		if rect.grow(0.08).has_point(a) or rect.grow(0.08).has_point(b):
+			continue
+		obstacles.append(rect.grow(0.08))
+	if _blocks_clear(a, b, obstacles):
+		return [to]
+	var region: = Rect2(a, Vector2.ZERO).expand(b).grow(search_margin)
+	var points: Array[Vector2] = [a, b]
+	for raw in obstacles:
+		var rect: Rect2 = raw
+		if not rect.intersects(region):
+			continue
+		var edge: = rect.grow(0.03)
+		for corner in [edge.position, Vector2(edge.end.x, edge.position.y), edge.end, Vector2(edge.position.x, edge.end.y)]:
+			var inside: = false
+			for other in obstacles:
+				if other.has_point(corner):
+					inside = true
+					break
+			if not inside:
+				points.append(corner)
+	var distances: Array[float] = []
+	distances.resize(points.size())
+	distances.fill(INF)
+	distances[0] = 0.0
+	var previous: Array[int] = []
+	previous.resize(points.size())
+	previous.fill(-1)
+	var visited: = {}
+	for _step in points.size():
+		var current: = -1
+		var best: = INF
+		for i in points.size():
+			if not visited.has(i) and distances[i] < best:
+				current = i
+				best = distances[i]
+		if current < 0 or current == 1:
+			break
+		visited[current] = true
+		for i in points.size():
+			if visited.has(i):
+				continue
+			var candidate: = best + points[current].distance_to(points[i])
+			if candidate < distances[i] and _blocks_clear(points[current], points[i], obstacles):
+				distances[i] = candidate
+				previous[i] = current
+	if previous[1] < 0:
+		if search_margin < 24.0:
+			return _around_blocks(from, to, search_margin * 2.0)
+		print("NAV_BLOCKED ", from, " -> ", to)
+		return [to]
+	var path: Array = []
+	var index: = 1
+	while index > 0:
+		var p: Vector2 = points[index]
+		path.push_front(Vector3(p.x, to.y, p.y))
+		index = previous[index]
+	return path
 
 func _push_pt(out: Array, p: Vector3) -> void :
 	if out.is_empty() or (out[out.size() - 1] as Vector3).distance_squared_to(p) > 0.04:
@@ -693,6 +754,23 @@ func _around(a: Vector3, b: Vector3) -> Array:
 		seq3.append(corners[(nearest + k) % 4])
 	return seq3
 
+static var use_block_cache: bool=true
+var _local_blocks: Array=[]
+var _local_block_bounds:=Rect2()
+var _local_block_frame: int=-1
+
+func _nearby_blocks(from: Vector3,to: Vector3) -> Array:
+	var a:=Vector2(from.x,from.z)
+	var b:=Vector2(to.x,to.z)
+	var frame: int=Engine.get_process_frames()
+	if frame!=_local_block_frame or not _local_block_bounds.has_point(a) or not _local_block_bounds.has_point(b):
+		_local_block_frame=frame
+		_local_block_bounds=Rect2(a,Vector2.ZERO).expand(b).grow(2.0)
+		_local_blocks=[]
+		for rect in block_rects:
+			if (rect as Rect2).intersects(_local_block_bounds,true): _local_blocks.append(rect)
+	return _local_blocks
+
 func _slide_out_of_blocks(from: Vector3, to: Vector3) -> Vector3:
 	if block_rects.is_empty():
 		return to
@@ -703,9 +781,9 @@ func _slide_out_of_blocks(from: Vector3, to: Vector3) -> Vector3:
 		var last: Vector3 = _route[_route.size() - 1]
 		dest = Vector2(last.x, last.z)
 	for _pass in 2:
-		for r in block_rects:
+		for r in (_nearby_blocks(from,p) if use_block_cache else block_rects):
 			var rect: Rect2 = r
-			if not rect.has_point(Vector2(p.x, p.z)) or rect.has_point(dest):
+			if not rect.has_point(Vector2(p.x, p.z)) or rect.has_point(Vector2(from.x, from.z)) or rect.has_point(dest):
 				continue
 			var dl: = p.x - rect.position.x
 			var dr: = rect.end.x - p.x
@@ -797,20 +875,32 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 			mi.set_meta("src", mi.mesh.surface_get_material(0))
 			_hair_parts.append(mi)
 		elif n.contains("eye") and mi.mesh.surface_get_material(0) is BaseMaterial3D:
-			mi.material_override = Ppl.toon_copy(mi.mesh.surface_get_material(0), Color.WHITE)
-	var cl: = Ppl.clothes(_female, _body_mi, skel)
-	var foot: = "sandals" if rng.randf() < 0.45 else "shoes"
-	for k in ["shirt", "shorts", foot]:
-		if not cl.has(k):
-			continue
-		var cm: = MeshInstance3D.new()
-		cm.name = "Clothes_" + k
-		cm.mesh = cl[k]
-		cm.skin = _body_mi.skin
-		cm.material_override = _mat
+			var eye_mat := ShaderMaterial.new()
+			eye_mat.shader = load("res://shaders/npc_eyes.gdshader")
+			var source: BaseMaterial3D = mi.mesh.surface_get_material(0)
+			eye_mat.set_shader_parameter("tint", source.albedo_color)
+			eye_mat.set_shader_parameter("textured", source.albedo_texture != null)
+			if source.albedo_texture != null: eye_mat.set_shader_parameter("eye_texture", source.albedo_texture)
+			eye_mat.set_shader_parameter("center_y", mi.mesh.get_aabb().get_center().y)
+			eye_mat.set_shader_parameter("blink_offset", float(gid) * 0.73)
+			mi.material_override = eye_mat
+	var foot: = "shoes"
+	_body_mi.mesh = Ppl.covered_body(_female, _body_mi.mesh)
+	for cm in Ppl.outfit_parts(_female):
+		var garment_mat: ShaderMaterial = _mat.duplicate()
+		var garment_zone: float = 6.0 if str(cm.name).contains("apron") else (0.0 if str(cm.name).begins_with("skin_") else (4.0 if str(cm.name).contains("shoes") else (2.0 if str(cm.name).contains("trousers") else 1.0)))
+		garment_mat.set_shader_parameter("garment_zone", garment_zone)
+		var src: Material = cm.mesh.surface_get_material(0)
+		if garment_zone > 0.0 and garment_zone < 5.0 and src is BaseMaterial3D and src.albedo_texture != null:
+			garment_mat.set_shader_parameter("use_fabric", true)
+			garment_mat.set_shader_parameter("fabric_texture", src.albedo_texture)
+		cm.material_override = garment_mat
+		cm.name = "Tailored_" + str(cm.name)
+		if garment_zone == 6.0: cm.hide()
 		skel.add_child(cm)
+		cm.skeleton = NodePath("..")
 		_mesh_insts.append(cm)
-	var shoe_cols: = [Color(0.95, 0.95, 0.93), Color(0.12, 0.12, 0.14), Color(0.15, 0.35, 0.75), Color(0.85, 0.2, 0.2), Color(0.35, 0.22, 0.12), Color(0.95, 0.75, 0.2), Color(0.2, 0.6, 0.55)]
+	var shoe_cols: = [Color(0.82, 0.80, 0.74), Color(0.12, 0.14, 0.16), Color(0.22, 0.29, 0.34), Color(0.35, 0.24, 0.16)]
 	var sc: Color = shoe_cols[rng.randi() % shoe_cols.size()]
 	var so: Color = Color(0.95, 0.93, 0.88) if foot == "shoes" and sc.get_luminance() < 0.7 else Color(0.25, 0.2, 0.18)
 	for mi in _mesh_insts:
@@ -818,16 +908,23 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 		mi.set_instance_shader_parameter("sole", so)
 	# cabelo
 	var styles: Array = Ppl.HAIR_FEMALE if _female else Ppl.HAIR_MALE
-	var hm: = Ppl.hair_mesh(styles[rng.randi() % styles.size()])
+	var hairstyle: String=styles[rng.randi() % styles.size()]
+	var hm: = Ppl.hair_mesh(hairstyle)
 	if hm:
-		skel.add_child(hm)
-		hm.skin = hm.skin
+		Ppl.attach_hair(hm, skel)
 		hm.set_meta("src", hm.mesh.surface_get_material(0))
 		_hair_parts.append(hm)
+		if hairstyle=="Hair_Long":
+			# Long cobre laterais/nuca, mas deixa o topo exposto nesse corpo.
+			var crown := Ppl.hair_mesh("Hair_SimpleParted")
+			if crown:
+				Ppl.attach_hair(crown,skel)
+				crown.set_meta("src",crown.mesh.surface_get_material(0))
+				_hair_parts.append(crown)
 	if not _female and rng.randf() < 0.28:
 		var bm: = Ppl.hair_mesh("Hair_Beard")
 		if bm:
-			skel.add_child(bm)
+			Ppl.attach_hair(bm, skel)
 			bm.set_meta("src", bm.mesh.surface_get_material(0))
 			_hair_parts.append(bm)
 
@@ -837,64 +934,31 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 		return
 	var hs: = SkeletonModifier3D.new()
 	hs.set_script(load("res://scripts/head_scaler.gd"))
-	hs.head_scale = rng.randf_range(1.12, 1.28)
+	hs.head_scale = rng.randf_range(1.0, 1.04)
 	_skel.add_child(hs)
 	var att: = BoneAttachment3D.new()
 	att.bone_name = "Head"
 	_skel.add_child(att)
 	_face = Node3D.new()
 	att.add_child(_face)
-	var roll: = rng.randf()
-	# acessórios reais: chapéu de palha / boné / chapéu de pescador (Poly Haven) / flor (Poly Haven) — modelos em assets/models/gen e Poly Haven
-	if roll < 0.28:
-		var hat: String = ["g:strawhat_red", "g:strawhat_blue", "g:strawhat_dark"][rng.randi() % 3]
-		Real.place(_face, hat, Vector3(0, HAT_Y - 0.01, -0.02), -1.0, 0.0, Color.WHITE, 0.0, false)
-	elif roll < 0.5:
-		var cap_c: Color = [Color(1.0, 0.4, 0.3), Color(0.2, 0.6, 1.0), Color(1.0, 0.85, 0.2), Color(0.3, 0.8, 0.45)][rng.randi() % 4]
-		Real.place(_face, "g:cap", Vector3(0, HAT_Y - 0.05, -0.02), -1.0, 0.0, cap_c.lerp(Color.WHITE, 0.15), 0.0, false)
-	elif roll < 0.62:
-		var bucket: Color = [Color(1.0, 1.0, 0.96), Color(0.7, 0.9, 1.1)][rng.randi() % 2]
-		Real.place(_face, "fishermans_hat", Vector3(0, HAT_Y - 0.05, -0.02), 0.0, rng.randf() * TAU, bucket, 0.34)
-	elif roll < 0.7:
-		Real.place(_face, "flower_gazania", Vector3(0.12, HAT_Y - 0.07, 0.03), 0.0, 0.0, Color.WHITE, 0.1)
-	# óculos de sol e câmera no pescoço
-	if rng.randf() < 0.3:
-		Real.place(_face, "g:sunglasses", Vector3(0, 0.075, 0.115), -1.0, 0.0, Color.WHITE, 0.0, false)
+	# Câmera no pescoço; óculos escuros removidos a pedido do Sergio.
 	if rng.randf() < 0.14:
 		var att3: = BoneAttachment3D.new()
 		att3.bone_name = "neck_01"
 		_skel.add_child(att3)
 		Real.place(att3, "Camera_01", Vector3(0, -0.2, 0.1), 0.0, PI, Color.WHITE, 0.14)
-	# colar de contas
-	if rng.randf() < 0.25:
-		var att2: = BoneAttachment3D.new()
-		att2.bone_name = "neck_01"
-		_skel.add_child(att2)
-		var bead_c: Color = PRINT_COLS[rng.randi() % PRINT_COLS.size()]
-		for k in 12:
-			var a: = TAU * k / 12.0
-			B.sphere(att2, 0.014, Vector3(cos(a) * 0.085, -0.02 + absf(sin(a * 0.5)) * -0.04, sin(a) * 0.08), B.flat(bead_c if k % 2 == 0 else Color(1, 1, 1), 0.4))
 
 ## Estampa da roupa e altura/porte variados.
 func _finish_look(rng: RandomNumberGenerator) -> void :
 	var pat: = 0.0
-	var roll: = rng.randf()
-	if roll < 0.2:
-		pat = 1.0
-	elif roll < 0.32:
-		pat = 2.0
-	elif roll < 0.48:
-		pat = 3.0
-	elif roll < 0.56:
-		pat = 4.0
 	var p2: Color = PRINT_COLS[rng.randi() % PRINT_COLS.size()]
 	for mi in _mesh_insts:
 		mi.set_instance_shader_parameter("pattern", pat)
 		mi.set_instance_shader_parameter("shirt2", p2)
-		mi.set_instance_shader_parameter("shorts_pattern", 1.0 if rng.randf() < 0.3 else 0.0)
+		mi.set_instance_shader_parameter("shorts_pattern", 0.0)
 	if _model:
-		var h: = rng.randf_range(0.9, 1.08)
-		var w: = rng.randf_range(0.82, 1.06)
+		var h: = rng.randf_range(0.94, 1.06)
+		var w: = rng.randf_range(0.91, 1.04)
 		_model.scale = Vector3(w * lerpf(1.0, h, 0.5), h, w * lerpf(1.0, h, 0.5))
 
 const HAT_Y: = 0.14
@@ -937,21 +1001,125 @@ func show_order(text: String, urgent: = false) -> void :
 		_bubble = Label3D.new()
 		_bubble.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		_bubble.font = UiTheme.bold()
-		_bubble.font_size = 46
-		_bubble.pixel_size = 0.0055
-		_bubble.outline_size = 34
-		_bubble.no_depth_test = true
+		_bubble.font_size = 22
+		_bubble.pixel_size = 0.0025
+		_bubble.outline_size = 4
+		_bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_bubble.width = 200.0
+		_bubble.no_depth_test = false
 		_bubble.render_priority = 10
 		_bubble.fixed_size = false
-		_bubble.position = Vector3(0, 2.15, 0)
+		# A raiz sentada fica à frente do corpo; ancora o pedido acima da cabeça.
+		# Nas cadeiras opostas os balões têm alturas alternadas para não se cobrirem.
+		_bubble.position = Vector3(0, 1.8 + (0.5 if spot.get("table", false) and cos(rotation.y) > 0.0 else 0.0), -0.3)
 		add_child(_bubble)
 	_bubble.text = text
+	if Core.company_enabled() and not spot.is_empty():
+		var world = _world()
+		if world != null:
+			_bubble.text = ("E · " if not bool(get_meta("order_taken", true)) else "") + get_tree().current_scene.operations.order_number(self)
 	_bubble.modulate = Color(0.2, 0.12, 0.08)
 	_bubble.outline_modulate = Color(1.0, 0.55, 0.5) if urgent else (Color(1.0, 0.85, 0.25) if get_meta("vip", false) else Color(1, 1, 1))
 
 
 ## Cliente atendido: senta comendo (prato na mão) ou bebendo (copo/coco), levando à boca. (v0.7.1)
 func consume(drink: bool) -> void :
-	_consume_drink = drink
+	consume_dish("suco" if drink else "petiscos")
+
+func consume_dish(dish: String) -> void:
+	var presentation = load("res://scripts/dish_presentation.gd")
+	_consume_drink = presentation.is_drink(dish)
+	set_meta("consuming_dish", dish)
+	var holder: Node3D = _cup if _consume_drink else _food
+	if holder != null:
+		for child in holder.get_children():
+			if child is Node3D:
+				child.visible = false
+			child.queue_free()
+		var model: Node3D = presentation.build(holder, dish)
+		if model != null:
+			_meal=model
+			model.top_level=true
+			_meal_scale=1.0 if presentation.is_handheld(dish) else .8
+			model.scale=Vector3.ONE*_meal_scale
 	play("Eat")
 	_set_eating(true)
+
+func apply_staff_uniform(role: String) -> void:
+	var palette := {"cozinheiro": Color(0.88,0.85,0.75), "garcom": Color(0.12,0.42,0.42), "atendente": Color(0.12,0.42,0.42), "caixa": Color(0.74,0.50,0.28), "limpeza": Color(0.35,0.48,0.58)}
+	set_colors(_skin, palette.get(role, Color(0.2,0.4,0.4)), Color(0.16,0.22,0.25), _hair_col)
+	set_meta("staff_role", role)
+	var apron = _skel.get_node_or_null("Tailored_apron")
+	if apron != null:
+		apron.visible = role in ["cozinheiro","limpeza"]
+		apron.set_instance_shader_parameter("apron_color", Color(0.92,0.86,0.72) if role == "cozinheiro" else Color(0.29,0.40,0.46))
+	if not _skel.has_node("StaffBadge"):
+		var badge := BoneAttachment3D.new()
+		badge.name = "StaffBadge"
+		badge.bone_name = "spine_03"
+		_skel.add_child(badge)
+		var label := Label3D.new()
+		badge.add_child(label)
+		label.transform = _skel.get_bone_global_rest(_skel.find_bone("spine_03")).affine_inverse() * Transform3D(Basis.IDENTITY,Vector3(0.075,1.31,0.17))
+		label.text = str(Core.company.get("name","Quiosque")).left(18) + "\n" + str(Economy.STAFF[role].name)
+		label.font_size = 16
+		label.pixel_size = 0.0006
+		label.modulate = Color(1,0.94,0.76)
+		label.outline_size = 3
+
+# Produtos acompanham o esqueleto depois de IK/animação, inclusive durante curvas.
+var _held_root: Node3D
+var _held_anchor: BoneAttachment3D
+var _held_tray: bool=false
+func hold_order(items: Array, holder_name: String="CustomerTray") -> void:
+	clear_held_order()
+	if _skel==null or items.is_empty(): return
+	_held_tray=items.size()>1 or not load("res://scripts/dish_presentation.gd").is_handheld(str(items[0]))
+	_held_anchor=BoneAttachment3D.new()
+	_held_anchor.bone_name="hand_r"
+	_skel.add_child(_held_anchor)
+	_held_root=Node3D.new()
+	_held_root.name=holder_name
+	_held_root.set_meta("hand_bound",true)
+	add_child(_held_root)
+	var presentation=load("res://scripts/dish_presentation.gd")
+	if _held_tray:
+		Real.place(_held_root,"g:service_carry_tray",Vector3(.19,0,-.12),0.0,0,Color.WHITE,.40)
+	for i in items.size():
+		var model: Node3D=presentation.build(_held_root,str(items[i]))
+		if model:
+			model.scale=Vector3.ONE*(.80 if _held_tray else 1.0)
+			model.position=Vector3((i-(items.size()-1)*.5)*.13+.19,.015,-.10) if _held_tray else Vector3(0,-.07,.025)
+	set_meta("hand_carry",true)
+	set_meta("carry_tray",_held_tray)
+	set_meta("work_kind","carry")
+	set_meta("work_target",global_position)
+	_skel.skeleton_updated.connect(_sync_held_order)
+	_sync_held_order()
+func _sync_held_order() -> void:
+	if not is_instance_valid(_held_root) or not is_instance_valid(_held_anchor): return
+	_held_root.global_transform=Transform3D(global_basis.orthonormalized(),_held_anchor.global_position)
+func clear_held_order() -> void:
+	if _skel and _skel.skeleton_updated.is_connected(_sync_held_order): _skel.skeleton_updated.disconnect(_sync_held_order)
+	for node in [_held_root,_held_anchor]:
+		if is_instance_valid(node):
+			if node is Node3D: node.visible=false
+			Core.release_visual(node)
+	_held_root=null
+	_held_anchor=null
+	for key in ["hand_carry","carry_tray"]:
+		if has_meta(key): remove_meta(key)
+
+func _sync_consumed_dish() -> void:
+	if not _eating or not is_instance_valid(_meal): return
+	var holder: Node3D=_cup if _consume_drink else _food
+	if holder==null: return
+	var size: float=_meal_scale
+	_meal.global_transform=Transform3D(global_basis.orthonormalized().scaled(Vector3.ONE*size),holder.get_parent().global_position+global_basis*Vector3(0,-.07,.025))
+
+func service_reaction(kind: String) -> void:
+	_service_kind=kind
+	_service_time=1.2
+	if not get_meta("hand_carry",false):
+		set_meta("work_kind","receive" if kind=="receber" else "greet")
+		set_meta("work_target",global_position+global_basis*Vector3(-.22,1.22,.32))

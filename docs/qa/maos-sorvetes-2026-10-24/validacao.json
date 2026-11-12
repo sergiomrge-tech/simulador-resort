@@ -1,0 +1,83 @@
+{
+  "pck_sha256": "bf92b51dfd5edf2674c26d66666a2a1ac5be43828ba2209e95144d5b3dd8e42a",
+  "pck_bytes": 1803531260,
+  "regressions": [
+    {
+      "check": "held-order",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "counter-first",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "company",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "practical",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "order-visual",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "tableware",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "held-order",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "counter-first",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "company",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "practical",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "order-visual",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "tableware",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0
+    }
+  ],
+  "visual_inspection": [
+    "held_sorvete_morango_1.png",
+    "held_coco_gelado_3.png",
+    "icecream_dining.png"
+  ]
+}

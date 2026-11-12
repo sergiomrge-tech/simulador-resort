@@ -1,0 +1,46 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[tableware] ok PC no centro do balcão
+[tableware] ok E alcança PC central por dentro
+[tableware] ok PC central abre gestão
+[tableware] ok PC não bloqueia atendimento pelo lado dos clientes
+[tableware] ok saída registra produto consumido: suco
+[tableware] ok recipiente correspondente: suco
+[tableware] ok suco deixa vidro/canudo sem líquido, gelo ou fruta
+[tableware] ok suco deixa vidro/canudo sem líquido, gelo ou fruta
+[tableware] ok limpeza remove recipiente e registro: suco
+[tableware] ok saída registra produto consumido: coco_gelado
+[tableware] ok recipiente correspondente: coco_gelado
+[tableware] ok limpeza remove recipiente e registro: coco_gelado
+[tableware] ok saída registra produto consumido: caipirinha
+[tableware] ok recipiente correspondente: caipirinha
+[tableware] ok limpeza remove recipiente e registro: caipirinha
+[tableware] ok saída registra produto consumido: batida
+[tableware] ok recipiente correspondente: batida
+[tableware] ok limpeza remove recipiente e registro: batida
+[tableware] ok saída registra produto consumido: acai
+[tableware] ok recipiente correspondente: acai
+[tableware] ok limpeza remove recipiente e registro: acai
+[tableware] ok saída registra produto consumido: moqueca
+[tableware] ok recipiente correspondente: moqueca
+[tableware] ok limpeza remove recipiente e registro: moqueca
+[tableware] ok saída registra produto consumido: petiscos
+[tableware] ok recipiente correspondente: petiscos
+[tableware] ok limpeza remove recipiente e registro: petiscos
+[tableware] ok saída registra produto consumido: tapioca
+[tableware] ok recipiente correspondente: tapioca
+[tableware] ok limpeza remove recipiente e registro: tapioca
+[tableware] ok saída registra produto consumido: pastel
+[tableware] ok recipiente correspondente: pastel
+[tableware] ok limpeza remove recipiente e registro: pastel
+[tableware] ok pedido misto deixa os três recipientes
+[tableware] ok salvar/carregar preserva louça específica
+[tableware] ok recipientes continuam visíveis após recarga
+[tableware] ok louça e recarga não alteram estoque nem cobram novamente
+[tableware] ok save antigo permanece compatível
+TABLEWARE_TEST PASS
+SHUTDOWN_COMPLETE code=0

@@ -1,0 +1,22 @@
+{
+ "seed": "20261108",
+ "instances": {
+  "World_2062": 91032,
+  "World_2071": 90991,
+  "World_0503": 8168,
+  "World_2063": 4150,
+  "World_2067": 8150,
+  "World_2064": 4255,
+  "World_0502": 4101,
+  "World_2069": 8318
+ },
+ "total": 219165,
+ "rejected": {
+  "wet": 2544,
+  "trail": 2933,
+  "steep": 30988,
+  "other": 7148,
+  "village": 10065,
+  "summit house": 192
+ }
+}

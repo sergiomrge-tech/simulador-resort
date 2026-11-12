@@ -1,0 +1,30 @@
+{
+ "_doc": "People passing time on the pier (11/11). The rope rails between the posts are 78 cm tall, too low to lean on (the UAL 2 Idle_Rail clip holds the wrists 92-95 cm up, 6-20 cm in front): one person leans on the timber guard rail at the sea end of the platform (mare_pier.rail: top 93 cm, 13 cm in front of the spot), one watches the sea with the arms folded and one talks on the phone. spots: [x, y, deck z, yaw, clip]. They come and go only while the player is 25 m away.",
+ "hours": [
+  8,
+  18
+ ],
+ "spots": [
+  [
+   7125,
+   -3400,
+   37,
+   180,
+   "Idle_FoldArms"
+  ],
+  [
+   7075,
+   -4877,
+   37,
+   -90,
+   "Idle_Rail"
+  ],
+  [
+   7160,
+   -4560,
+   37,
+   -90,
+   "Idle_TalkingPhone"
+  ]
+ ]
+}

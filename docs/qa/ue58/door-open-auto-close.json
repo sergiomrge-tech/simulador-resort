@@ -1,0 +1,198 @@
+[
+  {
+    "pie": true,
+    "time": 216.88640120252967,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x00000207F678D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      4772.49992370605,
+      2300.0,
+      111.9999997317791
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": true
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ]
+  },
+  {
+    "pie": true,
+    "time": 217.39509190246463,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x00000207F678D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      4772.49992370605,
+      2300.0,
+      102.15000316500664
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": "Door",
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": true
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ]
+  },
+  {
+    "pie": true,
+    "time": 217.9084680043161,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x00000207F678D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      4772.49992370605,
+      2650.0,
+      111.9999997317791
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": "Door",
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": true
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ]
+  },
+  {
+    "pie": true,
+    "time": 218.4315899014473,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x00000207F678D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      4772.49992370605,
+      2650.0,
+      105.15000650286674
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ]
+  }
+]

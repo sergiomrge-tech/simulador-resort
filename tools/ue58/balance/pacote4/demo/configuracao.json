@@ -1,0 +1,105 @@
+{
+  "base_revision": "efceab984ef6a1eb3dfc0cdd88ca9a7377586aaf",
+  "meta_horas": [
+    6,
+    10
+  ],
+  "minutos_por_dia": 16,
+  "dias": 120,
+  "sementes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29
+  ],
+  "perfis": {
+    "casual": {
+      "active_seconds": 360,
+      "success": 0.5,
+      "kiosk_share": 0.65,
+      "attendant_seconds_per_item": 11,
+      "manual_seconds_per_item": 12,
+      "event_every": 7,
+      "tour_every": 7,
+      "cup_join": 0.25,
+      "win": 0.35,
+      "reception_share": 0.1,
+      "complaint_response": 0.45
+    },
+    "medio": {
+      "active_seconds": 600,
+      "success": 0.72,
+      "kiosk_share": 0.8,
+      "attendant_seconds_per_item": 11,
+      "manual_seconds_per_item": 10,
+      "event_every": 3,
+      "tour_every": 3,
+      "cup_join": 0.65,
+      "win": 0.55,
+      "reception_share": 0.35,
+      "complaint_response": 0.8
+    },
+    "dedicado": {
+      "active_seconds": 840,
+      "success": 0.9,
+      "kiosk_share": 0.95,
+      "attendant_seconds_per_item": 11,
+      "manual_seconds_per_item": 8,
+      "event_every": 1,
+      "tour_every": 1,
+      "cup_join": 0.95,
+      "win": 0.75,
+      "reception_share": 0.65,
+      "complaint_response": 0.97
+    }
+  },
+  "mudancas": [
+    {
+      "file": "customization.json",
+      "pointer": "/price_mult/4",
+      "current": 260,
+      "new": 220,
+      "reason": "Compensar parte do custo do milhão na cauda de compras: manter o 100% próximo de 40 h sem reduzir a dívida nem preços de expansões."
+    },
+    {
+      "file": "customization.json",
+      "pointer": "/recipes/cost_mult/4",
+      "current": 900,
+      "new": 760,
+      "reason": "Mesma compensação apenas no nível 5 de receitas; manter as 7.000 vendas e o ritmo de campanha. Proposta, não aplicada ao jogo."
+    }
+  ],
+  "service_scale": 1,
+  "mode": "demo",
+  "debt_policy": "default",
+  "debt_policy_values": {
+    "before_hotel_share": 0.02,
+    "after_hotel_share": 0.5
+  }
+}

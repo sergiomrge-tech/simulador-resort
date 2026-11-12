@@ -232,9 +232,9 @@ func _build_main() -> Control:
 	_btn(vb, "Carregar jogo", func(): _open_slots("load"), 62, 26)
 	_btn(vb, "Configurações", func(): _open_settings(main_p), 62, 26)
 	if not touch:
-		_btn(vb, "Sair", func(): get_tree().quit(), 62, 26, Color(0.55, 0.25, 0.2))
+		_btn(vb, "Sair", func(): Core.quit_game(), 62, 26, Color(0.55, 0.25, 0.2))
 	var ver: = Label.new()
-	ver.text = "v%s  ·  %s" % [ProjectSettings.get_setting("application/config/version", "0.2.0"), "PC" if Quality.hd else "Mobile"]
+	ver.text = "v%s  ·  %s  ·  %s" % [ProjectSettings.get_setting("application/config/version", "0.2.0"),ProjectSettings.get_setting("application/config/build_label",""), "PC" if Quality.hd else "Mobile"]
 	ver.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	ver.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	ver.position = Vector2(24, -44)
@@ -330,7 +330,7 @@ func _build_pause() -> Control:
 	if not touch:
 		_btn(vb, "Sair do jogo", func():
 			Core.save_game()
-			get_tree().quit(), 62, 26, Color(0.55, 0.25, 0.2))
+			Core.quit_game(), 62, 26, Color(0.55, 0.25, 0.2))
 	return p
 
 func toggle_pause() -> void :
@@ -404,6 +404,16 @@ func _build_settings() -> Control:
 	r = _row(vid, "Campo de visão (FOV)")
 	_slider(r, 60, 100, 1, Quality.fov, func(v): Quality.set_fov(v), func(v): return "%d°" % int(v))
 
+	r=_row(vid,"Sombras")
+	_option(r,["Padrão do preset","Desligadas","Baixas","Médias","Altas"],Quality.shadows+1,func(i):Quality.set_detail("shadows",i-1))
+	r=_row(vid,"Vegetação")
+	_slider(r,35,100,5,Quality.vegetation*100,func(v):Quality.set_detail("vegetation",v/100.0),func(v):return "%d%%"%int(v))
+	r=_row(vid,"Distância dos detalhes")
+	_slider(r,50,150,10,Quality.detail_distance*100,func(v):Quality.set_detail("detail_distance",v/100.0),func(v):return "%d%%"%int(v))
+	r=_row(vid,"Pedestres na vila")
+	_slider(r,4,18,1,Quality.population,func(v):Quality.set_detail("population",int(v)),func(v):return str(int(v)))
+	r=_row(vid,"Mostrar FPS e tempo de quadro")
+	_check(r,Quality.show_fps,func(v):Quality.set_detail("show_fps",v))
 	var aud: = VBoxContainer.new()
 	aud.name = tr("Áudio")
 	aud.add_theme_constant_override("separation", 14)
@@ -415,6 +425,8 @@ func _build_settings() -> Control:
 	r = _row(aud, "Efeitos e ambiente")
 	_slider(r, 0, 100, 1, Quality.vol_sfx * 100.0, func(v): Quality.set_volume("SFX", v / 100.0), func(v): return "%d%%" % int(v))
 
+	r=_row(aud,"Ambiente natural")
+	_slider(r,0,100,1,Quality.vol_ambience*100,func(v):Quality.set_volume("Ambiente",v/100.0),func(v):return "%d%%"%int(v))
 	var ctl: = VBoxContainer.new()
 	ctl.name = tr("Controles")
 	ctl.add_theme_constant_override("separation", 8)

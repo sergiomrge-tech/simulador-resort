@@ -1,0 +1,418 @@
+{
+ "_doc": "Grand Hotel rooms (CHECKLIST 5.1, MareHotelRooms.cpp). 32 rooms, numbered by floor (3rd floor up, 8 per floor). The first three are the visitable 3rd floor: 301 suite (tools/ue58/gen_suite.py), 302 standard and 303 luxury (tools/ue58/gen_hotel_rooms.py, placed by Content/Python/mare_hotel_rooms.py); the others repeat the same models and are kept by the housekeeping crew. kinds: nightly rate = hotel reference rate x rate_mult; the guest profile picks the kind it asks for. tasks: what a check-out leaves to do (minibar = restock what the guest took, paid at the supply cost). crew: hotel housekeeping, tasks per hour between 8:00 and 18:00, the visitable rooms only after 'visitable_after' (the player's morning). Rooms the player cleans by hand get 'polished' (better rating for the next guest). complaints: phoned in between 8:00 and 22:00, chance per occupied room per hour, at most 'max_open' open; 'minutes' to solve it before the guest takes it into the review (mood penalty); the phone sends the technician for 'cost'; in the visitable rooms the player solves it in person for free.",
+ "kinds": [
+  {
+   "id": "suite",
+   "label": "Suíte",
+   "count": 2,
+   "rate_mult": 1.9
+  },
+  {
+   "id": "luxo",
+   "label": "Luxo",
+   "count": 10,
+   "rate_mult": 1.2
+  },
+  {
+   "id": "standard",
+   "label": "Standard",
+   "count": 20,
+   "rate_mult": 0.85
+  }
+ ],
+ "visitable": [
+  "suite",
+  "standard",
+  "luxo"
+ ],
+ "profile_kind": {
+  "executivo": "standard",
+  "lua_de_mel": "suite",
+  "familia_vip": "luxo",
+  "influenciador": "luxo"
+ },
+ "tasks": [
+  "bed",
+  "towels",
+  "trash",
+  "minibar"
+ ],
+ "task_labels": {
+  "bed": "Arrumar a cama",
+  "towels": "Trocar as toalhas",
+  "trash": "Tirar o lixo",
+  "minibar": "Repor o frigobar"
+ },
+ "task_done": {
+  "bed": "cama arrumada",
+  "towels": "toalhas trocadas",
+  "trash": "lixo retirado",
+  "minibar": "frigobar reposto"
+ },
+ "_spots": "Visitable rooms in order (301 suite, 302 standard, 303 luxury): where each task's mess and E target sit (world cm [x, y, z, yaw]; the mess is dropped onto the surface traced below z) and where each complaint is solved in person ('fix', world cm). UMareStaysWorld. VIP requests (5.2) are taken to the bed (petals, pillow), the minibar (champagne) and the TV table (breakfast).",
+ "spots": [
+  {
+   "bed": [
+    -3440,
+    6287,
+    930,
+    25
+   ],
+   "towels": [
+    -2300,
+    6560,
+    870,
+    -40
+   ],
+   "trash": [
+    -3300,
+    5840,
+    870,
+    0
+   ],
+   "minibar": [
+    -2760,
+    6280,
+    880,
+    0
+   ],
+   "fix": {
+    "ac": [
+     -3550,
+     6880,
+     1080
+    ],
+    "tv": [
+     -2850,
+     6255,
+     1000
+    ],
+    "shower": [
+     -2150,
+     6442,
+     960
+    ],
+    "towels": [
+     -2300,
+     6560,
+     900
+    ],
+    "noise": [
+     -2800,
+     6790,
+     960
+    ],
+    "vip_petals": [
+     -3440,
+     6287,
+     960
+    ],
+    "vip_pillow": [
+     -3440,
+     6287,
+     975
+    ],
+    "vip_champagne": [
+     -2760,
+     6280,
+     920
+    ],
+    "vip_breakfast": [
+     -2850,
+     6255,
+     960
+    ]
+   }
+  },
+  {
+   "bed": [
+    -1500,
+    6182,
+    930,
+    25
+   ],
+   "towels": [
+    -1511,
+    6517,
+    870,
+    -40
+   ],
+   "trash": [
+    -1586,
+    5852,
+    870,
+    0
+   ],
+   "minibar": [
+    -1332,
+    6132,
+    880,
+    0
+   ],
+   "fix": {
+    "ac": [
+     -1272,
+     6012,
+     1080
+    ],
+    "tv": [
+     -1308,
+     6182,
+     1000
+    ],
+    "shower": [
+     -1560,
+     6540,
+     960
+    ],
+    "towels": [
+     -1511,
+     6517,
+     900
+    ],
+    "noise": [
+     -1364,
+     6800,
+     960
+    ],
+    "vip_petals": [
+     -1500,
+     6182,
+     960
+    ],
+    "vip_pillow": [
+     -1500,
+     6182,
+     975
+    ],
+    "vip_champagne": [
+     -1332,
+     6132,
+     920
+    ],
+    "vip_breakfast": [
+     -1308,
+     6182,
+     960
+    ]
+   }
+  },
+  {
+   "bed": [
+    -706,
+    6180,
+    930,
+    25
+   ],
+   "towels": [
+    -796,
+    6562,
+    870,
+    -40
+   ],
+   "trash": [
+    -1211,
+    6292,
+    870,
+    0
+   ],
+   "minibar": [
+    -1195,
+    6077,
+    880,
+    0
+   ],
+   "fix": {
+    "ac": [
+     -1252,
+     5922,
+     1080
+    ],
+    "tv": [
+     -1220,
+     6142,
+     1000
+    ],
+    "shower": [
+     -640,
+     6620,
+     960
+    ],
+    "towels": [
+     -796,
+     6562,
+     900
+    ],
+    "noise": [
+     -1116,
+     6800,
+     960
+    ],
+    "vip_petals": [
+     -706,
+     6180,
+     960
+    ],
+    "vip_pillow": [
+     -706,
+     6180,
+     975
+    ],
+    "vip_champagne": [
+     -1195,
+     6077,
+     920
+    ],
+    "vip_breakfast": [
+     -1220,
+     6142,
+     960
+    ]
+   }
+  }
+ ],
+ "crew": {
+  "tasks_per_hour": 8,
+  "from": 8,
+  "to": 18,
+  "visitable_after": 11
+ },
+ "polished_bonus": 0.3,
+ "dirty_check_in_penalty": 0.0,
+ "minibar": [
+  {
+   "id": "agua",
+   "label": "água",
+   "price": 9,
+   "cost": 2
+  },
+  {
+   "id": "refri",
+   "label": "refrigerante",
+   "price": 12,
+   "cost": 3
+  },
+  {
+   "id": "cerveja",
+   "label": "cerveja",
+   "price": 16,
+   "cost": 5
+  },
+  {
+   "id": "castanha",
+   "label": "castanha de caju",
+   "price": 22,
+   "cost": 7
+  },
+  {
+   "id": "chocolate",
+   "label": "chocolate",
+   "price": 15,
+   "cost": 4
+  },
+  {
+   "id": "espumante",
+   "label": "espumante",
+   "price": 85,
+   "cost": 30
+  }
+ ],
+ "minibar_take_max": 4,
+ "complaints": {
+  "chance_per_room_hour": 0.012,
+  "max_open": 3,
+  "from": 8,
+  "to": 22,
+  "solved_mood": 0.08,
+  "failed_mood": 0.4,
+  "kinds": [
+   {
+    "id": "ac",
+    "label": "Ar-condicionado quebrado",
+    "minutes": 90,
+    "cost": 80,
+    "fix": "Consertar o ar-condicionado"
+   },
+   {
+    "id": "noise",
+    "label": "Barulho no corredor",
+    "minutes": 45,
+    "cost": 0,
+    "fix": "Pedir silêncio no corredor"
+   },
+   {
+    "id": "shower",
+    "label": "Chuveiro sem água quente",
+    "minutes": 90,
+    "cost": 60,
+    "fix": "Consertar o chuveiro"
+   },
+   {
+    "id": "towels",
+    "label": "Faltam toalhas",
+    "minutes": 60,
+    "cost": 15,
+    "fix": "Levar toalhas limpas"
+   },
+   {
+    "id": "tv",
+    "label": "TV sem sinal",
+    "minutes": 75,
+    "cost": 40,
+    "fix": "Ajustar a TV"
+   },
+   {
+    "id": "vip_petals",
+    "vip": true,
+    "label": "Pedido VIP: pétalas de rosa na cama",
+    "minutes": 120,
+    "cost": 60,
+    "fix": "Espalhar pétalas de rosa na cama",
+    "fame": 6,
+    "tip": 120
+   },
+   {
+    "id": "vip_champagne",
+    "vip": true,
+    "label": "Pedido VIP: champanhe gelado no quarto",
+    "minutes": 90,
+    "cost": 150,
+    "fix": "Levar o champanhe no balde de gelo",
+    "fame": 6,
+    "tip": 150
+   },
+   {
+    "id": "vip_pillow",
+    "vip": true,
+    "label": "Pedido VIP: travesseiro de pena de ganso",
+    "minutes": 120,
+    "cost": 80,
+    "fix": "Trocar os travesseiros por pena de ganso",
+    "fame": 5,
+    "tip": 100
+   },
+   {
+    "id": "vip_breakfast",
+    "vip": true,
+    "label": "Pedido VIP: café da manhã servido no quarto",
+    "minutes": 75,
+    "cost": 90,
+    "fix": "Servir o café da manhã no quarto",
+    "fame": 5,
+    "tip": 110
+   }
+  ],
+  "vip": {
+   "_doc": "5.2 VIP requests (06/11): a guest of these profiles asks once per stay (chance per hour of the stay); solved in person = fame x2 and the tip, by phone = the cost and the fame; missed = failed_mood and fame lost.",
+   "profiles": [
+    "familia_vip",
+    "lua_de_mel",
+    "influenciador"
+   ],
+   "chance_per_hour": 0.35,
+   "in_person_fame_mult": 2,
+   "failed_mood": 0.6,
+   "failed_fame": 3
+  }
+ }
+}

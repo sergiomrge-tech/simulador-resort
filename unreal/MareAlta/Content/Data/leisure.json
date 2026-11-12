@@ -1,0 +1,301 @@
+{
+ "_doc": "Fishing at the pier and the photo mode (village chapters). Fishing: E at the spot casts; after a random wait the fish bites and the player has bite_window seconds to strike (E, Space, click or A); a strike gives one fish of a species drawn by weight, which goes to the stock as 'peixe' (Seu Severino's chapter asks for 4). Photo mode: P takes a picture (saved in Saved/Album); every subject inside the frame, closer than its max distance and not hidden behind a wall, is recorded in the album (prog.album) and flags its chapter step (prog.chp). A subject with sun = true is the sun itself: low (elevation under max_elevation degrees), within angle degrees of the view, at the given hours (the sunset). World cm. 11/11 (Fase 3) bait, fight and the species book: 'baits' (massa is free and endless; the others are bought in packs at the pier, prog.bait); each species has 'strength' (0..1, how hard it pulls in the fight; bigger fish of the species pull harder), 'bait' (weight multiplier per bait id, 1 when absent), optional 'hours' [from, to] of the day it bites, and a 'hint' shown in the book before the first catch. After the strike the fish is fought: holding reels the line in and raises the tension, a pulling fish raises it faster; the line snaps over the limit, a slack line lets the fish go (FMareFishFight, MareFishing.h). First catch of a species: 'first_fame'; the whole book: 'book_reward' R$. photo_challenges: one-time goals of the photo mode, done when one photo holds 'all' the subjects (or 'count' different ones); reward in R$ and fame.",
+ "fishing_spot": [
+  7200,
+  -4890,
+  0,
+  90
+ ],
+ "bite_wait": [
+  2.0,
+  6.0
+ ],
+ "bite_window": 1.1,
+ "species": [
+  {
+   "id": "sardinha",
+   "name": "Sardinha",
+   "weight": 40,
+   "cm": [
+    12,
+    20
+   ],
+   "strength": 0.1,
+   "bait": {
+    "massa": 1.4,
+    "camarao": 0.8,
+    "lula": 0.3
+   },
+   "hint": "Vem em qualquer isca, o dia todo."
+  },
+  {
+   "id": "pargo",
+   "name": "Pargo",
+   "weight": 25,
+   "cm": [
+    25,
+    45
+   ],
+   "strength": 0.3,
+   "bait": {
+    "massa": 0.9,
+    "camarao": 1.6,
+    "lula": 0.8
+   },
+   "hint": "Gosta de camarão."
+  },
+  {
+   "id": "robalo",
+   "name": "Robalo",
+   "weight": 20,
+   "cm": [
+    35,
+    70
+   ],
+   "strength": 0.55,
+   "bait": {
+    "massa": 0.4,
+    "camarao": 1.8,
+    "lula": 1.2
+   },
+   "hint": "Camarão, de manhã cedo ou no fim da tarde."
+  },
+  {
+   "id": "cioba",
+   "name": "Cioba",
+   "weight": 12,
+   "cm": [
+    30,
+    55
+   ],
+   "strength": 0.4,
+   "bait": {
+    "massa": 0.5,
+    "camarao": 1.4,
+    "lula": 1.3
+   },
+   "hint": "Camarão ou lula."
+  },
+  {
+   "id": "garoupa",
+   "name": "Garoupa (rara!)",
+   "weight": 3,
+   "cm": [
+    50,
+    95
+   ],
+   "strength": 0.85,
+   "bait": {
+    "massa": 0.2,
+    "camarao": 1.0,
+    "lula": 4.0
+   },
+   "hint": "Só a lula tira a garoupa da toca."
+  },
+  {
+   "id": "carapeba",
+   "name": "Carapeba",
+   "weight": 22,
+   "cm": [
+    14,
+    26
+   ],
+   "strength": 0.15,
+   "bait": {
+    "massa": 1.6,
+    "camarao": 0.9,
+    "lula": 0.3
+   },
+   "hint": "Belisca massa de pão perto das estacas."
+  },
+  {
+   "id": "xareu",
+   "name": "Xaréu",
+   "weight": 10,
+   "cm": [
+    40,
+    80
+   ],
+   "strength": 0.7,
+   "bait": {
+    "massa": 0.2,
+    "camarao": 1.2,
+    "lula": 2.2
+   },
+   "hours": [
+    15,
+    19
+   ],
+   "hint": "Caça no fim da tarde. Prepare o braço."
+  },
+  {
+   "id": "peixe_espada",
+   "name": "Peixe-espada",
+   "weight": 14,
+   "cm": [
+    60,
+    110
+   ],
+   "strength": 0.6,
+   "bait": {
+    "massa": 0.1,
+    "camarao": 0.8,
+    "lula": 2.5
+   },
+   "hours": [
+    18.5,
+    24
+   ],
+   "hint": "Só de noite, com lula."
+  }
+ ],
+ "photo_subjects": [
+  {
+   "id": "farol",
+   "name": "Farol",
+   "at": [
+    10800,
+    -4000,
+    900
+   ],
+   "max": 9000,
+   "radius": 500
+  },
+  {
+   "id": "pier",
+   "name": "Píer dos pescadores",
+   "at": [
+    7200,
+    -3500,
+    50
+   ],
+   "max": 4000,
+   "radius": 600
+  },
+  {
+   "id": "hotel",
+   "name": "Grand Hotel",
+   "at": [
+    -1800,
+    6500,
+    1500
+   ],
+   "max": 12000,
+   "radius": 1500
+  },
+  {
+   "id": "quiosque",
+   "name": "Quiosque",
+   "at": [
+    3800,
+    -1200,
+    250
+   ],
+   "max": 3000,
+   "radius": 400
+  },
+  {
+   "id": "bar",
+   "name": "Bar do Coqueiro",
+   "at": [
+    1300,
+    -1300,
+    250
+   ],
+   "max": 3000,
+   "radius": 400
+  },
+  {
+   "id": "piscina",
+   "name": "Piscina",
+   "at": [
+    0,
+    400,
+    0
+   ],
+   "max": 3000,
+   "radius": 600
+  },
+  {
+   "id": "por_do_sol",
+   "name": "Pôr do sol",
+   "sun": true,
+   "hours": [
+    16.5,
+    18.8
+   ],
+   "max_elevation": 18,
+   "angle": 30
+  }
+ ],
+ "baits": [
+  {
+   "id": "massa",
+   "name": "Massa de pão",
+   "pack": 0,
+   "cost": 0
+  },
+  {
+   "id": "camarao",
+   "name": "Camarão",
+   "pack": 5,
+   "cost": 20
+  },
+  {
+   "id": "lula",
+   "name": "Lula",
+   "pack": 5,
+   "cost": 45
+  }
+ ],
+ "first_fame": 5,
+ "book_reward": 300,
+ "photo_challenges": [
+  {
+   "id": "cartao_postal",
+   "text": "Farol e píer na mesma foto",
+   "all": [
+    "farol",
+    "pier"
+   ],
+   "money": 60,
+   "fame": 4
+  },
+  {
+   "id": "fim_de_tarde",
+   "text": "O pôr do sol",
+   "all": [
+    "por_do_sol"
+   ],
+   "money": 40,
+   "fame": 3
+  },
+  {
+   "id": "por_do_sol_no_farol",
+   "text": "O pôr do sol com o farol na foto",
+   "all": [
+    "por_do_sol",
+    "farol"
+   ],
+   "money": 120,
+   "fame": 8
+  },
+  {
+   "id": "meu_negocio",
+   "text": "Quiosque e bar na mesma foto",
+   "all": [
+    "quiosque",
+    "bar"
+   ],
+   "money": 60,
+   "fame": 4
+  },
+  {
+   "id": "panorama",
+   "text": "Três pontos da ilha numa foto só",
+   "count": 3,
+   "money": 150,
+   "fame": 10
+  }
+ ]
+}

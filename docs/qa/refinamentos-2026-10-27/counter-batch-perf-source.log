@@ -1,0 +1,11 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4010 arbustos=112 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+BENCH_SCENE {"draw_calls":{"mean":1756.51675257732,"p50":1756.0,"p95":1776.0},"drawn_fps":96.7272008371209,"frame_ms":{"mean":10.3249909793815,"p50":9.444,"p95":15.646},"frames":776,"gpu_ms":{"mean":3.30171649941464,"p50":3.33200001716614,"p95":3.37599992752075},"primitives":{"mean":8564022.45360825,"p50":8560755.0,"p95":8585349.0},"process_ms":{"mean":17.5430554123712,"p50":17.246,"p95":22.677},"render_cpu_ms":{"mean":3.08092268502589,"p50":2.76200008392334,"p95":4.73999977111816},"scene":"quiosque","vram_mb":1820.78852844238}
+BENCH_SCENE {"draw_calls":{"mean":1918.11600928074,"p50":1915.0,"p95":1936.0},"drawn_fps":107.547203042,"frame_ms":{"mean":9.28743967517401,"p50":8.591,"p95":14.843},"frames":862,"gpu_ms":{"mean":5.35521577793042,"p50":5.35300016403198,"p95":5.37900018692017},"primitives":{"mean":12279514.1902552,"p50":12266272.0,"p95":12323260.0},"process_ms":{"mean":15.2319408352668,"p50":15.963,"p95":19.475},"render_cpu_ms":{"mean":2.82009164501509,"p50":2.60599994659424,"p95":4.57399988174438},"scene":"vila","vram_mb":1820.78852844238}
+BENCH_SCENE {"draw_calls":{"mean":750.5574057844,"p50":751.0,"p95":762.0},"drawn_fps":142.463280089557,"frame_ms":{"mean":7.0131884312007,"p50":6.351,"p95":11.439},"frames":1141,"gpu_ms":{"mean":1.82184224448426,"p50":1.82200002670288,"p95":1.83500003814697},"primitives":{"mean":3041480.76950044,"p50":3044206.0,"p95":3048706.0},"process_ms":{"mean":11.9199614373355,"p50":11.856,"p95":12.931},"render_cpu_ms":{"mean":1.47400175396755,"p50":1.35300004482269,"p95":2.42300009727478},"scene":"praia","vram_mb":1820.78852844238}
+PERFORMANCE_TEST PASS
+SHUTDOWN_COMPLETE code=0

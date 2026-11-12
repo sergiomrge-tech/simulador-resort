@@ -27,7 +27,7 @@ const XP: = {"sale": 2, "vip": 25, "tour": 8, "photo": 15, "goal": 40, "chapter"
 ## área -> ramos -> 3 níveis. "need" = expansão exigida; "fame" de cada nível = nível de fama mínimo.
 const TREE: = {
 	"quiosque": {"name": "Quiosque", "need": "", "branches": {
-		"kiosk_speed": {"name": "Mãos rápidas", "desc": "Preparo 12% mais rápido por nível", "per": 0.12},
+		"kiosk_speed": {"name": "Entrega ágil", "desc": "Equipe anda 12% mais rápido por nível", "per": 0.12},
 		"kiosk_quality": {"name": "Capricho", "desc": "Clientes dão notas melhores (+0,15 ★ por nível)", "per": 0.15},
 		"kiosk_patience": {"name": "Fila animada", "desc": "Clientes esperam 15% mais por nível", "per": 0.15},
 	}},

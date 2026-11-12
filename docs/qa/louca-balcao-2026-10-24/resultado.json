@@ -1,0 +1,22 @@
+{
+  "source_pass": [
+    "tableware",
+    "terminal",
+    "company",
+    "counter-first",
+    "counter"
+  ],
+  "exported_pass": [
+    "tableware",
+    "terminal",
+    "company",
+    "counter-first",
+    "counter"
+  ],
+  "exit_codes": 0,
+  "errors": 0,
+  "pck_bytes": 1802902492,
+  "pck_sha256": "0510a079e2333709c1249980ff6cd1e0eb711feb0d2b9de69d6d6cafe2472147",
+  "zip_bytes": 1568648082,
+  "zip_sha256": "bbcb44ca8f74ce8eea0e6f0b016c4e8ffafb2eaa3ea2233d79b5eb804b6c2797"
+}

@@ -1,0 +1,164 @@
+"""Sunbathers against their towels (10/11, Sergio's photo: the face-down bather lying half off her towel).
+
+towels(): the towel meshes of the level against Content/Data/sunbathers.json (the data must be the towel's centre).
+bathers(): PIE, every MareBather lying down: head, pelvis and feet against the towel centre of the data."""
+import json
+import math
+from pathlib import Path
+
+import unreal
+
+DATA = Path(unreal.Paths.project_content_dir()) / 'Data' / 'sunbathers.json'
+
+
+def _spots():
+    return json.loads(DATA.read_text(encoding='utf-8'))['towels']
+
+
+def towels(arg=''):
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world() or unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    rows = []
+    cands = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = c.get_editor_property('static_mesh')
+            if not m:
+                continue
+            bb = m.get_bounding_box()
+            ts = ([c.get_instance_transform(i, True) for i in range(c.get_instance_count())]
+                  if isinstance(c, unreal.InstancedStaticMeshComponent) else [c.get_world_transform()])
+            for t in ts:
+                size = (bb.max - bb.min) * t.scale3d
+                dims = sorted([abs(size.x), abs(size.y)])
+                # a towel: flat (under 12 cm), 70-130 by 150-240 cm
+                if abs(size.z) < 12 and 70 < dims[0] < 130 and 150 < dims[1] < 240:
+                    ctr = t.transform_location((bb.min + bb.max) * .5)
+                    cands.append((m.get_name(), a.get_actor_label(), ctr, t.rotation.rotator().yaw, [round(abs(size.x)), round(abs(size.y))], c.is_visible() and not a.is_hidden_ed()))
+    for i, s in enumerate(_spots()):
+        near = sorted(cands, key=lambda k: (k[2].x - s[0]) ** 2 + (k[2].y - s[1]) ** 2)[:2]
+        rows.append({'spot': i, 'data': s, 'nearest': [{'mesh': n[0], 'actor': n[1], 'centre': [round(n[2].x), round(n[2].y), round(n[2].z)], 'yaw': round(n[3]), 'size': n[4],
+                                                       'off_cm': round(math.hypot(n[2].x - s[0], n[2].y - s[1])), 'visible': n[5]} for n in near]})
+    return json.dumps({'towel_like': len(cands), 'rows': rows}, ensure_ascii=False)
+
+
+def bathers(arg=''):
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    if not world:
+        return json.dumps({'pie': False})
+    spots = _spots()
+    rows = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        if 'MareBather' not in [str(t) for t in p.tags]:
+            continue
+        mesh = p.get_component_by_class(unreal.SkeletalMeshComponent)
+        head, pel = mesh.get_socket_location('head'), mesh.get_socket_location('pelvis')
+        fl, fr = mesh.get_socket_location('foot_l'), mesh.get_socket_location('foot_r')
+        mid = (fl + fr) * .5
+        ctr = (head + mid) * .5
+        loc = p.get_actor_location()
+        i, s = min(enumerate(spots), key=lambda k: (k[1][0] - loc.x) ** 2 + (k[1][1] - loc.y) ** 2)
+        if math.hypot(s[0] - loc.x, s[1] - loc.y) > 400:
+            continue
+        rows.append({'spot': i, 'actor': [round(loc.x), round(loc.y), round(loc.z)], 'head': [round(head.x), round(head.y), round(head.z)],
+                     'pelvis': [round(pel.x), round(pel.y), round(pel.z)], 'feet': [round(mid.x), round(mid.y), round(mid.z)],
+                     'body_cm': round((head - mid).length()), 'centre_off_cm': round(math.hypot(ctr.x - s[0], ctr.y - s[1])),
+                     'pelvis_above_towel_cm': round(pel.z - s[2]), 'hidden': bool(p.get_editor_property('hidden'))})
+    return json.dumps(rows, ensure_ascii=False)
+
+
+def look(arg='-85'):
+    """PIE: the hero looks down/up by `arg` degrees of pitch, walking (the player's own view, for a mare.Shot)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    hero.get_component_by_class(unreal.CharacterMovementComponent).set_movement_mode(unreal.MovementMode.MOVE_WALKING)
+    r = pc.get_control_rotation()
+    pc.set_control_rotation(unreal.Rotator(roll=0, pitch=float(arg), yaw=r.yaw))
+    loc = hero.get_actor_location()
+    return json.dumps({'pitch': float(arg), 'hero': [round(loc.x), round(loc.y), round(loc.z)]})
+
+
+def trace(arg):
+    """Editor or PIE world: what stands between two points "x1,y1,z1,x2,y2,z2" (complex trace, every hit)."""
+    x1, y1, z1, x2, y2, z2 = [float(v) for v in arg.split(',')]
+    sub = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem)
+    world = sub.get_game_world() or sub.get_editor_world()
+    hits = unreal.SystemLibrary.line_trace_multi(world, unreal.Vector(x1, y1, z1), unreal.Vector(x2, y2, z2), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                 True, [], unreal.DrawDebugTrace.NONE, True) or []
+    rows = []
+    for h in hits:
+        t = h.to_tuple()
+        loc, actor, comp = t[4], t[9], t[10]
+        mesh = comp.get_editor_property('static_mesh') if comp and isinstance(comp, unreal.StaticMeshComponent) else None
+        rows.append({'at': [round(loc.x), round(loc.y), round(loc.z)], 'actor': actor.get_actor_label() if actor else None, 'mesh': mesh.get_name() if mesh else None})
+    return json.dumps(rows, ensure_ascii=False)
+
+
+def near(arg):
+    """Static mesh parts whose bounds come within `r` cm (horizontal) of "x,y,z,r" and overlap the height of a person
+    standing there (z .. z+180): name, bounds centre, half size, gap to the point."""
+    x, y, z, r = [float(v) for v in arg.split(',')]
+    sub = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem)
+    world = sub.get_game_world() or sub.get_editor_world()
+    rows = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.is_hidden_ed() or a.get_editor_property('hidden'):
+            continue
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = c.get_editor_property('static_mesh')
+            if not m or not c.is_visible():
+                continue
+            bb = m.get_bounding_box()
+            ts = ([c.get_instance_transform(i, True) for i in range(c.get_instance_count())]
+                  if isinstance(c, unreal.InstancedStaticMeshComponent) else [c.get_world_transform()])
+            for t in ts:
+                ctr = t.transform_location((bb.min + bb.max) * .5)
+                if abs(ctr.x - x) > 1500 or abs(ctr.y - y) > 1500:
+                    continue
+                half = (bb.max - bb.min) * t.scale3d * .5
+                hx, hy, hz = abs(half.x), abs(half.y), abs(half.z)
+                rad = max(hx, hy)   # rotation unknown here: the wider half as a circle
+                if max(hx, hy) > 400:   # floors, walls, the tower: not furniture
+                    continue
+                gap = math.hypot(ctr.x - x, ctr.y - y) - rad
+                if gap < r and ctr.z + hz > z and ctr.z - hz < z + 180:
+                    rows.append({'mesh': m.get_name(), 'actor': a.get_actor_label(), 'centre': [round(ctr.x), round(ctr.y), round(ctr.z)],
+                                 'half': [round(hx), round(hy), round(hz)], 'gap_cm': round(gap)})
+    rows.sort(key=lambda k: k['gap_cm'])
+    return json.dumps(rows[:14], ensure_ascii=False)
+
+
+def people(arg='3000'):
+    """PIE: people within `arg` cm of the hero: name, location, yaw, seated, speed (nearest first)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0).get_actor_location()
+    rows = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        loc = p.get_actor_location()
+        d = math.hypot(loc.x - hero.x, loc.y - hero.y)
+        if d > float(arg):
+            continue
+        rows.append({'name': str(p.get_editor_property('person_name')), 'at': [round(loc.x), round(loc.y), round(loc.z)], 'yaw': round(p.get_actor_rotation().yaw),
+                     'seated': bool(p.get_editor_property('seated')), 'speed': round(p.get_velocity().length()), 'd': round(d), 'hidden': bool(p.get_editor_property('hidden'))})
+    rows.sort(key=lambda r: r['d'])
+    return json.dumps(rows[:12], ensure_ascii=False)
+
+
+def who(arg=''):
+    """PIE: where the people called `arg` (comma list) are, their yaw and the MetaHuman body they wear."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    names = [n.strip() for n in arg.split(',') if n.strip()]
+    rows = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        n = str(p.get_editor_property('person_name'))
+        if n not in names:
+            continue
+        loc = p.get_actor_location()
+        body = ''
+        for a in [p] + list(p.get_attached_actors() or []):
+            for c in a.get_components_by_class(unreal.SkeletalMeshComponent):
+                m = c.get_skeletal_mesh_asset()
+                if m and 'BodyMesh' in m.get_name():
+                    body = m.get_name()
+        rows.append({'name': n, 'at': [round(loc.x), round(loc.y), round(loc.z)], 'yaw': round(p.get_actor_rotation().yaw), 'body': body})
+    return json.dumps(rows, ensure_ascii=False)

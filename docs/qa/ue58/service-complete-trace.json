@@ -1,0 +1,3432 @@
+[
+  {
+    "pie": true,
+    "time": 1.4875340014696121,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 3.511045601218939,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 5.517453700304031,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 7.523494899272919,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 9.532525699585676,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 11.535010199993849,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 13.54992949962616,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 15.21215320378542,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": 0,
+        "table": 0,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3201.7275049843674,
+          -1842.5024592940617,
+          90.40943589806555
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 17.22110890224576,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": 0,
+        "table": 0,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3391.9497522642605,
+          -1952.671573679814,
+          90.40943589806555
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 19.22735420241952,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": 0,
+        "table": 0,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3605.3531760514797,
+          -1840.1068199275053,
+          90.40943589806555
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 21.235452603548765,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3700.0,
+          -1230.0,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": 0,
+        "table": 0,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3810.313641517947,
+          -1695.1986389922442,
+          92.43224397301672
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 23.241422902792692,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3752.2519289025086,
+          -1287.1712583244507,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.ORDER: 1>",
+        "counter": 0,
+        "table": 0,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3854.877844937586,
+          -1663.691501078248,
+          96.95814862847327
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 25.25121770426631,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3844.2582234891843,
+          -1387.8396115464832,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.PRODUCTS: 2>",
+        "counter": 0,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [],
+        "position": [
+          3854.877844937586,
+          -1663.691501078248,
+          96.95814862847327
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 27.23733290657401,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3885.9351748191943,
+          -1251.9163455022076,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.PRODUCTS: 2>",
+        "counter": 0,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [],
+        "position": [
+          3854.877844937586,
+          -1663.691501078248,
+          96.95814862847327
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 29.25288250669837,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2000.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3871.7848271445005,
+          -1327.3816053279058,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.PRODUCTS: 2>",
+        "counter": 0,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [],
+        "position": [
+          3854.877844937586,
+          -1663.691501078248,
+          96.95814862847327
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 13
+  },
+  {
+    "pie": true,
+    "time": 31.264674704521894,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3861.2349325837804,
+          -1383.6452783104678,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.TO_TABLE: 3>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          3969.7834104417466,
+          -1742.5970911502334,
+          90.55961290001868
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 33.28068570420146,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3861.2349325837804,
+          -1383.6452783104678,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.TO_TABLE: 3>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4177.520712008026,
+          -1885.2501844806504,
+          90.55961290001868
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 35.2953577041626,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3861.2349325837804,
+          -1383.6452783104678,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 37.30524980649352,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3861.2349325837804,
+          -1383.6452783104678,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 39.31250750645995,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3861.2349325837804,
+          -1383.6452783104678,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 41.32079770416021,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3861.2349325837804,
+          -1383.6452783104678,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 43.28226690366864,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3759.2119203537595,
+          -1295.588634472746,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 44.91138260439038,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3587.734979747589,
+          -1195.865410123792,
+          100.1500015258789
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": 0,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4415.494623483193,
+          -1851.2570044170131,
+          90.368132263422
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 46.92949830368161,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3347.59676474177,
+          -1173.6242715141507,
+          90.27875921657497
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": 0,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4176.971630136289,
+          -1883.4932826036268,
+          90.368132263422
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 48.93866070359945,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3249.988376071523,
+          -1399.3096089951296,
+          90.27875921657497
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": 0,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3976.1385221788964,
+          -1732.695328431096,
+          90.368132263422
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 50.95083620399237,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3176.9474057028306,
+          -1639.9925961904223,
+          90.27875921657497
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.EATING: 4>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4250.96092224121,
+          -1779.3201446533199,
+          80.90000051259995
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.ORDER: 1>",
+        "counter": 0,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3885.0153418509785,
+          -1664.2743927053973,
+          97.00134196877478
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 52.97147200629115,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3227.8120897851904,
+          -1472.5200054710383,
+          90.27875921657497
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.LEAVING: 5>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4413.269402873054,
+          -1929.4240657201547,
+          90.39315843582153
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.ORDER: 1>",
+        "counter": 0,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3885.0153418509785,
+          -1664.2743927053973,
+          97.00134196877478
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 54.98881160467863,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3301.333915096657,
+          -1231.3085575716907,
+          90.27875921657497
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.LEAVING: 5>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4662.770403201107,
+          -1965.9982650547947,
+          90.39315843582153
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.ORDER: 1>",
+        "counter": 0,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3885.0153418509785,
+          -1664.2743927053973,
+          97.00134196877478
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 57.00811470672488,
+    "paused": false,
+    "open": true,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3516.5517032933644,
+          -1172.1576293498065,
+          99.14116414100239
+        ]
+      },
+      {
+        "id": "MarePerson_1",
+        "name": "Bruno",
+        "stage": "<MarePersonStage.LEAVING: 5>",
+        "counter": -1,
+        "table": 0,
+        "employee": false,
+        "plan": [
+          "coco_gelado"
+        ],
+        "delivered": [
+          "coco_gelado"
+        ],
+        "position": [
+          4914.464339347503,
+          -1975.982867309246,
+          90.38906651136628
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.ORDER: 1>",
+        "counter": 0,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3885.0153418509785,
+          -1664.2743927053973,
+          97.00134196877478
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 59.4422077126801,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3342.216893460194,
+          -1178.8743027223481,
+          90.27875633434074
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.LEAVING: 5>",
+        "counter": -1,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4082.6033065136094,
+          -1812.614579894089,
+          90.36223331093787
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {
+      "0": [
+        "coco_gelado"
+      ]
+    },
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 61.44765121489763,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3248.1687721206263,
+          -1406.2493423622468,
+          90.27875633434074
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.LEAVING: 5>",
+        "counter": -1,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4301.596187625597,
+          -1888.7035850651653,
+          90.36223331093787
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {
+      "0": [
+        "coco_gelado"
+      ]
+    },
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 63.46141441166401,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3174.814271566012,
+          -1647.0444324229666,
+          90.27875633434074
+        ]
+      },
+      {
+        "id": "MarePerson_2",
+        "name": "João",
+        "stage": "<MarePersonStage.LEAVING: 5>",
+        "counter": -1,
+        "table": 1,
+        "employee": false,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4532.940801667091,
+          -1789.492559237108,
+          90.36223331093787
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {
+      "0": [
+        "coco_gelado"
+      ]
+    },
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 65.47682061418891,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3207.7088370658666,
+          -1880.2811414190355,
+          90.27875633434074
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {
+      "0": [
+        "coco_gelado"
+      ]
+    },
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 67.4852233119309,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3427.8324938837077,
+          -1955.928047434008,
+          90.27875633434074
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {
+      "0": [
+        "coco_gelado"
+      ]
+    },
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 69.50179151445627,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3679.2060310421034,
+          -1939.1968031696817,
+          90.27875633434074
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {
+      "0": [
+        "coco_gelado"
+      ]
+    },
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 71.51939431205392,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          3930.728025943798,
+          -1920.7116399758925,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {
+      "0": [
+        "coco_gelado"
+      ]
+    },
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 73.53513211384416,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4182.01752320739,
+          -1902.2435637839162,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {
+      "0": [
+        "coco_gelado"
+      ]
+    },
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 75.54844001308084,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 77.56071851402521,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 79.57796171307564,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 81.59069001302123,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 83.61057021468878,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 85.62332771345973,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 87.63669731467962,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 89.67925791442394,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 91.69628581404686,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 93.70686821267009,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 95.72237161174417,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 97.73389561474323,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 99.75041241198778,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 101.76070671156049,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 103.77495511248708,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 105.78962661325932,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 107.80291961506009,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 109.81962111219764,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  },
+  {
+    "pie": true,
+    "time": 111.83325401321054,
+    "paused": false,
+    "open": false,
+    "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000002138DF3D800) Class 'MareGameMode'>",
+    "mode_tick": true,
+    "location": [
+      3800.0,
+      -1200.0,
+      100.0
+    ],
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cash": 2012.0,
+    "carry": "",
+    "panel_open": false,
+    "focus": null,
+    "people": [
+      {
+        "id": "MarePerson_0",
+        "name": "Atendente",
+        "stage": "<MarePersonStage.APPROACHING: 0>",
+        "counter": -1,
+        "table": -1,
+        "employee": true,
+        "plan": [],
+        "delivered": [],
+        "position": [
+          4193.285994342919,
+          -1901.415407471121,
+          90.63266058162468
+        ]
+      }
+    ],
+    "doors": [
+      {
+        "name": "Porta da casa",
+        "opened": false
+      },
+      {
+        "name": "Porta do banheiro",
+        "opened": false
+      }
+    ],
+    "dirty_tables": {},
+    "sold": 14
+  }
+]

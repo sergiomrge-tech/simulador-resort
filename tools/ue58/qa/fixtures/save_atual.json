@@ -1,0 +1,219 @@
+{
+  "album": [],
+  "bar": 0,
+  "company": {
+    "carry": "",
+    "color": "creme",
+    "created": false,
+    "dirty_items": {},
+    "dirty_seats": [],
+    "font": "praia",
+    "kiosk_open": false,
+    "name": "Maré Alta",
+    "opening_version": 1,
+    "physical": true,
+    "production": {},
+    "ready": {},
+    "receivables": [],
+    "sim": {
+      "auto_due": false,
+      "auto_order": false,
+      "custom_hours": false,
+      "day": 0,
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "end": 18,
+      "history": [],
+      "management": {
+        "aged": [],
+        "checks": [],
+        "closed_day": -1,
+        "closing": {},
+        "counter": 100,
+        "day": 0,
+        "delivery_log": [],
+        "equipment": {
+          "blender": {
+            "condition": 100,
+            "hygiene": 100,
+            "level": 1
+          },
+          "fridge": {
+            "condition": 100,
+            "hygiene": 100,
+            "level": 1
+          },
+          "grill": {
+            "condition": 100,
+            "hygiene": 100,
+            "level": 1
+          }
+        },
+        "look": {
+          "board": "madeira",
+          "layout": "original",
+          "menu": true,
+          "paint": "mar",
+          "uniform": "mar"
+        },
+        "look_owned": false,
+        "next_order": 1,
+        "orders": [],
+        "profiles": {},
+        "store": {},
+        "strict": false,
+        "task": {},
+        "worked": {}
+      },
+      "shifts": {},
+      "staff_day": -1,
+      "start": 8,
+      "target": 6,
+      "today": {
+        "cash_in": 0,
+        "investment": 0,
+        "open_minutes": 0,
+        "overhead": 0,
+        "payroll": 0,
+        "stockouts": 0,
+        "supplies": 0,
+        "waste": 0
+      },
+      "wage_day": -1
+    },
+    "staff_carry": ""
+  },
+  "contracts": {},
+  "day": 1,
+  "day_in": 0,
+  "day_out": 0,
+  "event": "",
+  "forecast": "",
+  "forecast_set": false,
+  "freezer": false,
+  "kiosk": 0,
+  "kiosk_n": 0,
+  "ledger": [],
+  "minutes": 390,
+  "money": 150,
+  "prep_active": false,
+  "prep_paid": false,
+  "prog": {
+    "biz": {},
+    "campaign": {
+      "fish": 0,
+      "icecream": 0,
+      "side_done": [],
+      "stage": 0
+    },
+    "ch": {},
+    "chp": {},
+    "disc": {},
+    "experience": {
+      "decor": {},
+      "greeted": {}
+    },
+    "fame_xp": 0,
+    "goals": [
+      {
+        "done": false,
+        "float": true,
+        "kind": "rating",
+        "money": false,
+        "reward": 160,
+        "target": 4.2,
+        "text": "Terminar a semana com avaliação de ★ %.1f ou mais"
+      },
+      {
+        "done": false,
+        "float": false,
+        "kind": "vip",
+        "money": false,
+        "reward": 130,
+        "target": 1,
+        "text": "Receber %d clientes VIP"
+      },
+      {
+        "done": false,
+        "float": false,
+        "kind": "dish",
+        "money": false,
+        "reward": 110,
+        "target": 8,
+        "text": "Vender %d porções de petiscos ou pratos da cozinha"
+      }
+    ],
+    "hotel": {},
+    "medals": [],
+    "off": {},
+    "prem": {},
+    "sstats": {
+      "earn": 0
+    },
+    "staff": {},
+    "tree": {},
+    "wstats": {
+      "biz": 0,
+      "dish": 0,
+      "earn": 0,
+      "photo": 0,
+      "serve": 0,
+      "tour": 0,
+      "vip": 0
+    }
+  },
+  "ptier": {},
+  "quests": {},
+  "ratings": [
+    3,
+    3,
+    3
+  ],
+  "redes": 0,
+  "rooms": [],
+  "saved_at": "2026-11-07 11:00:00",
+  "served": 0,
+  "smult": {},
+  "staff": {
+    "atendente": false,
+    "bartender": false,
+    "caixa": false,
+    "camareira": false,
+    "cozinheiro": false,
+    "garcom": false,
+    "guia": false,
+    "limpeza": false
+  },
+  "stock": {
+    "acai": 0,
+    "batata_pronta": 6,
+    "cachaca": 0,
+    "camarao": 0,
+    "coco": 12,
+    "frutas": 12,
+    "gelo": 18,
+    "pao": 0,
+    "peixe": 0,
+    "peixe_pronto": 6,
+    "queijo": 0,
+    "sorvete_chocolate": 6,
+    "sorvete_morango": 6,
+    "tapioca": 0
+  },
+  "stockouts": 0,
+  "summary": {},
+  "tours_done": {},
+  "tours_n": 0,
+  "tours_rev": 0,
+  "tut": 0,
+  "unlocked": {},
+  "v": 7,
+  "weather": "sun"
+}

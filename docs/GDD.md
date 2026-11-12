@@ -1,5 +1,7 @@
 # Maré Alta Resort — GDD resumido (v0.1.0)
 
+> **Plataforma (02/11/2026, decisão do Sergio): o jogo é para PC (Steam), Unreal Engine 5.8.** As menções a celular deitado e Android abaixo são da versão Godot inicial; o "celular" do jogo é o aparelho de gestão dentro do jogo (tecla B). Plano atual de gameplay: `docs/ue58/GAMEPLAY_PLANO_2026-11-02.md`.
+
 **Gênero:** simulador de pousada/resort em primeira pessoa (3D), celular deitado (paisagem).
 **Cenário:** pousada de praia no Nordeste brasileiro — coqueiros, sapê, jangada, bossa nova.
 **Referências (Steam):** Supermarket Simulator, TCG Card Shop Simulator, Waterpark Simulator, Hotel Renovator, Tropical Resort Simulator.

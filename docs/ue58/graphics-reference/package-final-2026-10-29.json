@@ -1,0 +1,12 @@
+{
+  "qa_root": "D:/CodexTemp/ue58-package-qa-20261029-074214",
+  "executable": "D:\\Builds\\MareAltaUE58_GramadoEstavel_2026-10-29\\Windows\\MareAlta.exe",
+  "checks": 63,
+  "passed": true,
+  "exit_code": 0,
+  "tested_at": "2026-10-29T07:45:06.8870391-03:00",
+  "visual_review_required": false,
+  "audio_mix_passed": true,
+  "visual_review_scope": "Preview lawn and existing scene captures; full migration art remains pending.",
+  "build_commit": "b7eb5390"
+}

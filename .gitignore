@@ -15,6 +15,7 @@ out/
 *.aab
 *.zip
 shots/
+docs/images/**/*.import
 
 # segredos — nunca versionar
 *.keystore
@@ -38,9 +39,49 @@ assets/models_hd/**/*.jpg
 .DS_Store
 Thumbs.db
 __pycache__/
+*.blend1
+*.blend2
+art/vendor/
 .autoconverted/
 assets/models/**/textures/
 export_presets.cfg.bak
 assets/models/qnat/
 
 !patches/*.exe
+
+# Unreal: generated output stays out of Git
+unreal/**/Binaries/
+unreal/**/Intermediate/
+unreal/**/Saved/
+unreal/**/DerivedDataCache/
+unreal/**/*.sln
+unreal/**/*.VC.db
+unreal/**/.vs/
+# Export bruto e saídas temporárias; Models/Textures são fontes portáveis.
+unreal/**/SourceArt/World/
+**/__pycache__/
+unreal/**/*.pyc
+unreal/**/SourceArt/**/*.blend1
+
+# Fab outfits (MetaHuman parametric wardrobe, Fab Standard License; ~7 GB): re-download with the list in
+# docs/ue58/ROUPAS_FAB.md and install by the .mhpkg manifest (base path from dependentPackages).
+unreal/MareAlta/Content/Outfits/
+unreal/MareAlta/Content/OutFits/
+unreal/MareAlta/Content/MetaOutfits/
+unreal/MareAlta/Content/People/MetaHumans/*_Beach/
+unreal/MareAlta/Content/People/MetaHumans/MH_*_Beach.uasset
+# Free Fab mocap clips (Animation Shopee, Fab Standard License) and their retarget, local like the outfits: re-create with
+# mare_metahuman import_mocap -> retarget_mocap -> rescale_mocap_root/inplacemocap -> orient_mocap -> turn_mocap SitTalk:180
+unreal/MareAlta/Content/People/AnimSource/
+unreal/MareAlta/Content/People/Animations/MH_LieDown.uasset
+unreal/MareAlta/Content/People/Animations/MH_SitDrink.uasset
+unreal/MareAlta/Content/People/Animations/MH_SitTalk.uasset
+unreal/MareAlta/Content/People/Animations/MH_TalkGesture.uasset
+unreal/MareAlta/Content/People/Animations/MH_Dance.uasset
+unreal/MareAlta/Content/People/Animations/MH_DanceHip.uasset
+unreal/MareAlta/Content/People/Animations/MH_Cheer.uasset
+unreal/MareAlta/Content/People/Retarget/IK_Mocap*
+unreal/MareAlta/Content/People/Retarget/RTG_Mocap*
+
+# NVIDIA DLSS 4.5 plugins (tools/ue58/install_dlss.ps1; ~3.5 GB, NVIDIA RTX SDK EULA)
+unreal/MareAlta/Plugins/NVIDIA/

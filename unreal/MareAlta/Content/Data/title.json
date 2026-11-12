@@ -1,0 +1,86 @@
+{
+ "_doc": "Title screen (07/11, Sergio: 'precisa ter uma tela inicial'; AMareTitleCamera, MareTitle.cpp): the camera glides through points [x, y, z, pitch, yaw] (world cm, degrees) in a loop of loop_seconds while the main menu is up, at hour (game hours; mid-afternoon: the low sun turned the sea a grassy green in the first try; the clock stands still and the save is not touched). The world keeps living: people walk, the sea moves, boats sail. logo/subtitle are the texts of the title (the commercial name is Coconut Simulator; Maré Alta is the resort inside the game). story: the postcards of a new game before the bus arrival (image = captured in-game, /Game/UI/Intro, always cooked; text is translated). 08/11 (Sergio: 'tela inicial em 2d', 'use o canva para fazer algo bastante detalhado'): art = a detailed 2D painting of the island made in Canva, cover-fitted over the whole screen (the 3D world is not drawn behind it); logo_image = the painted Canva logo (SourceArt/UI/Title, import with mare_title_art.run). Without them the title falls back to the living bay and the text logo. 10/11 (Sergio: 'a tela em 2.5d faça você'): art_material = the UI material that draws the painting in 2.5D, sliding every pixel by its depth map (T_TitleDepth, tools/ue58/gen_title_depth.py; mare_title_art.material25d) as the title sways and the mouse moves; without it the flat painting is drawn. 09/11 (B13): points 3-6 further out to sea, ~6 m from the row of palms (their crowns are at camera height) and above the beached sailboat's mast; the flight passed within a metre of the striped umbrellas and of the kiosk roof. 10/11 (Sergio: 'mude a tela de fundo pela do jogo, pode ser uma vista à distância rodando ao redor da ilha'): the painting left the title (it stays on the loading screen and the language page); the game itself is the background, seen by a camera that circles the island far out at sea: orbit = centre [x, y] of the island, radius and height in cm, look_z = height it looks at, start_deg = where it starts (-90: south, the beach and the village side), seconds for a full turn. points are kept for when orbit is removed. yaw_offset = degrees the view turns left of the island (negative) so the island sits on the right, clear of the menu.",
+ "hour": 16.2,
+ "loop_seconds": 90,
+ "logo": "Coconut Simulator",
+ "subtitle": "Maré Alta Resort",
+ "points": [
+  [
+   3000,
+   -2900,
+   520,
+   -7,
+   30
+  ],
+  [
+   3600,
+   -3200,
+   560,
+   -7,
+   55
+  ],
+  [
+   5200,
+   -3250,
+   850,
+   -12,
+   115
+  ],
+  [
+   5600,
+   -3200,
+   900,
+   -13,
+   100
+  ],
+  [
+   4500,
+   -3400,
+   850,
+   -13,
+   75
+  ],
+  [
+   3300,
+   -3300,
+   700,
+   -10,
+   45
+  ]
+ ],
+ "story": [
+  {
+   "image": "/Game/UI/Intro/T_Story_1.T_Story_1",
+   "text": "Por quarenta verões, Dona Dilce abriu o quiosque da praia antes do sol."
+  },
+  {
+   "image": "/Game/UI/Intro/T_Story_2.T_Story_2",
+   "text": "Um dia chegou uma carta: \"Meu bem, o quiosque agora é seu.\""
+  },
+  {
+   "image": "/Game/UI/Intro/T_Story_3.T_Story_3",
+   "text": "Você pegou o primeiro barco para a ilha."
+  },
+  {
+   "image": "/Game/UI/Intro/T_Story_4.T_Story_4",
+   "text": "A vila parecia menor... e o mar, do tamanho das lembranças."
+  },
+  {
+   "image": "/Game/UI/Intro/T_Story_5.T_Story_5",
+   "text": "Bem-vinda, bem-vindo à Maré Alta."
+  }
+ ],
+ "logo_image": "/Game/UI/Title/T_TitleLogo.T_TitleLogo",
+ "orbit": {
+  "centre": [
+   3000,
+   50000
+  ],
+  "radius": 100000,
+  "height": 11000,
+  "look_z": 2000,
+  "start_deg": -70,
+  "seconds": 300,
+  "yaw_offset": -15
+ }
+}

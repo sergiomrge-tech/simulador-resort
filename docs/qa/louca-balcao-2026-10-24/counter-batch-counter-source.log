@@ -1,0 +1,41 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[counter] ok fachada voltada para praia e mar
+[counter] ok balcão e todas as mesas no lado da praia
+[counter] ok balcão e todas as mesas no lado da praia
+[counter] ok balcão e todas as mesas no lado da praia
+[counter] ok balcão e todas as mesas no lado da praia
+[counter] ok balcão e todas as mesas no lado da praia
+[counter] ok balcão e todas as mesas no lado da praia
+[counter] ok balcão e todas as mesas no lado da praia
+[counter] ok balcão e todas as mesas no lado da praia
+[counter] ok cliente no balcão 3
+[counter] ok cliente no balcão 4
+[counter] ok mira tolerante -8.0 graus · #03
+[counter] ok mira tolerante 0.0 graus · #03
+[counter] ok mira tolerante 8.0 graus · #03
+[counter] ok E anota por dentro · #03
+[counter] ok retirada para teste de entrega
+[counter] ok E entrega do lado interno sem sair · #03
+[counter] ok mira tolerante -8.0 graus · #04
+[counter] ok mira tolerante 0.0 graus · #04
+[counter] ok mira tolerante 8.0 graus · #04
+[counter] ok E anota por dentro · #04
+[counter] ok retirada para teste de entrega
+[counter] ok E entrega do lado interno sem sair · #04
+[counter] ok não seleciona cliente através da parede traseira
+[counter] ok geladeira oferece reposição direta no celular
+[counter] ok compra repõe 10 e cobra orçamento exato
+[counter] ok permanece na geladeira após comprar
+[counter] ok não cobra novamente estoque já reposto
+[counter] ok saldo insuficiente não faz compra parcial
+[counter] ok reposição da estação exige estar na geladeira
+[counter] ok pega produto imediatamente após repor
+[counter] ok save antigo dentro do quiosque acompanha a rotação
+[counter] ok nova gravação não gira o jogador novamente
+COUNTER_TEST PASS
+SHUTDOWN_COMPLETE code=0

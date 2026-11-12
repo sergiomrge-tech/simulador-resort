@@ -1,0 +1,292 @@
+{
+  "_doc": "Entrega para colar após alterar o consumidor nativo. NÃO importar automaticamente para os catálogos antes de mudar C++. item 9 é o fragmento derivado do item 8; não existe segundo literal. LOCTEXT mantém namespace/chave; demais strings migram chave portuguesa e os 12 mapas juntos.",
+  "base": "899e77a66ce718e19f48d9ae3f06049fdc77cd64",
+  "languages": [
+    "en",
+    "es",
+    "de",
+    "fr",
+    "zh-Hans",
+    "ja",
+    "ru",
+    "ko",
+    "it",
+    "pl",
+    "nl",
+    "pt-PT"
+  ],
+  "entries": [
+    {
+      "item": 8,
+      "old": " · sem guia contratado os passeios não saem",
+      "new": " · sem guia contratado, você precisa guiar os passeios",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareSimulation.cpp",
+          "line": 842,
+          "literal": "return Line+(HasStaff(TEXT(\"guia\"))?TEXT(\"\"):TEXT(\" · sem guia contratado os passeios não saem\"));}"
+        }
+      ],
+      "translations": {
+        "en": " · without a hired guide, you need to lead the tours",
+        "es": " · sin un guía contratado, tienes que guiar los paseos",
+        "de": " · ohne angestellten Guide musst du die Ausflüge selbst führen",
+        "fr": " · sans guide embauché, vous devez guider les excursions",
+        "zh-Hans": " · 没有雇用导游时，需要你亲自带团",
+        "ja": " · ガイドを雇っていなければ、自分でツアーを案内します",
+        "ru": " · без нанятого гида экскурсии нужно проводить самому",
+        "ko": " · 고용한 가이드가 없으면 직접 투어를 안내해야 합니다",
+        "it": " · senza una guida assunta, devi guidare tu le escursioni",
+        "pl": " · bez zatrudnionego przewodnika musisz samodzielnie prowadzić wycieczki",
+        "nl": " · zonder ingehuurde gids moet je zelf de tochten leiden",
+        "pt-PT": " · sem guia contratado, tem de guiar os passeios"
+      }
+    },
+    {
+      "item": 9,
+      "old": "sem guia contratado os passeios não saem",
+      "new": "sem guia contratado, você precisa guiar os passeios",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareSimulation.cpp",
+          "line": 842,
+          "literal": "return Line+(HasStaff(TEXT(\"guia\"))?TEXT(\"\"):TEXT(\" · sem guia contratado os passeios não saem\"));}"
+        }
+      ],
+      "translations": {
+        "en": "without a hired guide, you need to lead the tours",
+        "es": "sin un guía contratado, tienes que guiar los paseos",
+        "de": "ohne angestellten Guide musst du die Ausflüge selbst führen",
+        "fr": "sans guide embauché, vous devez guider les excursions",
+        "zh-Hans": "没有雇用导游时，需要你亲自带团",
+        "ja": "ガイドを雇っていなければ、自分でツアーを案内します",
+        "ru": "без нанятого гида экскурсии нужно проводить самому",
+        "ko": "고용한 가이드가 없으면 직접 투어를 안내해야 합니다",
+        "it": "senza una guida assunta, devi guidare tu le escursioni",
+        "pl": "bez zatrudnionego przewodnika musisz samodzielnie prowadzić wycieczki",
+        "nl": "zonder ingehuurde gids moet je zelf de tochten leiden",
+        "pt-PT": "sem guia contratado, tem de guiar os passeios"
+      }
+    },
+    {
+      "item": 24,
+      "old": "Passe da cozinha · pegar pratos prontos",
+      "new": "Balcão de retirada da cozinha · pegar pratos prontos",
+      "data_files": [
+        "tutorial.json"
+      ],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareRestaurantWorld.cpp",
+          "line": 31,
+          "literal": "if(bHotel && !Pass)Pass=Place(Defs,TEXT(\"pass\"),TEXT(\"RestaurantPass\"),TEXT(\"Passe da cozinha · pegar pratos prontos\"));"
+        }
+      ],
+      "translations": {
+        "en": "Kitchen pickup counter · collect ready dishes",
+        "es": "Mostrador de recogida de la cocina · recoger platos listos",
+        "de": "Abholtresen der Küche · fertige Gerichte abholen",
+        "fr": "Comptoir de retrait de la cuisine · récupérer les plats prêts",
+        "zh-Hans": "厨房取餐台 · 领取做好的菜品",
+        "ja": "厨房の受け取りカウンター · 出来上がった料理を受け取る",
+        "ru": "Стойка выдачи кухни · забрать готовые блюда",
+        "ko": "주방 픽업대 · 완성된 요리 가져가기",
+        "it": "Banco di ritiro della cucina · ritira i piatti pronti",
+        "pl": "Lada odbioru w kuchni · odbierz gotowe dania",
+        "nl": "Afhaalbalie van de keuken · klaargemaakte gerechten ophalen",
+        "pt-PT": "Balcão de retirada da cozinha · levantar pratos prontos"
+      }
+    },
+    {
+      "item": 63,
+      "old": "Empresa criada. Abra o quiosque para receber clientes.",
+      "new": "Empresa criada. Abra o quiosque pela placa do balcão para receber clientes.",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareSimulation.cpp",
+          "line": 120,
+          "literal": "LastMessage=TEXT(\"Empresa criada. Abra o quiosque para receber clientes.\"); return Save();"
+        }
+      ],
+      "translations": {
+        "en": "Company created. Open the kiosk using the counter sign to welcome customers.",
+        "es": "Empresa creada. Abre el quiosco con el cartel del mostrador para recibir clientes.",
+        "de": "Firma gegründet. Öffne den Kiosk über das Schild am Tresen, um Gäste zu empfangen.",
+        "fr": "Entreprise créée. Ouvrez le kiosque avec le panneau du comptoir pour accueillir les clients.",
+        "zh-Hans": "公司已创建。使用柜台上的招牌开启小摊，迎接顾客。",
+        "ja": "会社を設立しました。カウンターの看板で売店を開けて、お客さんを迎えましょう。",
+        "ru": "Компания создана. Откройте киоск с помощью вывески на прилавке, чтобы принимать клиентов.",
+        "ko": "회사를 만들었습니다. 카운터 간판으로 가판대를 열어 손님을 받으세요.",
+        "it": "Impresa creata. Apri il chiosco con l'insegna sul banco per accogliere i clienti.",
+        "pl": "Firma utworzona. Otwórz kiosk szyldem na ladzie, aby przyjmować klientów.",
+        "nl": "Bedrijf opgericht. Open de kiosk met het bord op de toonbank om klanten te ontvangen.",
+        "pt-PT": "Empresa criada. Abra o quiosque pela placa do balcão para receber clientes."
+      }
+    },
+    {
+      "item": 67,
+      "old": "Quem você não atender em 2 horas, a equipe do hotel recebe pela oferta do hóspede.",
+      "new": "Após 2 horas sem atendimento, a equipe do hotel aceita a oferta do hóspede.",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareGame.cpp",
+          "line": 586,
+          "literal": "if(bHotel)Line(TEXT(\"Quem você não atender em 2 horas, a equipe do hotel recebe pela oferta do hóspede.\"),12,Faded);"
+        }
+      ],
+      "translations": {
+        "en": "After 2 hours without service, the hotel staff accepts the guest's offer.",
+        "es": "Tras 2 horas sin atención, el equipo del hotel acepta la oferta del huésped.",
+        "de": "Nach 2 Stunden ohne Bedienung nimmt das Hotelpersonal das Angebot des Gastes an.",
+        "fr": "Après 2 heures sans accueil, l'équipe de l'hôtel accepte l'offre du client.",
+        "zh-Hans": "若2小时无人接待，酒店员工会接受客人的报价。",
+        "ja": "2時間対応しないと、ホテルのスタッフが宿泊客の提示額を受け入れます。",
+        "ru": "Через 2 часа без обслуживания персонал отеля принимает предложение гостя.",
+        "ko": "2시간 동안 응대하지 않으면 호텔 직원이 투숙객의 제안을 수락합니다.",
+        "it": "Dopo 2 ore senza assistenza, il personale dell'hotel accetta l'offerta dell'ospite.",
+        "pl": "Po 2 godzinach bez obsługi personel hotelu przyjmuje ofertę gościa.",
+        "nl": "Na 2 uur zonder bediening accepteert het hotelpersoneel het bod van de gast.",
+        "pt-PT": "Após 2 horas sem atendimento, a equipe do hotel aceita a oferta do hóspede."
+      }
+    },
+    {
+      "item": 72,
+      "old": "A tradução para o inglês ainda está sendo feita: alguns textos podem continuar em português.",
+      "new": "Se encontrar algum texto sem tradução, informe o idioma e a tela em que ele aparece.",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareGame.cpp",
+          "line": 2271,
+          "literal": "Page->AddSlot().AutoHeight().Padding(0,10,0,0)[MareUI::Text(LOCTEXT(\"OptLanguageHint\",\"A tradução para o inglês ainda está sendo feita: alguns textos podem continuar em português.\").ToString(),11)];"
+        }
+      ],
+      "translations": {
+        "en": "If you find any untranslated text, report the language and the screen where it appears.",
+        "es": "Si encuentras texto sin traducir, indica el idioma y la pantalla donde aparece.",
+        "de": "Falls du unübersetzten Text findest, melde die Sprache und den Bildschirm, auf dem er erscheint.",
+        "fr": "Si vous trouvez du texte non traduit, indiquez la langue et l'écran où il apparaît.",
+        "zh-Hans": "如果发现未翻译的文字，请报告语言及其所在界面。",
+        "ja": "未翻訳の文章を見つけた場合は、言語と表示された画面をお知らせください。",
+        "ru": "Если найдёте непереведённый текст, укажите язык и экран, на котором он появился.",
+        "ko": "번역되지 않은 문구를 발견하면 언어와 표시된 화면을 알려 주세요.",
+        "it": "Se trovi testo non tradotto, segnala la lingua e la schermata in cui appare.",
+        "pl": "Jeśli znajdziesz nieprzetłumaczony tekst, podaj język i ekran, na którym się pojawia.",
+        "nl": "Meld de taal en het scherm als je onvertaalde tekst tegenkomt.",
+        "pt-PT": "Se encontrar algum texto sem tradução, informe o idioma e a tela em que ele aparece."
+      }
+    },
+    {
+      "item": 73,
+      "old": "Clique numa ação e aperte a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam.",
+      "new": "Clique em uma ação e pressione a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam de tecla.",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareGame.cpp",
+          "line": 2244,
+          "literal": "Page->AddSlot().AutoHeight().Padding(0,10,0,4)[MareUI::Text(LOCTEXT(\"OptKeysHint\",\"Clique numa ação e aperte a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam.\").ToString(),11)];"
+        }
+      ],
+      "translations": {
+        "en": "Click an action and press the new key (Esc cancels). If the key is already in use, the two actions swap keys.",
+        "es": "Haz clic en una acción y pulsa la nueva tecla (Esc cancela). Si ya está en uso, las dos acciones intercambian teclas.",
+        "de": "Klicke auf eine Aktion und drücke die neue Taste (Esc bricht ab). Ist sie bereits belegt, tauschen die beiden Aktionen ihre Tasten.",
+        "fr": "Cliquez sur une action et appuyez sur la nouvelle touche (Esc annule). Si elle est déjà utilisée, les deux actions échangent leurs touches.",
+        "zh-Hans": "点击一个操作并按下新按键（Esc取消）。如果按键已被使用，两个操作会交换按键。",
+        "ja": "操作をクリックして新しいキーを押します（Escでキャンセル）。使用中のキーの場合は、2つの操作のキーが入れ替わります。",
+        "ru": "Нажмите на действие и задайте новую клавишу (Esc — отмена). Если она уже занята, два действия обменяются клавишами.",
+        "ko": "동작을 클릭하고 새 키를 누르세요(Esc로 취소). 이미 사용 중인 키라면 두 동작의 키가 서로 바뀝니다.",
+        "it": "Fai clic su un'azione e premi il nuovo tasto (Esc annulla). Se è già in uso, le due azioni si scambiano i tasti.",
+        "pl": "Kliknij działanie i naciśnij nowy klawisz (Esc anuluje). Jeśli jest już używany, oba działania zamienią się klawiszami.",
+        "nl": "Klik op een actie en druk op de nieuwe toets (Esc annuleert). Als de toets al in gebruik is, wisselen de twee acties van toets.",
+        "pt-PT": "Clique em uma ação e pressione a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam de tecla."
+      }
+    },
+    {
+      "item": 74,
+      "old": "Valores padrão carregados (o áudio já mudou). Clique em Aplicar para usar o resto.",
+      "new": "Padrões carregados; o áudio já mudou. Clique em Aplicar para confirmar as demais configurações.",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareGame.cpp",
+          "line": 2332,
+          "literal": "Status=LOCTEXT(\"OptDefaultsLoaded\",\"Valores padrão carregados (o áudio já mudou). Clique em Aplicar para usar o resto.\");"
+        }
+      ],
+      "translations": {
+        "en": "Defaults loaded; audio has already changed. Click Apply to confirm the other settings.",
+        "es": "Valores predeterminados cargados; el audio ya cambió. Haz clic en Aplicar para confirmar las demás opciones.",
+        "de": "Standardwerte geladen; der Ton wurde bereits geändert. Klicke auf Anwenden, um die übrigen Einstellungen zu bestätigen.",
+        "fr": "Valeurs par défaut chargées ; l'audio a déjà changé. Cliquez sur Appliquer pour confirmer les autres réglages.",
+        "zh-Hans": "已加载默认设置；音频已更改。点击应用以确认其他设置。",
+        "ja": "初期設定を読み込みました。音声はすでに変更されています。適用をクリックして、その他の設定を確定してください。",
+        "ru": "Стандартные значения загружены; звук уже изменился. Нажмите «Применить», чтобы подтвердить остальные настройки.",
+        "ko": "기본값을 불러왔으며 오디오는 이미 변경되었습니다. 적용을 클릭해 나머지 설정을 확정하세요.",
+        "it": "Valori predefiniti caricati; l'audio è già cambiato. Fai clic su Applica per confermare le altre impostazioni.",
+        "pl": "Wczytano ustawienia domyślne; dźwięk już się zmienił. Kliknij Zastosuj, aby potwierdzić pozostałe ustawienia.",
+        "nl": "Standaardwaarden geladen; het geluid is al gewijzigd. Klik op Toepassen om de overige instellingen te bevestigen.",
+        "pt-PT": "Padrões carregados; o áudio já mudou. Clique em Aplicar para confirmar as demais configurações."
+      }
+    },
+    {
+      "item": 75,
+      "old": "Manter este modo de tela? Volta ao anterior em {0} s.",
+      "new": "Manter este modo de tela? O anterior volta em {0} s.",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareGame.cpp",
+          "line": 2292,
+          "literal": ".Text_Lambda([this](){return FText::Format(LOCTEXT(\"OptKeepVideo\",\"Manter este modo de tela? Volta ao anterior em {0} s.\"),FMath::Max(0,FMath::CeilToInt(RevertAt-FPlatformTime::Seconds())));})]"
+        }
+      ],
+      "translations": {
+        "en": "Keep this display mode? The previous one returns in {0} s.",
+        "es": "¿Mantener este modo de pantalla? El anterior volverá en {0} s.",
+        "de": "Diesen Anzeigemodus beibehalten? Der vorherige kehrt in {0} s zurück.",
+        "fr": "Conserver ce mode d'affichage ? Le précédent revient dans {0} s.",
+        "zh-Hans": "保留此显示模式？{0}秒后恢复之前的模式。",
+        "ja": "この画面モードを維持しますか？{0}秒後に元のモードに戻ります。",
+        "ru": "Сохранить этот режим экрана? Предыдущий вернётся через {0} с.",
+        "ko": "이 화면 모드를 유지할까요? {0}초 후 이전 모드로 돌아갑니다.",
+        "it": "Mantenere questa modalità video? La precedente torna fra {0} s.",
+        "pl": "Zachować ten tryb ekranu? Poprzedni wróci za {0} s.",
+        "nl": "Deze schermmodus behouden? De vorige keert terug over {0} s.",
+        "pt-PT": "Manter este modo de tela? O anterior volta em {0} s."
+      }
+    },
+    {
+      "item": 76,
+      "old": "Sair para o desktop",
+      "new": "Sair para a área de trabalho",
+      "data_files": [],
+      "cpp": [
+        {
+          "file": "unreal/MareAlta/Source/MareAlta/MareGame.cpp",
+          "line": 2487,
+          "literal": "Add(LOCTEXT(\"QuitDesktop\",\"Sair para o desktop\").ToString(),[this](){GetSimulation()->Save();UKismetSystemLibrary::QuitGame(this,this,EQuitPreference::Quit,false);});"
+        }
+      ],
+      "translations": {
+        "en": "Quit to desktop",
+        "es": "Salir al escritorio",
+        "de": "Zum Desktop beenden",
+        "fr": "Quitter vers le bureau",
+        "zh-Hans": "退出到桌面",
+        "ja": "デスクトップに戻る",
+        "ru": "Выйти на рабочий стол",
+        "ko": "바탕 화면으로 나가기",
+        "it": "Esci al desktop",
+        "pl": "Wyjdź na pulpit",
+        "nl": "Afsluiten naar bureaublad",
+        "pt-PT": "Sair para a área de trabalho"
+      }
+    }
+  ]
+}

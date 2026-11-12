@@ -92,7 +92,7 @@ func _materials() -> void :
 	M.azulejo = B.mat("blue_floor_tiles_01", 0.5, Color(1, 1, 1), 0.35)
 	M.stone = B.mat("light_stone", 0.55, Color(1, 1, 1), 0.75)
 	M.terra_tiles = B.mat("patio_tiles", 0.55, Color(0.95, 0.9, 0.84), 0.75)
-	var thatch: = B.mat("reed_roof_04", 0.45, Color(1.25, 1.08, 0.8), 0.95).duplicate()
+	var thatch: = B.mat("reed_roof_04", 0.45, Color(0.72, 0.61, 0.43), 0.95).duplicate()
 	thatch.cull_mode = BaseMaterial3D.CULL_DISABLED
 	M.thatch = thatch
 	M.post = B.mat("palm_tree_bark", 0.8, Color(0.8, 0.7, 0.6), 0.9)
@@ -154,6 +154,7 @@ func _ground() -> void :
 	mi.mesh = st.commit()
 	var sm: = ShaderMaterial.new()
 	sm.shader = load("res://shaders/ground.gdshader")
+	sm.set_shader_parameter("grass_tex",B.tex("leafy_grass"))
 	sm.set_shader_parameter("dry_tex", B.tex("coast_sand_01"))
 	sm.set_shader_parameter("dry_nor", B.nor("coast_sand_01"))
 	sm.set_shader_parameter("wet_tex", B.tex("damp_beach_sand"))
@@ -1156,18 +1157,30 @@ func _menu_lines(ids: Array) -> PackedStringArray:
 
 func _chalkboard(pos: Vector3, rot: float, title: String, lines: PackedStringArray) -> void :
 	var n: = Node3D.new()
+	n.name = "Chalkboard"
 	n.position = pos
 	n.rotation.y = rot
 	add_child(n)
 	B.box(n, Vector3(1.2, 1.5, 0.08), Vector3.ZERO, M.darkwood)
 	B.box(n, Vector3(1.02, 1.28, 0.03), Vector3(0, 0, 0.04), B.flat(Color(0.1, 0.22, 0.18), 0.9))
-	B.label(n, title, Vector3(0, 0.46, 0.07), 36, Color(0.95, 0.9, 0.7), Color(0, 0, 0, 0))
-	var body: = ""
-	for ln in lines:
-		if body != "":
-			body += "\n"
-		body += ln
-	B.label(n, body, Vector3(0, -0.08, 0.07), 26, Color(0.9, 0.96, 0.88), Color(0, 0, 0, 0))
+	var heading := B.label(n, title, Vector3(0, 0.45, 0.071), 32, Color(0.95, 0.9, 0.7), Color.TRANSPARENT)
+	heading.name = "BoardTitle"
+	_fit_board_text(heading, PackedStringArray([title]), .86, .20)
+	var body := B.label(n, "\n".join(lines), Vector3(0, -0.11, 0.071), 28, Color(0.9, 0.96, 0.88), Color.TRANSPARENT)
+	body.name = "BoardMenu"
+	_fit_board_text(body, lines, .86, .86)
+
+func _fit_board_text(label: Label3D, lines: PackedStringArray, width: float, height: float) -> void:
+	# Label3D width is in pixels; its physical size also depends on pixel_size.
+	# Measure the actual localized text, including every unlocked menu row.
+	var widest := 1.0
+	for line in lines:
+		widest = maxf(widest, label.font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size).x)
+	var text_height := label.font.get_height(label.font_size) * maxf(1, lines.size()) * 1.15
+	label.pixel_size = minf(.0032, minf(width / widest, height / text_height))
+	label.outline_size = 0
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 
 func _beach_props() -> void :
@@ -1185,7 +1198,7 @@ func _beach_props() -> void :
 		ch.reparent(root)
 
 func _beach_props_build() -> void :
-	var spots: = [Vector3(-28, 0, -21), Vector3(-17, 0, -22), Vector3(-6, 0, -23), Vector3(4, 0, -22), Vector3(24, 0, -21), Vector3(33, 0, -22)]
+	var spots: = [Vector3(-28, 0, -21), Vector3(-17, 0, -22), Vector3(-6, 0, -23), Vector3(4, 0, -22), Vector3(15, 0, -22), Vector3(82, 0, -22)]
 	var tints: = [Color(0.86, 0.22, 0.18), Color(0.95, 0.78, 0.35), Color(0.95, 0.95, 0.9), Color(0.12, 0.55, 0.58), Color(0.2, 0.38, 0.72), Color(0.9, 0.45, 0.25)]
 	for i in spots.size():
 		var p: Vector3 = spots[i]
@@ -1278,7 +1291,7 @@ func _palms() -> void :
 	for k in 26:
 		var x: = rng.randf_range(-110, 110)
 		var z: = rng.randf_range(50, 95)
-		if absf(x) < 50 and z < 52:
+		if (absf(x) < 50 and z < 52) or Rect2(-5,50,116,26).has_point(Vector2(x,z)):
 			continue
 		Palm.spawn(self, Vector3(x, _height(x, z) - 0.1, z), 200 + k, false)
 	for k in 12:
@@ -1461,7 +1474,7 @@ const VEG_EXCL: = [Rect2(-2.0, 16.0, 40.0, 30.0), Rect2(-3.0, 33.0, 113.0, 44.0)
 	Rect2(-1.8, 19, 3.6, 28), Rect2(-11.8, -5.8, 2.6, 33), Rect2(-24.8, -5.8, 15.2, 2.6), Rect2(-11.8, 24.6, 12.2, 2.8), 
 	Rect2(8.4, -17.6, 9.2, 9.2), Rect2(8.0, -11.0, 4.2, 9.0), Rect2(-1.2, -17, 2.4, 15), Rect2(1.0, 38.5, 5.5, 3), 
 	Rect2(1.0, 25.8, 98, 8.4), Rect2(41.5, 16.5, 56, 9.2), Rect2(39, 34, 58, 9.5), Rect2(65, 34, 20, 20), Rect2(36.4, -16, 3.2, 43), 
-	Rect2(33, -17.5, 10, 9), Rect2(56, -24, 12, 9), Rect2(-47, 23, 51, 52)]   # v1.0: terreno do Grand Hotel
+	Rect2(33, -20.0, 10, 11.5), Rect2(56, -24, 12, 9), Rect2(-47, 23, 51, 52)]   # v1.0: terreno do Grand Hotel
 
 func _veg_free(p: Vector2, margin: = 0.5) -> bool:
 	for r in VEG_EXCL:
@@ -1502,6 +1515,7 @@ func _scatter(mesh: Mesh, mat: Material, xforms: Array, vis_end: float, shadows:
 		mmi.multimesh = mm
 		if mat != null:
 			mmi.material_override = mat
+		mmi.add_to_group("scalable_vegetation")
 		mmi.visibility_range_end = vis_end
 		mmi.visibility_range_end_margin = 8.0
 		mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
@@ -2008,12 +2022,12 @@ func refresh_areas() -> void :
 # ------------------------------------------------------------------ v0.7.2: estruturas 10x mais detalhadas
 ## Estrutura de madeira de quiosque/bar: vigas de amarração, mãos-francesas, caibros sob o sapê,
 ## amarras de corda e assoalho de tábuas com frestas.
-func hut_details(c: Vector3, half: float, y0: float, post_h: float, peak: float, roof_half: float) -> void :
+func hut_details(c: Vector3, half: float, y0: float, post_h: float, peak: float, roof_half: float, structure: bool = true) -> void :
 	var wood: = B.flat(Color(0.62, 0.42, 0.25), 0.85)
 	var rope: = B.flat(Color(0.86, 0.74, 0.5), 0.95)
 	var top: = y0 + post_h
 	var corners: = [Vector3(- half, 0, - half), Vector3(half, 0, - half), Vector3(half, 0, half), Vector3(- half, 0, half)]
-	for i in 4:
+	for i in (4 if structure else 0):
 		var a: Vector3 = c + corners[i] + Vector3(0, top - 0.12, 0)
 		var b_: Vector3 = c + corners[(i + 1) % 4] + Vector3(0, top - 0.12, 0)
 		B._beam(self, a, b_, 0.08, wood)

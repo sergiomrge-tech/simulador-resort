@@ -1,6 +1,18 @@
 # Maré Alta Resort — Palácio de Memória
 
+> **Checkpoint mais recente: [`docs/ue58/CHECKPOINT_2026-11-09.md`](docs/ue58/CHECKPOINT_2026-11-09.md).**
+
 > **Para continuar o trabalho (outra IA ou pessoa): leia primeiro [`docs/CONTINUAR.md`](docs/CONTINUAR.md).**
+
+> **Direção (11/11/2026, regra do Sergio):** a sessão principal (Fable 5.2) é o diretor geral e coordena agentes mais
+> baratos (`batedor`, `artesao-bpy`, `programador`, `tradutor`, `inspetor`, `operador`, em `.claude/agents/`). Quem faz o
+> quê, o que nunca se delega, os recursos de uso exclusivo e o molde do pedido estão em
+> [`docs/ue58/DIRECAO.md`](docs/ue58/DIRECAO.md). Leia antes de começar um lote de trabalho.
+
+> Instruções comuns a todas as IAs: [AGENTS.md](AGENTS.md). Este arquivo guarda
+> lições de várias versões; referências antigas a preparo, óculos, cores muito
+> saturadas, versão 1.0.x e entrega obrigatória por NSIS não substituem o guia
+> vigente. Preserve as lições técnicas, seguindo as preferências atuais do usuário.
 
 Regras aprendidas com erros reais deste projeto. Leia antes de mexer em qualquer coisa.
 Cada "cômodo" guarda um tipo de erro: o que aconteceu, a regra e como conferir.
@@ -12,6 +24,26 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 ---
 
 ## 🚪 Hall de entrada — regras fixas do Sergio
+- **Herói sem mãos e braços (04/11/2026, regra fixa):** em primeira pessoa o herói NUNCA mostra mãos nem braços, em nenhuma parte do jogo. Ele carrega produtos normalmente (o item fica na frente da câmera, no lugar da mão) e interage; só não se veem mãos/braços. Ações físicas são feitas sem mãos (bar: E no ingrediente joga direto no copo). UE: `UMarePlayerPresentation` esconde `upperarm_l/r` do ViewBody (também em `UpdateAnimation`, que reinicia a visibilidade); `MarePreviewQA` checa `player_arms_hidden`. Não criar mecânica que dependa de mostrar mão do herói.
+- **Encerramento/recursos (23/10, correção do checkpoint):** Palm._coco_mesh instanciava coconut.glb para extrair Mesh, sem liberar o Node temporário. Node.print_orphan_nodes identificou coconut2/coconut; liberar inst tanto no sucesso quanto no retorno vazio, preservando Mesh/Material RefCounted no cache. Core.quit_game retém materiais/malhas/partículas até remover a cena e aguardar quadros do renderer; Core.release_visual aplica o mesmo cuidado na troca de produtos/NPCs. Isso evita liberar materiais com instâncias gráficas ainda pendentes. Não usar RenderingServer.sync(), que não existe na API GDScript 4.5; frame_post_draw precisa de guarda para headless. Runner rejeita qualquer ERROR:, além de falha lógica/código de saída. Capturas de testes vão para user://qa_shots (res:// não é gravável no PCK).
+- **Mira/abertura no ciclo legado (23/10):** área genérica do balcão precisa começar antes da colisão do tampo. Mantida profundidade 1,4 m, largura 3,2 m e centro X=-0,5, recortando o extremo do PC. Reduzir só a profundidade a 0,6 quebrava a mira antiga. Fixture de rush deve abrir explicitamente o quiosque; o produto continua iniciando fechado. Não restaurar abertura automática para passar testes.
+- **PC/retirada/porta (23/10):** guia atual em docs/COMPUTADOR_E_BALCAO.md. Gestão no PC físico, quiosque começa fechado e fecha ao dormir, pedido/retirada integral no balcão antes da mesa. Não seguir regras históricas conflitantes abaixo. Fonte Blender com textura escura incorporada: MixRGB não preservava multiplicador no GLB; conferir imagem. Interactable genérico do balcão profundo bloqueava PC: reduzir só a área clicável, não a colisão física. Porta fecha após saída apenas com arco livre. Testar --terminal-test e --counter-first-test no fonte e no executável. Balcão escolhido: madeira escura/base cinza.
+
+- **Quadro/cesto (23/10):** medir fonte localizada e número de linhas para ajustar pixel_size do Label3D; outline_size zero no quadro. Além dos limites da placa, conferir obstrução física: quadro HOJE elevado a centro Y=1,9 para passar acima do guarda-corpo. Cesto wicker_basket_02 original tem tampa solta inclinada; variante g:wicker_basket_closed reposiciona a tampa sobre a borda preservando vime/UVs. B.model e Real usam a correção; gerador import_closed_basket.py, fonte .blend incorporada/reaberta. --props-layout-test confere limites, cardápio inicial/expandido, altura e modelo, capturas em user://qa_shots.
+- **Cruzeiro refinado (23/10):** usuário rejeitou imagem do Quaternius low poly por ser simples. Retirado; coastal_cruise autoral detalhado, escala 1,6, posição fixa à noite (-210 Z), cabines com algumas janelas apagadas, frames, varandas, botes e radar. Fontes Blender reabertas. Não alegar download de modelos Sketchfab/BlendSwap sem login: download exige autenticação. Testar --coastal-test, escala/luzes/exclusividade e imagem da praia.
+- **Baleias/nuvens/navio (23/10):** preferência mais recente: UM navio de madeira por vez, devagar (.5 m/s), cruzeiro fixo à noite. Ship Pinnace Poly Haven CC0 preservado em pirate_sailship.blend. Baleia autoral detalhada, fontes incorporadas. Nuvens devem ser shader_type sky, não plano gigante transparente (cortes angulares em Vulkan). WhaleWildlife anima salto, gotas balísticas, espuma/ondas e som suave SFX. Respeitar pausa e mute; testar --whale-test e --coastal-test com imagens de salto/queda/dissipação.
+- **Barcos (23/10):** usuário corrigiu a ambientação: barcos passam, só o cruzeiro fica estático à noite. Dois barcos em sentidos opostos com movimento perceptível (3,2 e 2,6 m/s); cruzeiro em posição fixa, sem oscilação/translação nem esteira. Testar posições antes/depois, inclusive cruzeiro invariável à noite; não voltar a animar seu deslocamento.
+- **Acabamento (23/10):** contorno de tela espesso e opaco desenhava nervuras escuras em toda folha/roupa. Reduzir espessura/opacidade e antecipar fade preserva silhuetas sem ocultar mapas. Água HD usa gradientes largos, brilho suave e espuma smoothstep; manter a fórmula inversa de profundidade do outline para não reintroduzir tremor de piso. Conferir Vulkan perto do balcão, mar diurno e cruzeiro noturno.
+- **Praia/balcão (23/10):** quiosque/mesas girados 180° para -Z. KioskBeachFrame mantém coordenadas autorais antigas nos modelos; spots/block_rects e rotas são globais convertidos por kiosk_point/kiosk_local. Operação usa o mesmo frame para móveis; funcionários pertencem à vila e recebem posições globais. Não usar station.position como global. Balcão tem staff_approach interno; mesas mantêm approach. Recalcular também layout de personalização, não apenas malhas.
+- **Mira/reposição (23/10):** cliente sentado tem alvo maior e seleção tolerante de 11°/3 m acima do tampo, com teste físico de visibilidade; estações miradas diretamente têm prioridade. Testar E por dentro nos dois lugares e parede bloqueando. Repor 10 na geladeira compra só os insumos faltantes com orçamento inteiro antes de cobrar; não fecha a estação, não duplica estoque pronto nem exige preparo.
+- **Praia viva (23/10):** CoastalLife mantém quatro jogadores separados de clientes/pedestres, bola cruza acima da rede e IK dos braços só no contato. Iate diurno e cruzeiro noturno em mar distante. Ao criar quadra, afastar props tanto de world._beach_props_build quanto de world_village._beach_life, excluir troncos/clutter; conferir imagem. Uma quadra lógica não impede guarda-sol antigo dentro dela.
+- **Save girado (23/10):** player.kiosk_facing=beach marca gravação nova. Save antigo dentro do footprint acompanha posição/yaw do quiosque uma vez. No teste --loop-test, Core.SAVE_PATH é test_save.json; usar set_slot antes do teste real _on_start_load, que seleciona save_slot1.json, senão o teste carrega outro arquivo e parece falha de migração.
+- **Casa e azul global (23/10):** paredes/materiais naturais ainda ficavam azuis com AMBIENT_SOURCE_SKY, sky_contribution .45 e cor ambiente azul/lilás. Usar ambiente de cor neutra, contribuição do céu zero e reflexão de céu desativada; preservar céu/ciclo do sol. Conferir interior, pessoas e quiosque em Vulkan. Casa: home_furnishings.gd e teste --home-test validam passagem real até cama/cozinha, apoios, colisões e E na TV/som. Som respeita mute/Music e reduz trilha sobreposta por distância.
+- **CRT sem manchas (23/10):** vidro da televisão_02 é componente conectado curvo. Separar do corpo e alternar vidro desligado/tela ligada. Recortar por limites de coordenadas causa buracos; sobrepor cópia quase coincidente causa z-fighting. Preservar faces/UVs e conferir de perto em home_media.png, não só HOME_TEST PASS. Fontes móveis home_*.blend devem continuar incorporadas e reabertas.
+- **Pedidos na mesa (23/10):** após escolher, cliente espera E para anotar. `order_taken` separa aguardando anotação de pedido registrado sem trocar estados do NPC. Espera/entrega continuam sentadas; mirar e usar E funciona nos dois lados da mesa. Garçom vai até approach para anotar antes de buscar o produto. Coletar/consultar não gasta estoque nem permite reiniciar paciência repetindo E. Fixtures podem usar `_order(g, true)`; teste real deve usar transição kchoose → _order e raycast/E.
+- **Sem preparo (23/10/2026):** pegar produtos prontos na geladeira/armário/cozinha e entregar. Removidos botões e cronômetros; estoque compartilhado debitado uma vez na retirada. Devolução guarda unidade já paga; empresa antiga com produção pendente converte em pronta sem novo débito. Não reintroduzir preparo manual, nem exigir cozinheiro. Garçom retira diretamente; cozinheiro pode auxiliar entrega se não houver outro atendente.
+- **Cores (23/10/2026):** Sergio pediu cores mais realistas em TUDO. Reduzir a saturação global e não reintroduzir reforços de laranja/saturação em Toon/daycycle. Preservar mapas dos modelos importados. Porta da casa deve parecer madeira natural, sem pintura azul. A nova preferência de cores prevalece sobre descrições históricas de paleta muito saturada.
+- **Quiosque vazio (23/10/2026):** nunca ocultar KioskOperations inteiro porque o save não criou a empresa. Equipamentos e expositores são permanentes; company_enabled controla gestão/atendimento e item carregado. Antes do cadastro, E na estação abre empresa. Testar cenário sem empresa, além dos testes que criam empresa no início.
 - **Nada de low poly**, principalmente móveis, casas e pessoas. Cilindro/esfera com poucos lados, caixa crua e corpo facetado são proibidos.
 - **REGRA (18/10/2026): nada de "bolas e quadrados".** Nenhum objeto do jogo pode ser só esfera, caixa ou cilindro montados por código (frutas = esfera, garrafa = cilindro, caixote = caixa são proibidos). **Todo objeto vem de um modelo real baixado da web (CC0)**, com malha detalhada. Antes de criar qualquer prop, **busque o asset**: Poly Haven (API `api.polyhaven.com`), Quaternius, KayKit, ambientCG, itch.io, OpenGameArt. Só monte por código o que não existe pronto (ex.: parede, piso, telhado), e mesmo assim com textura e relevo. Registre a fonte em `CREDITS.md` e o asset em `tools/fetch_assets.py`.
 - **REGRA (18/10/2026, reforçada pelo Sergio): proibido low poly e proibido "bolas coloridas"** (esferas/elipsoides achatadas fazendo de flor, fruta, balão, folhagem, copa). Tudo que for visível tem que ser modelado de verdade **no Blender (bpy)** com malha detalhada. Se não souber como é o objeto, **busque referências de imagem na web** (image_search/WebSearch) antes de modelar. Ao ver blobs/formas primitivas no jogo, troque-os, não deixe para depois.
@@ -41,12 +73,20 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - **Regra:** para cilindro ou cápsula entre dois pontos locais, use `B._beam(parent, a, b, raio, mat)`. Nunca use `look_at*` em nó filho com coordenadas locais.
 
 ## 🪜 Sala do Chão — z-fighting e contorno
+- **Correção (22/10/2026):** os barcos da praia devem ficar fora do corredor e da plataforma do cais, considerando o AABB transformado de casco, mastro e vela. Passos usam amostras curtas e o material do piso atingido por raycast; altura do jogador não identifica madeira e cadência de 0,75 m fazia as pisadas soarem como escavação.
+- **Erro (22/10/2026):** os GLBs do cais tinham tábuas visíveis, mas nenhum piso físico; a plataforma final também ficava antes do limite de colisão. Acrescentar colisão contínua aos módulos e à plataforma, alinhar os limites ao piso e testar caminhando da praia ao fim e de volta. A rampa deve encontrar o deck sem degrau. Não ativar nado só pela profundidade do terreno quando o personagem está sobre o cais; recuperar quedas abaixo do mapa para o último piso seguro.
 - **Erro:** o deslocamento em y para evitar z-fighting crescia sem limite (`0.008 * n`), virando degraus no chão.
 - **Regra:** use deslocamento cíclico: `y + passo * (n % 4)`.
 - **Erro:** o contorno cartoon usava a 2ª derivada da profundidade linear, que gera linhas tracejadas em todo piso visto de lado (o "chão tremendo" ao andar).
 - **Regra:** o contorno usa a 2ª derivada de **1/profundidade**, que é linear na tela sobre planos. O contorno só funciona sem MSAA (use FXAA).
 
 ## 👥 Sala das Pessoas
+- **Preferência (23/10):** Sergio pediu tirar os óculos escuros de todas as pessoas. Não gerar `Sunglasses` em Guest nem forçar o acessório em provas visuais. Manter também a preferência anterior por pessoas sem chapéus/bonés.
+- **Avental (23/10):** ajustar a superfície ao perfil da roupa, com alças e bolso, em vez de um plano distante do corpo. Os pesos de quadril/pernas precisam ser contínuos em todas as linhas: trocar de zero para peso de coxa numa altura fixa quebra o tecido durante o idle. Conferir em pé, andando, preparando e sentado. No bpy Windows, salvar fonte em arquivo temporário novo e copiar ao destino evita o erro de sobrescrita `file saved with @`; reabrir a fonte final e conferir texturas incorporadas.
+- **Roupas/gestos (23/10):** ao encurtar calça, ocultar pele acima da barra real; deixar coxa de corpo muscular sob roupa Regular faz triângulos de pele atravessarem o tecido. O IK de trabalho deve girar a orientação atual do membro para o alvo: os braços Quaternius se estendem em X, não em Y. Retirada/entrega aguardam 400 ms sem reservar/consumir estoque outra vez. Validar com empresa e imagens de preparo, andar/sentar.
+- **Correção definitiva do cabelo:** os glTFs Hair_* desta instalação são malhas rígidas, sem Skin. Usar `Ppl.attach_hair`: BoneAttachment3D em Head e transformação inversa do repouso da cabeça; apenas `skeleton = ".."` não resolve malha sem pesos. Esta regra detalha e substitui a orientação simplificada abaixo. Chapéus e bonés foram retirados por pedido do Sergio.
+- **Roupas e cabelo (22/10/2026):** roupa MakeHuman ajustada só por escala não acompanha este corpo/rig; usar peças Quaternius compatíveis, com pesos originais, e conferir andar/sentar. Ao reanexar cabelo/barba em `Skeleton3D`, definir `skeleton = NodePath("..")`; deixar o caminho do arquivo importado faz o cabelo flutuar. Ao reconstruir ArrayMesh de corpo, descartar atributos CUSTOM não utilizados e preservar a flag de oito pesos quando aplicável; um erro na superfície pode apagar o corpo inteiro apesar de o teste lógico terminar com PASS. Conferir logs e imagem.
+- **Contratação (22/10/2026):** não criar o personagem somente no tick de trabalho. Sincronizar presença em `staff_changed`, inclusive com celular aberto, fora do turno e no atendente legado sem empresa; turno controla trabalho, folga/demissão controlam ausência. Testar contratação pausada e entrega automática separadamente.
 - O corpo vem de `assets/models/ual/guest.glb` (manequim Quaternius), com zonas de cor gravadas em `COLOR.r` por `tools/color_zones.py`. Se trocar ou suavizar a malha, **rode o color_zones de novo**.
 - Chapéus e cabelos ficam presos ao osso `Head`, e a cabeça é aumentada pelo `head_scaler`. Confira se a aba não corta os olhos (aba de palha em y ≥ 0,245).
 - Pedestres: 12 no modo HD e 5 no leve (o Sergio pediu metade). Não aumente sem pedir.
@@ -62,6 +102,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Download do itch.io pelo shell: GET na página, POST `/download_url` com `csrf_token`, abrir a URL devolvida, depois POST `/file/<id>?source=view_game&as_props=1&after_download_lightbox=true` (a URL assinada dura 60 s). Kenney, ambientCG e Poly Haven respondem direto do shell.
 
 ## 🖥️ Sala do Vídeo
+- **Celular (22/10/2026):** nomes de apps sem quebra de linha alargavam a grade e eram cortados pelo painel. Grade de três colunas, textos/botões com quebra e rolagem vertical; o Álbum usa FlowContainer nos prêmios. Dimensionar o aparelho por escala da janela e manter a largura útil dos cartões sob controle, sem mínimo fixo que ignore a barra de rolagem. `--loop-test --phone-layout-test` verifica todos os apps em 1280×720, 800×600 e 360×640.
 - DirectX 12: opção "API gráfica" grava um `override.cfg` ao lado do .exe (com volta automática para o Vulkan).
 - DLSS **não existe na Godot**. O upscaler é o FSR 2.2 / FSR 1, na opção "Upscaling" + "Escala 3D".
 
@@ -83,6 +124,8 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - O código antigo continua como fallback quando o .glb não existe.
 
 ## 🧪 Sala da Conferência — antes de entregar
+- **Quiosque prático (22/10/2026):** ao substituir um prop de expansão, preservar seu marco lógico em `areas` (ex.: `grill`) mesmo com a cozinha agora interna; `career_test` e desbloqueios dependem dele. Validar o corredor com movimento real da cápsula. Na saída do deck, o chão passa de y=0,1 para y=0: a asserção de piso deve considerar o destino. GLB exporta cores lineares e `Toon.toonify` clareia novamente; julgar madeira/palha no jogo e reservar margem na cor original. Não exibir nomes de fregueses atravessando o telhado: no atendimento físico, usar apenas o número curto e a lista de pedidos.
+- **Gestão ampliada (22/10/2026):** normalizar os números de estado/higiene no sanitize evita diferenças de precisão em save/recarga. Personalização move modelo, assento, ponto de entrega e bloqueio juntos; prévia não cobra. Para cores de prévia iguais às do cenário, definir o albedo solicitado no material duplicado (Toon.material satura a cor). Testar encomendas e serviços pendentes após recarga e evitar avisos repetidos em cada tentativa automática de preparo.
 1. `godot --headless --check-only -s scripts/X.gd` em todo script editado. Erros "Identifier not found: Core/Quality/Economy" são normais (autoloads). Qualquer outro erro bloqueia.
 2. Erros já cometidos: função duplicada no mesmo arquivo (`oil_lamp`); `var w: = M.algo` sem tipo (use `var w: Material = ...`).
 3. Prints: `./shot.sh nome` ou câmera livre com `--cam=x,y,z,yaw,pitch[,hora]` (ver `main.gd`). Olhe de perto paredes, móveis, pessoas e chão.
@@ -156,3 +199,780 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - FEITO: `prune_export.py` não exclui mais `qnat` (arbustos Quaternius sumiam no jogo instalado = "placas redondas"); `Real` avisa `REAL_MISSING` no log; `Real.ALIAS` troca todo `k:` low-poly por modelo detalhado (`tools/gen_food.py`: coconut_green, coconut_open, pineapple, orange, frappe, cup_plastic, glass_juice, cocktail, campfire_logs, beach_flag, beach_spade, boat_hull; Poly Haven: croissant, Barrel_01, wooden_crate_02, stone_fire_pit, sand_rocks_small_01, boulder_01, dead_tree_trunk); recife com altura limitada pela profundidade (pontas no mar); espreguiçadeira/venezianas/treliça/banca corrigidas; D3D12 com mais descritores.
 - FALTA: (1) pessoas travadas em pé na mesa do quiosque (dois clientes no mesmo lugar, rótulos sobrepostos) em `village_life.gd`; (2) conferir em prints: prateleira do quiosque, balcão, carrinho de cocos, pilhas de coco, fogueira junina, tendas da quermesse, barco de pesca (`g:boat_hull`), castelo de areia; (3) `--primcheck`/`--floatcheck`; (4) LOOP_TEST; (5) gerar PATCH a partir da v1.0 instalada (base = commit da v1.0, ex. `51921df`) — o patch precisa levar a pasta `assets/models/qnat`; (6) atualizar CREDITS (gen_food + dead_tree_trunk Poly Haven) e catálogo.
 - A edição em `tools/build_release.sh` para o smoke testar o .pck exportado (`--main-pack`, `--v1`) ainda NÃO foi aplicada.
+
+
+## Interface, rotas e assets — 23/10/2026
+
+Botão sem largura mínima em HBox podia quebrar texto letra a letra e esticar um
+cartão de equipe para centenas de pixels. Reservar largura calculada pelo texto,
+limitar altura na regressão e conferir imagens. Compras começa em reposição de
+produto, reutilizando cotação/compra atômica do Core; não duplicar contabilidade.
+Hair_Long original só cobre laterais/nuca em alguns corpos: completar o topo com
+Hair_SimpleParted usando o mesmo BoneAttachment3D e cor, não prender ao chão.
+Portas de casas próximas à parede ficavam dentro do block_rect com padding:
+projetar destino de morador para fora com margem corporal; não retirar a exceção
+na chegada a mesas de clientes. Rotas extras ao fim da lista precisam receber
+pedestres por distribuição uniforme, preservando a contagem máxima.
+Não remover armature/animações dos animais ao suavizar. Aplicar Subsurf antes do
+Armature, manter pesos e ligar as feições ao osso da cabeça. Verificar a anatomia
+na câmera: olhos de cachorro em x/y incorretos ficavam saltados; foram reposicionados
+na superfície da cabeça e reduzidos antes da entrega.
+Tela do Classic Laptop usa UV U=1..2; offset -1 e material unshaded mantêm a tela
+legível sem o clareamento de iluminação da cena. SubViewport mostra dados reais.
+
+
+## Louça e PC central — 24/10/2026
+
+Louça não pode ser sempre plate-dinner: esse GLB Kenney já contém alimento.
+Gerar recipientes vazios reais; suco precisa perder líquido/gelo/fruta e preservar
+vidro/canudo. Caipirinha vazia mantém escala do vidro servido (altura sem enfeite
+é 0,63865543 da altura total original). Registrar todos os itens consumidos por
+lugar, salvar/carregar validando IDs e limpar registro junto do objeto.
+No PC central a mira interna deve atingir sua área antes da área genérica do
+balcão, sem mudar colisões físicas. A área central está em Z local 1,1 com altura
+0,7; por fora o balcão continua primeiro. Atualizar fixtures que ainda apontavam
+para X=1,6. Testes de formulário devem abrir PC de verdade para não acessar campo
+que B acabou de liberar. Bandeja e frutas precisam de espaços separados; frutas
+passaram para a bancada lateral para não atravessar os seis copos.
+Builds foram movidos para D:/CodexTemp/resort-build/rc2-playable por junção, pois C
+ficou cheio. Nunca apagar saves/instalações para liberar espaço; novos ZIPs no D.
+
+
+## Performance e atendente único — 24/10/2026
+
+Material compartilhado deve ser imutável: cache por fonte/cor/natureza em Real,
+utilizado também por B.model. Pintura individual duplica o material antes de
+alterar. Não duplicar todos os materiais de cada instância idêntica: impede
+agrupamento e aumenta draw calls. PC renderiza o SubViewport somente ao mudar o
+conteúdo; UPDATE_ONCE pode permanecer pendente quando a tela não está visível.
+Testar ausência de UPDATE_ALWAYS e atualização real de conteúdo, não presumir
+que a propriedade já virou DISABLED após alguns process_frames sem renderização.
+NPCs reutilizam candidatos de colisão próximos por passo, mantendo o teste do
+algoritmo anterior (1200 trajetos aleatórios). Ao mover a posição para fora da
+janela de busca, recomputar candidatos; não criar cache persistente de blocos que
+ficam obsoletos ao mudar o layout.
+Volumes de occlusion culling devem ficar estritamente dentro de geometria opaca:
+casas decorativas têm caixas menores que o corpo sólido. Não criar uma caixa
+fechando a casa acessível do jogador, o quiosque ou entradas/janelas abertas.
+Medir antes/depois na mesma resolução/preset e repetir invertendo a ordem:
+comparações sequenciais oscilaram por atividade de outros programas nesta máquina.
+Não atribuir toda a diferença ao patch. Preservar dados brutos e imagens.
+Um único role ativo atende o quiosque: atendente. Antigos garcom/caixa/limpeza/
+cozinheiro ficam apenas no formato de save/histórico. Unificar na carga, preservar
+experiência/turno/perfil e cobrar uma única diária, sem custo de migração. Na falta
+de estoque, continuar anotando/limpando em vez de ficar tentando retirar um item
+inexistente. Para receber, o atendente precisa caminhar ao PC; ao limpar precisa
+chegar à mesa. Não restaurar recebimento remoto automático pelo antigo role caixa.
+
+- Cache de materiais usa Color como chave completa. to_html() quantiza e limita HDR: Color(1.2,1.2,1.2) não pode colidir com branco; preservar os fatores LIFT.
+
+## Transporte nas mãos — 24/10/2026
+
+Não prender produtos de NPC em posição fixa no peito. Usar âncora hand_r após os SkeletonModifiers, manter apresentação em pé e remover âncora/conexão ao sentar ou sair. IK precisa respeitar os lados dos braços: alvo direito X negativo, esquerdo X positivo no rig atual; alturas baixas demais deixavam um braço sem alcance. Poses consultadas fora do ciclo dos modificadores são restauradas pela Godot; conferir a âncora e capturas renderizadas. Sorvete é refrigerado, mas não bebida: separar is_chilled de is_drink na estação, interface e regressão da exposição. Não restaurar preparo para satisfazer teste histórico.
+
+## Correções visuais e operação — 26/10/2026
+
+Ativar use_occlusion_culling também ativa oclusores legados. _hero_house tinha
+uma chamada antiga _occlude preenchendo a casa inteira, apesar da regra escrita
+proibindo isso. Remover o volume e comparar a mesma câmera na janela com culling
+ligado/desligado; conferir por imagem, não só existência/colisão de móveis.
+PC usa AABB do modelo em coordenadas locais, cacheada na montagem, e raio curto
+horizontal: não usar grande cone magnético que rouba a mira de clientes.
+Clientes de pé no balcão têm cabeça acima do tampo: mirar 1,55 m e usar alcance
+interno até staff_approach, preservando linha de visão e bloqueio de paredes.
+Número do pedido vem da reserva dining_spot; g.spot temporário da retirada não
+existe em kiosk_spots e gerava #00. Excluir alvo invisível do caixa antigo.
+Pagamento agora é imediato na entrega; liquidar contas históricas uma vez na
+carga. Regressão deve considerar registro financeiro atualizado, sem esperar que
+sim/ledger seja idêntico ao snapshot anterior ao recebimento.
+Importar GLBs novos no editor antes do runtime: existir no disco não garante
+ResourceLoader.exists até a criação de .import/cache. REAL_MISSING reprova o lote
+mesmo que o teste lógico tenha PASS. Fontes editáveis/geradores são versionados.
+Campanha é lida sem efeitos pelo HUD; recompensa exige etapa/id atual e grava
+estado antes do crédito. Estações usam painel compacto à direita para preservar
+missões/pedidos à esquerda, inclusive durante retirada/reposição.
+
+## Pedidos finais do lote de 26/10
+
+Usuário substituiu os pedidos de PC lateral/alcance por EXCLUIR O PC. Gestão no
+celular portátil B em qualquer lugar. Remover modelo, alvo e SubViewport; deixar
+alias de métodos antigos somente para compatibilidade, sem objetos invisíveis.
+HUD é CanvasLayer: usar get_viewport().get_visible_rect(), não get_viewport_rect().
+Antes de iniciar nova execução, zerar apenas seu log de QA: o runner lia Parse Error
+de tentativa antiga antes de a engine abrir o log e interrompia processos corretos.
+Chuva alimentava w=max(shore,rain*.6), e o mesmo w ativava espuma em TODO terreno.
+Separar umidade de espuma; usar smoothstep crescente e restringir espuma à costa.
+Testar e inspecionar render de chuva, sem aceitar manchas brancas como poças.
+Botões usam largura do texto; cartões/menus ficam em celular vertical 420×700,
+com seis abas numa grade 3×2. Nenhum painel horizontal largo vazio como terminal.
+
+Teste de otimização precisa aguardar a inicialização diferida e um frame renderizado antes do encerramento. Sair no primeiro frame deixava partículas/instâncias pendentes no renderer, embora o PASS lógico já tivesse sido impresso. Objetos temporários pertencem à cena principal para passar pela retenção/liberação de Core.quit_game. Rejeitar ERROR mesmo após PASS.
+
+
+## Checkpoint interrompido — refinamentos de 26/10
+
+Botão criado vazio pode manter largura mínima de 34px depois de ganhar texto: recalcular em _refresh_kiosk_controls. Não aumentar mínimo de todas as setas/controles curtos: isso fez Bangalôs ultrapassar o celular. O exemplo de pessoa atravessando espreguiçadeira coincide com BeachSet em x33,z-22 sobreposto às novas mesas; não presumir que basta mudar a pose. Conferir layout completo por imagem. WAV de reggae é original e tem loop explícito; soundfile ao gravar OGG nessa instalação encerrou o processo e deixou arquivo de4KB inválido. Não reutilizar esse arquivo. Estado e pendências em docs/REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md; usuário pediu terminar depois.
+
+
+## Retomada de 27/10 — integração e revisão visual
+
+Anexo a leste da casa invadia o vizinho em x54, e PASS de passagem não detectou.
+Mover banheiro para trás/norte com rotação 90°, abrir a parede norte e restaurar a
+leste; usar coordenadas locais nos testes e clear_to_close. Excluir vegetação do
+retângulo do anexo, incluindo instâncias MultiMesh, sem esconder o grupo inteiro.
+Escalar a instância indesejada para epsilon preserva AABB/culling (não mover -100m).
+Testar controle de densidade por redução real agregada/algum grupo; chunks com
+uma instância ficam em 1 e não devem reprovar a política de preservar ao menos uma.
+Sombras têm índice próprio separado do preset; mudar sombras não altera SSAO/LOD.
+Conversas são uma página responsiva do celular, evitando modal fora da tela em
+resoluções pequenas. Resultado inicial inclui investment, como o relatório financeiro.
+Ambiente é sub-bus de SFX para preservar o volume dos efeitos nos pássaros/folhas.
+A sobreposição vista no cliente era lounger decorativo x33 sobre cadeira real;
+afastar BeachSet e conferir a pessoa sentada com copo por imagem.
+
+Rotinas temporárias usam dia*1440+minutos; comparar só horário fazia descanso continuar até a tarde seguinte depois de dormir. Ao expirar, restaurar abordagem apenas se ainda estiver a menos de1,5m do banco; não teleportar de volta quem já foi para casa.
+
+## UE5.8 nativa / MCP
+
+UE5.8 usa FJsonObject com chaves UE::FSharedString: passe FString(Pair.Key.ToView())
+ou FStringView, sem habilitar macros legadas para mascarar incompatibilidades.
+UGameInstanceSubsystem deve ser criado com UGameInstance como Outer, inclusive em
+AutomationTests. IFileManager::Move retorna bool, não código COPY_OK.
+Actor não expõe add_component_by_class no Python desta engine; usar o helper
+ActorTools.add_component baseado no SubobjectDataSubsystem. EditorActorSubsystem
+ou LevelEditorSubsystem.get_world pode retornarNone; obtenha o mundo pelo editor.
+MCP5.8 CaptureViewport exige parâmetros explícitos captureTransform/annotations
+apesar de o schema não os listar como obrigatórios. Plugin MCP somente no editor.
+Calibração real GLTF: Godot(x,y,z)m → UE(x,z,y)*100cm.
+
+
+## UE5.8 — importação e navegação
+
+AssetImportTask.options deve receber InterchangePipelineStackOverride contendo SoftObjectPath(pipeline), não a pipeline diretamente. Remover subárvores ocultas antes do glTF evita KHR_node_visibility exigida e rejeitada pela UE. Para limpar grafo de material, remover cada expressão de uma cópia da lista; delete_all_material_expressions deixou nós antigos. recompile_material retorna lista de erros, conferir vazia. SingleLayerWater requer Nanite desativado. Alterar BodySetup não garante atualizar UNavCollision: projeção Z910 com física no chão exige investigar cache de navegação. A limpeza de imports pelo Editor encontrou inconsistência de referências e encerrou o processo; não repetir sem diagnóstico. Desativar AndroidFileServer desnecessário e revisar configurações geradas para não versionar SecurityToken.
+
+
+## UE5.8 — causa da superfície de navegação falsa
+
+Recast exporta hulls convexos do AggGeom mesmo com CTF_UseComplexAsSimple. Remover hulls automáticos, atualizar CreateNavCollision(true) e salvar; só mudar CollisionTraceFlag não basta. GetSimpleCollisionCount não inclui convexos: somar GetConvexCollisionCount. RemoveCollisionsWithNotification(false) atualiza a colisão sem pedir rebuild completo via PostEditChange. Instâncias/meshes translúcidos precisam renderizar sem Nanite (42 modelos neste catálogo). MoveTo com StopOnOverlap soma o raio da cápsula ao limite; alinhar o destino projetado e o critério AtGoal. Ao levantar, projetar o acesso da cadeira antes de reativar a cápsula. Chamadas Python estáticas de NavigationSystemV1 durante PIE geram ensure no CDO desta engine; consultar a navegação no editor com PIE parado e validar movimento real no jogo. Antes de RunTestsByFilter, DiscoverTests e ListTests: lista vazia não é teste aprovado.
+
+
+## UE5.8 — snapshots físicos e transações
+
+Salvar atores antes de OnWorldBeginTearDown destruir os objetos, não após Deinitialize. No Save da economia, capturar o snapshot no mesmo JSON atômico; AddOrder e Deliver gravam antes de o chamador atualizar o personagem, então reconciliar id/itens a partir de ue_orders. Manter estágio Approaching de pedidos recuperados ainda a caminho do balcão. Um marcador consumed impede recriar louça após a limpeza enquanto o cliente continua sentado; a cadeira só é liberada quando ele sai. Não simular o quiosque no mapa Entry sem MareGameMode. SubsystemBlueprintLibrary não está exposta no Python desta instalação; ObjectIterator filtrado pelo outer obtém a instância do mundo. Copiar metadados desconhecidos também por cliente/jogador/atendente, não apenas na raiz.
+
+
+## UE5.8 — áudio, apresentação e pacote de 28/10
+
+Usar Rotator com pitch/yaw/roll nomeados no Python; a ordem posicional desta instalação levou a câmera ao piso e deixou luzes práticas de lado. Ler/escrever código com encoding UTF-8 explícito: o Python da engine usa a página de código do Windows e read_text sem encoding corrompe acentos. Exportar também world.texts: os modelos não contêm Label3D. TextRender usa normal local +X e precisa adaptar os eixos do Godot; promoções mantêm cinco linhas para caber.
+
+Colisão do oceano exige UseDefaultCollision=false, perfil NoCollision e CollisionEnabled=NoCollision. Natação com estado Swimming não basta: conferir câmera acima da superfície, mergulho e retorno real. Capturar Lumen depois de estabilizar a câmera, evitando avaliar o ruído do primeiro quadro após teleporte.
+
+O gravador do master submix da UE5.8 recebe áudio antes do ganho de saída: conferir também o roteamento master e silêncio sustentado das fontes depois dos buffers/efeitos. PIE pode mutar o dispositivo quando em segundo plano; testar o EXE é obrigatório. O volume geral controla o submix master para silenciar caudas, e loops silenciosos mantêm a posição.
+
+O save padrão começa às 6h30 e o expediente às 8h. O teste de abertura precisa configurar o horário explicitamente, sem depender do tempo gasto carregando assets. Uma abertura antecipada fica ativada e o celular deve explicar a espera e permitir fechar. Cook inicial levou 25min10s; -iterativecooking preserva os pacotes e shaders válidos. Não compilar a DLL do editor enquanto editor/commandlet a mantém aberta, nem rodar dois UBT ao mesmo tempo.
+
+O cenário UE foi exportado com --v1 (tudo liberado), mas default_save é um perfil
+novo. Não usar presença de geometria como propriedade. Region_ segue unlocked;
+negócios seguem prog.biz.lvl. O export antigo perdeu a identificação do HotelWorld
+e Biz_*; dividir grupos de instâncias preservando todas as transformações, não
+ocultar o grupo compartilhado inteiro. Ao ocultar piscina, cobrir o buraco real na
+malha de terreno: o retângulo azul era o fundo visível, não água restante.
+FScreenshotRequest captura no fim do quadro; comprar no mesmo tick da captura
+"antes" produz imagem já desbloqueada. Separar captura e compra por um quadro.
+Licença comprada não cria ingredientes: testar compra, reposição e retirada em
+sequência. Pedidos legados continuam atendíveis, sem liberar novos pedidos da
+receita que ainda não foi licenciada.
+
+## UE5.8 — materiais exportados e gramado de 29/10
+
+Tratar Material direto e MaterialInstanceConstant; seguir parents e considerar
+blend overrides. Habilitar/salvar os usos Nanite e InstancedStaticMeshes antes
+do cook, inclusive em materiais de vidro sem Nanite usados por ISMs. O editor
+pode recompilar automaticamente e parecer correto, enquanto o EXE mostra xadrez.
+Reprovar também avisos missing usage flag e Default Material will be used,
+não somente Error/Fatal. Essa auditoria encontrou problemas no hotel e no mar.
+
+Houve GPU MMU page fault na inicialização do hotel desbloqueado, sem falta de
+VRAM (2,8 GB usados). A execução diagnóstica com r.Lumen.AsyncCompute=0 passou;
+Lumen GI/reflexos e Nanite permanecem ativos. A configuração foi persistida em
+[SystemSettings]. Isso é uma mitigação verificada nessa máquina, não prova da
+causa exata no driver/engine. Não mexer em TDR, registro ou driver do usuário.
+
+Grama baixa sem colisão pode cobrir terra natural percorrida pelos NPCs; pisos
+construídos são rejeitados pelo primeiro hit do raycast. Usar a linha abstrata
+da rota com grande margem deixava faixas verdes carecas. Fazer a borda 3D
+acompanhar a transição/ruído do material, não iniciar vários metros depois dela.
+O usuário rejeitou pequenos tufos espaçados: manter base verde contínua e grade
+sobreposta de 30 cm, duas variantes HISM, geração no editor e culling 18–30 m.
+
+
+## UE5.8 — importação de modelos próprios e celular (01/11)
+
+Interchange reaproveita materiais/texturas por NOME no projeto inteiro: modelos bpy usam prefixo do modelo nos materiais e imagens e busca LOCAL (`mare_hotel_lobby._import(search=False)`); reimportar mantém materiais antigos, então importar em pasta nova (`mare_custom fresh`) e reapontar. Texturas glTF fora de potência de 2 são descartadas em silêncio (log "poder de duas dimensões"): `gen_custom_furniture._pow2` redimensiona e salva antes de empacotar. Conferir o log após cada importação. Celular: `SBox.WidthOverride` inclui o Padding; converter pixels do viewport pela geometria do widget (DPI); fonte manuscrita sem "→ ★ −". Lista completa no CLAUDE.md global.
+
+## UE5.8 — MetaHumans (02/11)
+
+PC travou por falta de memória (log do Windows: "arquivo de paginação é muito pequeno"): build em lote de MetaHumans no editor + textura 8K em numpy float32 + render Cycles ao mesmo tempo esgotaram 32 GB + paginação. Build de MetaHuman: lotes de no máximo 5, salvando cada um (`save_directory`) e reiniciando o editor entre lotes; nada pesado em paralelo. Build com roupa apaga a pele sob a roupa (corpo com buracos): banhistas usam variante `<nome>_Swim` sem Outfits e com show_top_underwear desligado via `commit_skin_settings` (skin_settings é somente leitura no Python); a calcinha cinza é assada em T_Body_BC e sai com `tools/ue58/mh_skin_underwear.py`. Rig facial e texturas exigem login Epic no navegador (o editor não guarda a credencial: pedir tudo num só login com `mh_cloudall`). O venv bpy chegou a ficar sem `numpy/__init__.py` e `_bpy_types.py`: reinstalar `numpy==1.26.4` e `bpy==5.0.1` com uv.
+
+## UE5.8 — MetaHuman deslizando (03/11)
+
+O esqueleto que anima o MetaHuman (GetMesh) fica oculto e o corpo visível o segue por leader pose. Com
+`VisibilityBasedAnimTickOption=OnlyTickPoseWhenRendered` (otimização dos pedestres da vila) o esqueleto oculto nunca
+conta como renderizado: a pose congela e o boneco desliza sem mexer pernas nem braços (11 de 14 pedestres). Rig oculto
+de MetaHuman usa sempre `AlwaysTickPoseAndRefreshBones`. Conferir com a auditoria de marcha (duas amostras: posição
+mudou e pés/mãos em relação ao corpo não mudaram = deslizando), não só pela pose escolhida.
+
+## Processo contra retrabalho (03/11)
+
+Antes de todo commit: `python tools/ue58/qa/qa_gate.py` (testes, flutuação contra a linha de base, marcha dia/noite,
+log do PIE e fotos de referência comparadas com a rodada anterior). FAIL = não comita. Todo defeito corrigido vira
+checagem permanente (teste ou item do portão). Interface: TODA tela usa `MareNotebookStyle.h` (papel pautado, margem,
+alfinete, Patrick Hand nos títulos e botões de tinta, Nunito no texto); nada de cartão creme liso nem fonte padrão.
+Fileiras de botões usam SWrapBox para não sair da folha.
+QA amplo (`-MarePreviewQA`, 104 checagens) sempre numa pasta de perfil NOVA (`-MareSaveRoot=D:/CodexTemp/claude-previewqa-<hora>`):
+ele salva o progresso (capítulos, dinheiro) e uma segunda rodada no mesmo perfil reprova checagens de capítulo.
+
+## UE5.8 — salvar assets e acabamento (03/11)
+
+`save_loaded_asset` chamado com o PIE rodando pode devolver sucesso e não gravar em disco: o material editado
+aparece certo na sessão e volta ao antigo ao reabrir o editor (aconteceu com o vermelho de teste das árvores, os
+materiais da torre do hotel, a grama e a cumeeira do bar). Editar assets com o PIE parado, ou depois chamar
+`mare_hud saveassets` com o PIE parado, e conferir com `git status` que o .uasset mudou. Antes de mudar cor de
+material importado, provar que a mudança chega ao render (tingir de vermelho e fotografar). Vidro claro na frente de
+quartos vazios parece parede: o hotel usa `M_HotelWindowGlass` (escuro e refletivo). Material importado do glTF tem
+cor numa chamada de função: encadear nós depois dela (`plaster_finish`, `grass_hue`, `grass_tone`).
+
+## UE5.8 — rostos, sexo e roupas das MetaHumans (03/11)
+
+Todo corpo MetaHuman construído usa o MESMO esqueleto, guardado em Common/Female: o caminho do esqueleto não diz o
+sexo (os homens calçavam o chinelo do pé feminino). Sexo pela lista `men` de `metahumans.json` (`AMarePerson::IsWoman`).
+Rosto com leader pose não avalia nada próprio (não pisca, não muda expressão): ele copia a pose do corpo
+(`FAnimNode_CopyPoseFromMesh` num proxy próprio) e recebe as curvas `CTRL_expressions_*`; o `ABP_Face_PostProcess`
+(RigLogic) da malha do rosto converte em ossos. O build Medium simplifica as roupas do Fab (gola das camisetas em
+zigue-zague): o Sergio quer as pessoas em Medium, então só as roupas vêm de um build High em `_HiGarments/<nome>`
+(só a pasta Clothing é mantida, ~9 MB) e são trocadas no `SetMetaHuman`. Não subir o resto para High.
+
+## UE5.8 — navegação estática e água da piscina (03/11)
+
+A navegação do Coast é ESTÁTICA (salva no nível). Nunca salvar o nível logo após `RebuildNavigation`, e não
+contar que tirar a colisão de uma malha a remove da navegação: tirei a colisão da água da piscina, o navmesh continuou
+cobrindo a água e a equipe caiu e ficou andando no fundo, por baixo do deck. Desfeito com `git checkout` do nível.
+Para desviar de obstáculos, usar pontos de passagem por fora (o corredor de 65 cm entre a borda e as espreguiçadeiras
+não tem navegação; o caminho cortava pela água). O deslize da equipe precisa enxergar pisos WorldDynamic (o deck).
+Peças da personalização são HISM: materiais importados para elas precisam do uso "instanced static meshes" (sem ele
+aparecem quadriculados no jogo; `hud_importmodel` já marca). O material de paisagens da TV antiga calcula a imagem
+pelo tamanho da tela de tubo no mundo: telas novas usam `M_HomeTV_Flat` pelas UVs.
+
+## Mixagem por números (03/11)
+
+Não dá para ouvir o jogo daqui: a mixagem é feita medindo. `python tools/ue58/measure_mix.py` soma o loudness do arquivo
+(LUFS; RMS para clipes < 0,4 s) ao ganho real (PlayCue, alvo dos loops, volume do grupo no audio.json, barramentos
+padrão). Ao mexer em ganho no código, atualizar as tabelas do script junto, senão a medição mente (passos estavam com
+.15 no script e .18 no código). Sons novos: normalizar por loudness, não por pico (pico igual deixou risadas 9 dB
+diferentes). Dois clipes sorteados no mesmo PlayCue precisam do mesmo loudness, ou ganho por clipe.
+
+## Cozimento de conteúdo carregado por caminho (04/11)
+
+O cozinheiro só leva o mapa, suas referências e `DirectoriesToAlwaysCook`. Tudo que o C++ carrega com
+LoadObject/LoadClass por texto, ou que vem de caminho em `Content/Data/*.json`, fica fora do executável sem aviso
+(o editor carrega do disco e esconde o problema). Os MetaHumans e todo `/Game/Custom` estavam assim. Ao criar pasta
+ou asset carregado por caminho, acrescente a pasta em DefaultGame.ini; `tools/ue58/qa/cook_audit.py` (no portão)
+reprova o que faltar. MetaHumans: só as pastas das pessoas das listas, nunca `/Game/People/MetaHumans` inteiro.
+
+## Desempenho medido no executável (04/11)
+
+Medir, não supor: `tools/ue58/bench_package.ps1` (modo `-MareBench`) dá jogo/render/GPU por setor e um CSV com draw
+calls por passada; `-Variants MareBenchNoPeople|MareBenchNoGroom` separa custos e `-Exec "cvar valor"` testa sem
+reempacotar. O gargalo das pessoas não era animação nem cabelo: era cada MetaHuman, mesmo longe e fora da tela, sendo
+desenhado peça por peça nas sombras do sol. Pessoas a mais de 30 m não projetam sombra; quem ninguém vê mantém a pose
+(o portão mede deslize só em quem está sendo desenhado e roda a auditoria de marcha com `mare.OffscreenPose 0`).
+Avisos que só aparecem no executável: vidro translúcido em malha Nanite (some), `Failed to find object` de
+LoadObject por tentativa (use `FPackageName::DoesPackageExist`), excesso de luzes por pixel nas sombras virtuais.
+Desligar `r.Shadow.Virtual.Enable` em tempo de execução derruba o executável empacotado.
+
+## Ligar Nanite em lote (04/11)
+
+Antes de ligar a Nanite numa malha, conferir o modo de mistura que o material REALMENTE usa: uma instância pode trocar
+o modo do pai (o vidro dos postes é um pai opaco tornado translúcido na instância) e componentes do nível podem
+aplicar outro material. `hud_naniteon` já sobe a cadeia de instâncias e tem `dry:` para simular. Malhas `/Engine/...`
+(Cube, Plane) nunca. Com o PIE aberto, `load_asset` devolve None e salvar falha: parar o PIE antes. Depois de qualquer
+edição em lote, conferir `Invalid material ... Nanite` no log e restaurar com `git checkout` o que não deu certo
+(o fechamento pelo MCP salva tudo o que estiver pendente, inclusive o mapa e materiais só recompilados).
+
+## Desempenho e DLSS no executável (04/11)
+
+Diagnóstico com dados: `bench_package.ps1` (FPS por setor), nvidia-smi (placa a 55% = gargalo na CPU) e Unreal Insights
+por thread e trecho (`ExportTimerCallees -threads="RenderThread*" -startTime -endTime`). `r.HZBOcclusion 1` fazia o render
+esperar ~10 ms por quadro (MapOcclusionResults); voltou a consulta por primitiva com 2 quadros de folga. O que pesava:
+luzes locais do mapa inteiro acesas e com sombra o dia todo, MetaHumans fora da tela, física do cabelo e malhas sem Nanite
+por causa de um slot de vidro translúcido. Plugin "Optional" no .uproject é descartado EM SILÊNCIO no jogo monolítico se
+algum módulo dele não compilou (DLSS tem Vulkan/D3D11): os plugins NVIDIA são obrigatórios e instalados por
+`tools/ue58/install_dlss.ps1`. As bibliotecas NVIDIA recusam consulta antes de PostEngineInit (e no cooker): consultar um
+tick depois. A Geração de quadros só gera quadros com a janela em foco. Variável gravada pelo jogo com ECVF_SetByCode
+ignora em silêncio comando de console posterior (o benchmark aplica os seus com SetByCode). Medições oscilam ±3 FPS:
+repetir antes de concluir. O MCP da 5.8 só sobe com `-ModelContextProtocolStartServer`; o PIE abre o menu principal
+pausado (a vila não nasce): o portão usa `mare.ShowUI play`.
+
+
+## Tradução no executável (04/11)
+
+`TMap<FString,...>`/`TSet<FString>` da UE comparam SEM diferenciar maiúsculas: o identificador "options" sobrescreveu
+"Options" e "farol" sobrescreveu "Farol" (o inglês saiu em minúsculas). Dicionários de texto usam KeyFuncs sensíveis
+(`MareLoc.cpp`). `FString::StartsWith("")` devolve false: modelo que começa com `{0}` precisa testar parte vazia.
+Registrar polyglot uma vez por idioma faz o último substituir o anterior: juntar todos os idiomas num só
+`FPolyglotTextData` por chave. Textos novos: rodar `python tools/ue58/i18n_extract.py`, traduzir o `todo_<idioma>.json`
+e conferir no executável com `-culture=en -MareLocAudit` (`MARE_LOC_MISSING` só lista o que realmente falta).
+
+## Ilha vulcânica e lições de importação (04/11)
+
+O importador glTF da UE (Interchange) descartou as cores de vértice deste GLB (has_vertex_colors False, mesmo com
+COLOR_0): máscaras vão num segundo canal de UV (TexCoord 1); o glTF grava V invertido, então na UE ler 1 - V. O eixo Y
+do bpy chega espelhado na UE (Blender -Y = UE +Y). Malha ABERTA (terreno, disco) gerada no bmesh: recalc_face_normals
+pode virar as faces para baixo e a UE descarta as faces de costas (víamos o lado de dentro da cratera e tudo escuro);
+forçar normal média para cima. A prévia Workbench do bpy desenha os dois lados e esconde isso: conferir de cima no jogo.
+MaterialExpressionObjectPositionWS é o CENTRO DOS LIMITES da malha, não o pivô: para altura use ActorPositionWS.
+Parâmetro novo de MaterialParameterCollection criado pelo Python fica com GUID zero ("invalid parameter"): reiniciar o
+editor. Emissivo forte ilumina a própria malha via Lumen: desligar affect_dynamic_indirect_lighting quando for longe.
+O parâmetro Storm do MPC também engrossa as nuvens (StormClouds): para mexer só no mar, separar os dois.
+Captura logo depois de pular o relógio do dia para a noite mostra luz velha (Lumen e exposição ainda do dia: vulcão
+branco, mar ciano) e o Sergio viu isso como defeito. Esperar ~25 s depois de `clock` antes de fotografar. Ondas grandes
+por WPO não mexem nas normais: somar a inclinação analítica das ondas ao normal, senão o relevo não pega luz. Espuma
+com produto de dois senos vira grade de ovais: distorcer as coordenadas e mascarar por manchas de baixa frequência.
+
+## UE5.8 — passeio de barco jogável (05/11)
+
+`AMarePerson::SeaHeight` replica o WPO do mar (`mare_materials.build_water`) e tinha ficado na fórmula antiga (sem o
+swell de 85 cm): mudar a fórmula do mar exige mudar as duas juntas. Barco andando no mar: amostrar SeaHeight na proa,
+popa e bordos (altura, caturro e balanço); a água aparecia dentro do casco mesmo assim, então o material do mar achata a
+superfície numa elipse sob a lancha (MPC `Boat*`, nível abaixo do ponto MAIS BAIXO do convés, que muda ao caturrar).
+Pessoas sentadas presas a algo que se move: o `SitOn` alinha a bacia uma vez contra um ponto do MUNDO; esperar o barco
+parado ~1 s, guardar a transformação relativa e reaplicar a cada quadro com `ETeleportType::TeleportPhysics` (sem isso
+o cabelo groom fica para trás, flutuando). O passeio pilotado é ignorado pelo `ToursHour` (`tours.active`). A captura
+`coast pie qa_x!` usa uma câmera própria posicionada pelo último comando: para a visão do jogador use `shot showui`.
+Origem dos modelos do bpy com frente -Y fica na popa/traseira: medir distâncias do centro do casco.
+
+## UE5.8 — snorkel e fundo do recife (05/11)
+
+O recife da UE NÃO está onde o world.json do Godot diz: corais e cardumes ficam ao largo (y ≈ −13 300, z ≈ −900), e
+só sobraram alguns peixes no raso. Medir a posição real no PIE (`mare_snorkel.layout`), nunca converter as coordenadas
+do Godot. Em mar aberto as ondas do material passam de ±2 m, mas a água do nado é plana: quem nada longe da costa fica
+com a cabeça dentro das cristas. No recife o swell cai para 8% (zona calma no WPO, no declive e em `SeaHeight`, os três
+juntos). `AMareCharacter::Tick` refaz a `Buoyancy` a cada quadro: para segurar o herói numa foto, reposicione-o a cada
+tick (`hold:`/`watch:` do `ReefQA`). O save restaura a posição do herói alguns segundos depois do PIE: um passeio
+iniciado logo em seguida perde o herói (o primeiro `start` do QA às vezes acaba sozinho). Os turistas nadam ATRÁS do
+guia: para fotografá-los, congele (`freeze:`) e vire a câmera. O cache estático de `ToursDefs`/`ReefDefs` só relê o
+JSON ao reiniciar o editor.
+
+## UE5.8 — trilha do farol (05/11)
+
+Turistas que nascem no deck do píer ou num barco ficam fora da navegação e nunca andam (WalkTo devolve false):
+projetar o ponto de nascimento na navmesh. Se o lugar atrás do herói não tiver chão navegável (água, pedra), mandar
+andar até o próprio herói. O lado "de trás" de quem segue vem do caminho percorrido, não da câmera: com a câmera,
+virar para olhar o grupo o fazia passar para a frente e encostar no rosto do jogador. O relógio corre 1 min de jogo
+por segundo e o sol se põe às 18h (medido em `mare_snorkel.sun`).
+
+## UE5.8 — resultado dos passeios (05/11)
+
+`GuideTour` só aceitava a nota na hora de saída (`IsTourBoarding`), mas a trilha chega ao farol às 17h15 ou mais, e os
+passeios jogáveis longos também passavam da hora. A nota era recusada sem que nenhum teste percebesse, porque os
+testes chamam `GuideTour` às 16h05. Passeio em andamento (`tours.active`) agora termina fora da hora. Testar o fim de
+um passeio jogável no horário em que ele termina de verdade, não no da saída. Teste com sorteio (o bartender de nível
+1 erra 15%) falha ao acaso: fixar o nível ou a semente no teste.
+
+## UE5.8 — minijogos em Slate (05/11)
+
+`FSlateRoundedBoxBrush` com raio maior que metade da caixa não desenha nada (as marcas de 12×10 px com raio 40
+sumiram) ou vira um losango. Use um pincel por tamanho, com raio até a metade da caixa. Para uma barra que enche,
+o `HAlign_Left` vai no slot do `SOverlay`, não no `SBox`: sem isso a barra tem largura zero. No PIE com o editor em
+segundo plano, o tick do Slate quase não roda: o QA dos minijogos deve forçar a fase (QAHold/QAStep) em vez de
+esperar o timer. Fila de clientes atrás do balcão precisa conferir chão e parede: atrás do cliente do food truck
+ficava a fachada de um prédio.
+
+## UE5.8 — lâmpadas, fundo do mar e git parcial (05/11)
+
+`FMath::SmoothStep(A,B,X)` exige A<B: com `SmoothStep(.55,.05,Day)` as lâmpadas acendiam de DIA e apagavam à noite
+(o teste da noite "via" as luzes desligadas e a casa clara vinha só da exposição automática compensando painéis fracos).
+Para inverter, use `1-SmoothStep(.05,.55,Day)`. Luz de cômodo vem da luminária: painéis retangulares (luz de parede) apagam à
+noite e de dia são só um preenchimento. Luminária nova vai em `Content/Data/lighting.json` (com `unlock` se for de
+expansão); a lâmpada fica dentro da cúpula, então a malha não projeta sombra (senão a própria cúpula prende a luz), e
+a luz é um foco virado para baixo com um ponto fraco para o teto. Os ícones de lâmpada no editor não aparecem no jogo.
+Fundo do mar: o perfil `reef.json` → `floor_fill.profile` é a fonte única (planos de areia de `ensure_seabed`,
+`UMareReefWorld::SeabedZ` para o gerador e o nado). Os planos não têm colisão: o herói é travado no `SeabedZ`.
+Escuridão pela profundidade = `SceneColorTint` do Eyes + exposição travada embaixo d'água (senão o olho "acende" o fundo).
+Herói com Buoyancy 1,35 embaixo d'água subia como boia (2,25 m/s): 1,03 abaixo de -110.
+Repositório recuperado como clone parcial (blob:none): `git status`/`reset` tentam baixar blobs e travam. Use
+`GIT_NO_LAZY_FETCH=1`; para refazer o índice, `git read-tree HEAD` (não `reset`).
+`git commit` falha nesse clone ("could not fetch ... from promisor remote", e o commit NÃO acontece, mesmo em segundo
+plano): grave a árvore com `git write-tree --missing-ok`, crie o commit com `git commit-tree <árvore> -p HEAD` e avance
+o branch com `git update-ref refs/heads/<branch> <commit> <HEAD antigo>`; o push funciona normalmente (06/11).
+O comando `shot showui` não gera arquivo no PIE quando a janela do editor está MINIMIZADA (06/11): a foto com UI é o
+Slate copiando o back buffer da própria janela, que não é desenhado minimizado, e o pedido some sem linha no log
+(`HighResShot` lê a cena e funciona). Use `mare.Shot [arquivo]`, que restaura a janela antes; o portão confere isso
+(`ui_shot`, com o editor minimizado).
+
+## UE5.8 — luz noturna dos imóveis (06/11)
+
+Cômodo sem volume `MareInterior` usa o olho da noite de fora (EV100 −1,9…−0,9, feito para o luar) e qualquer lâmpada
+fraca vira luz do dia: a casa ficava clara e laranja enquanto a suíte e o lobby (com volume, EV 4,4…5,2) ficavam pretos.
+Todo cômodo precisa de volume, e todos usam o mesmo olho noturno (`mare.InteriorNightEV`). Luz de imóvel só onde há
+luminária: luz solta leva a tag `MareBareLight` (preenchimento de dia, apaga à noite) e o portão reprova luz de cômodo
+sem luminária a até 160 cm (`mare_light_audit.bare_check`). O globo da luminária precisa de material emissivo ligado a
+`MPC_MareTime.Night` (`M_LampGlow_PBR`). A tela de fim do Acesso Antecipado pausa o jogo quando tudo está comprado:
+fotos de QA com tudo liberado saíam congeladas; `mare.ShowUI close` fecha. Lumen leva ~15 s para tirar a luz do dia do
+cache num cômodo visto pela primeira vez. Câmera de QA com o pawn em z 170 põe o olho a 2,44 m, dentro de placas e
+hastes penduradas: use a altura do herói (pawn z ~100). Rode o portão DEPOIS da última mudança no próprio portão: uma
+rodada PASS de antes de entrar uma checagem nova não vale.
+
+## UE5.8 — exposição embaixo d'água e Lumen (06/11)
+
+A luminância do `SceneColorTint` entra na pré-exposição (`PostProcessEyeAdaptation.cpp`): escurecer a cena com uma
+tinta de 0,013 levou a exposição para fora da faixa segura de `r.EyeAdaptation.CachedLightingPreExposure` ([-8, 12]
+com 4), e o Lumen cortava a luz em cache (aviso vermelho "Cached lighting ... clipped"). Para escurecer, use o
+`ColorGain` (LUT, depois da exposição) e deixe na tinta só a cor. Para medir a exposição de verdade, use
+`ShowFlag.VisualizeHDR 1` (EV100 da cena, mín./máx. e valor da pré-exposição), não a suposição pelos números do volume.
+Para achar o número de um aviso escondido atrás do HUD, varie o cvar e veja em que valor ele some.
+
+## UE5.8 — lojinha de souvenires (06/11)
+
+`Tag` dentro de um `SCompoundWidget` é o membro privado `SWidget::Tag`, não a cor `MareNotebook::Tag` (erro C2248):
+em widget novo escreva `MareNotebook::Tag`. Já estava anotado na memória e repeti; vale para todo arquivo Slate novo.
+Widget novo vai em arquivo próprio (`MareSouvenirGame.cpp`) com uma fábrica e um QA, para não engordar o MareGame.cpp.
+Tempos de minijogo (memória de 3 s, cronômetro) usam `FPlatformTime::Seconds()`, porque o Tick do Slate quase não roda
+com o editor em segundo plano. Miniatura de foto do álbum: `FImageUtils::ImportFileAsTexture2D` + `FSlateBrush` com o
+objeto preso em `TStrongObjectPtr`.
+
+## UE5.8 — papel de quem nasce por código (06/11)
+
+`AMarePerson` sem papel (nem `bAmbient`, nem `bEmployee`, nem tag) cai na lista `beach` do `metahumans.json` e veste
+roupa de banho: o motorista do ônibus dirigia de biquíni. Toda pessoa criada por código precisa de papel explícito.
+Para fotografar gente no PIE: mover o herói (o movimento dele fica desligado durante cenas) e `set_global_time_dilation`
+baixo para congelar a cena; `HighResShot 1` grava em `Saved/Screenshots/WindowsEditor` sem HUD.
+
+## UE5.8 — folhas do celular e teste com sorteio (06/11, 3.6)
+
+O `SMareFit` media a altura das linhas uma vez só, 3 quadros depois de abrir: texto com quebra ainda não tinha
+assentado e o card do negócio cresce no jogo (a linha do relatório se preenche). Medido 295, real 372: o card cobria o
+"folha x de y". Agora as linhas visíveis são remedidas a cada quadro (só crescem), um título nunca fica sozinho numa
+folha e só a folha que não cabe encolhe. Ao abrir uma tela paginada nova, conferir a última folha na foto.
+Teste que chama uma hora simulada herda os sorteios dela (`FRand`): o `Rental` reprovou 1 vez em 3 no portão porque a
+hora soltou um caiaque à deriva antes do `TestFalse`. Antes de afirmar um estado, zere o que o sorteio pode ter mudado.
+O portão agora imprime as 2 primeiras mensagens de cada teste reprovado.
+
+## UE5.8 — dica que nunca aparece e portão sem argumentos (06/11, 6.2)
+
+A dica do negócio vinha depois do `CanPlayBusiness`: sem ninguém na fila a função saía antes e o jogador nunca via a
+dica justamente na primeira visita. Dica de primeira vez vai ANTES de qualquer saída antecipada. Quem testa dica num
+perfil de save já usado vê a segunda dica (a primeira foi marcada como vista): use pasta de save nova.
+`tools/ue58/qa/qa_gate.py` não lê argumentos: `qa_gate.py --help` roda o portão inteiro e para o PIE. Não passe nada.
+
+## UE5.8 — quartos do Grand Hotel (06/11, 5.1)
+
+Roupa de cama feita de caixas (`cushion` com edredom de 5 cm e travesseiros de espessura cheia até a borda) parecia
+"tijolo" na foto. Agora o edredom, o lençol dobrado e a manta são pano que dobra na borda do colchão e cai pelos lados
+(`cloth_over`), e os travesseiros afinam até a costura (`pillow`), no `bed_core` compartilhado pelas 5 camas. Nos
+cantos, use a maior queda e não a soma (a soma fez uma ponta embaixo de cada canto). Prévia rápida de um GLB:
+`Saved/claude/glb_preview.py` (Eevee, 2 vistas). Reimportar um modelo da biblioteca no MESMO asset (pasta `_m4`/`_m5`
+do `custom_assets.json`) sem rodar o `fix_usage`: `mare_custom.run('inplace', 'slug,slug')`.
+A TV da suíte era uma caixa de `metal_plate` com frente de vidro e parecia um painel cinza estampado: TV de verdade da
+biblioteca (`mare_tv_oled65`) sobre o rack. Peça "eletrônica" feita de caixa no bpy é para trocar por modelo pronto.
+O venv do bpy (`D:\CodexTemp\claude\bpy-env`) perdeu os `.py` soltos de `bpy/5.0/scripts/modules` ("No module named
+_bpy_types"). Conserto: `uv pip install --python <venv>\Scripts\python.exe --reinstall --no-deps bpy==5.0.1` (o venv é
+do uv, não tem pip).
+Reclamação com prazo vencido só expirava na virada da hora e o celular mostrava "0 min" por até 1 hora: o
+`UMareStaysWorld::Tick` agora expira no prazo. Ao fotografar o QA, atrasar o relógio (`coast clock`) pula as viradas de
+hora até passar a hora antiga (guarda do `OperateHour`): não é defeito do jogo. A arrumação automática passa nos quartos
+visitáveis depois das 11h: fotos tiradas em sequência a partir das 10h saem com o quarto já limpo.
+QA: `mare.QA hotelroom <i>` (check-out agora) e `mare.QA complaint <i>:<tipo>` (este ocupa o quarto: rode depois do
+check-out e em outro quarto, senão desfaz a sujeira).
+Texto com crases dentro de here-string `@"..."@` do PowerShell perde as crases e vira caractere de controle (`` `b ``,
+`` `f ``, `` `n ``): para escrever Markdown no PC, grave um arquivo com `local_write_file` e anexe com Python.
+
+## UE5.8 — sinuca completa e placar (06/11, 5.4)
+
+`ACameraActor` nasce com `bConstrainAspectRatio` ligado (16:9): no viewport do PIE, que não é 16:9, a câmera da sinuca
+punha faixa preta embaixo e tudo que o HUD projeta (`ProjectWorldLocationToScreen`: linha de mira, anel da caçapa)
+caía 20–40 px fora das bolas, porque a projeção ignora as barras. Toda câmera de minijogo criada por código desliga
+isso (`SetConstraintAspectRatio(false)`); o portão confere (`cameras`). Quando algo do HUD fica "quase" no lugar,
+compare a posição real do ator com o desenho e procure faixa preta na foto, antes de mexer em números.
+`UTextRenderComponent` quebra linha com `<br>`, não com `\n`. Antes de escrever num modelo do Poly Haven, leia os
+vértices da seção (`ProceduralMeshLibrary.get_section_from_static_mesh`): a colisão é uma caixa e não diz onde está a
+face inclinada do cavalete. Para chegar ao salão num perfil novo: `mare.QA money`/`fame 10`, comprar as expansões na ordem e
+passar as 4 histórias da vila (pier, prainha, sabores, carnaval) com `mare.QA step` antes do Grand Hotel.
+
+## UE5.8 — decoração do salão de jogos (06/11, 5.4)
+
+Peça encostada numa parede que já tem detalhe (o trilho de madeira do saguão faz parte da malha da torre e sai 8 cm da
+parede) precisa ser mais funda que esse detalhe: a parede de destaque de 5 cm ficou com o trilho atravessando o reboco
+e o ripado. Antes de encostar algo numa parede, faça um traço de colisão em várias alturas para achar o que sai dela
+(`mare_game_room.check` faz isso com a peça em `QUERY_ONLY` temporário, porque a decoração não tem colisão).
+O vidro glTF dos quadros do Poly Haven chega quase opaco e espelhado no Lumen e esconde a pintura: use um material
+translúcido próprio de 6% de opacidade. Alguns arquivos de planta do Poly Haven (`calathea_orbifolia_01`) são uma
+fileira de variantes soltas, sem vaso, de 2,5 m: no chão parecem mato saindo do piso. Confira os bounds de uma planta
+antes de usar. O portão ganhou a checagem `decor` para os três.
+
+## UE5.8 — pebolim com barras de verdade (06/11, 5.4)
+
+Malha importada pelo `mare_custom.py` ganha sufixo do importador no nome (`mare_foosball_rod_5_mar4`): nunca escreva o
+caminho do asset à mão no C++; leia do `Content/Data/custom_assets.json` pelo slug (as barras simplesmente não
+apareciam). Quaternião acumulado quadro a quadro (giro da bola) precisa de `Normalize()` a cada quadro: em um minuto a
+bola encolheu até sumir. Ponto de espera de cliente perto de um móvel jogável: confira a distância para o móvel e para
+as outras pessoas no próprio teste (eles ficavam 15–20 cm um dentro do outro). Entrada do jogador num minijogo fica numa
+função pura (`PlayerControl(FInput)`) para o teste exercitar o mapeamento mouse/controle sem PIE: mover o mouse pelo
+Computer use não chega como delta no PIE com o cursor capturado.
+
+## UE5.8 — eventos do hotel e peças "fantasma" (06/11, 5.2)
+
+Antes de criar um arquivo novo, conferir se o nome já existe: gravei `MareEvents.cpp` por cima do arquivo dos eventos do
+dia (temporadas, tela de fim do EA) e tive de restaurá-lo do git; o novo foi para `MareHotelEvents.cpp`. Peça fantasma
+(material translúcido por cima de uma malha Nanite) não desenha: a Nanite só aceita opaco/mascarado e o log avisa
+"Invalid material ... used on Nanite". Use `SetForceDisableNanite(true)` enquanto for fantasma e também em peça montada
+cujo material próprio é vidro (a lanterna). Fantasma unlit com emissivo 0,9 saiu PRETO de dia (a exposição do sol
+engole emissivo baixo): use translúcido iluminado com cor-base clara e fresnel na opacidade. `AddFame` ignorava valor
+negativo: toda "a fama caiu" do jogo (VIP perdido, multa injusta do aluguel) não fazia nada; agora tira xp sem baixar o
+nível. `Printf(..., S->Fn(), *S->LastMessage)`: a ordem de avaliação dos argumentos não é garantida e o texto saiu
+lixo; chame a função antes. `coast clock N` recebe MINUTOS (540 = 9h), não horas.
+
+## UE5.8 — banhistas da piscina e tobogã (07/11)
+
+`ProceduralMeshLibrary.get_section_from_static_mesh` numa malha Nanite DERRUBA o editor (não há vértices na CPU): para
+saber a forma de um modelo nosso, ler o gerador (`tools/gen_*.py`) ou o GLB. Blender -> mundo da UE: x*100, -y*100, z*100
+a partir da instância. Com tudo da demo liberado aparece a tela "Obrigado por jogar a demo!", que PAUSA o jogo: todo QA
+que libera o hotel precisa de `mare.ShowUI close`, senão nenhum subsistema anda. Pessoa movida rápido por código (calha do
+tobogã) fica careca com o cabelo groom metros atrás, mesmo com `ETeleportType::TeleportPhysics` e `ResetSimulation`:
+a causa era mover a pessoa DEPOIS da pose e do cabelo daquele quadro (subsistema tickável roda depois dos atores): o cabelo ficava um quadro atrás. Quem é movido por um sistema do mundo deve ser movido no tick da própria pessoa (`AMarePerson::PreTick`); a física do cabelo fica desligada só durante a descida (`SetHairSimulation`). Pose de tobogã: deitado de costas, pés na frente, tronco erguido (`RideReclined`); a pose sentada de cadeira põe as canelas através da calha.
+O swim do UAL (`Swim_Fwd`) deixa o corpo deitado ~90 cm abaixo do ator: medir os ossos (cabeça/bacia) contra a água antes
+de calibrar alturas. Desvio entre nadadores: corpo é um segmento cabeça-pés (90 cm à frente, 85 atrás), não um ponto.
+O editor em segundo plano roda o PIE a ~3 quadros/s: QA que espera gente aparecer precisa de tempo ou do modo forçado.
+Texto interno em C++ (nomes de campo JSON, depuração) vira chave de tradução se não tiver `// i18n:skip` na linha.
+O tobogã da UE é o modelo próprio `mare_water_slide` (`tools/ue58/gen_water_slide.py`: o de `gen_hotel.py` com a reta de
+saída de 4,5 m, materiais com prefixo, textura do Poly Haven da biblioteca), girado 18,66° em volta da torre para a saída
+terminar ~2 m dentro da piscina; girar sozinho não bastava (a ponta já estava no ponto mais distante da torre e a hélice
+encosta na borda). `pool_swim.json` → `slide` (`yaw`, `run`) tem de acompanhar o nível. Conferir a saída com foto DE CIMA.
+
+## UE5.8 — noite de 07/11 (demo jogada pelo Sergio)
+
+Antes de gravar um arquivo novo, confira se o nome já existe (de novo: `mare_mountains.py` era a vegetação dos morros e
+foi sobrescrito; restaurado do git, a serra do horizonte virou `mare_serra.py`). `LiveCoding.Compile` pelo console do
+editor travou o editor e o MCP (o console do Live Coding ficou esperando): feche o editor e use `restart_editor.ps1 -Build`.
+Reimportar um modelo no MESMO asset (`mare_custom inplace`) não cria materiais para slots novos: eles caem no
+WorldGridMaterial cinza; duplique um material existente por cor e ligue os slots (`mare_slide_colors.py`). Calha ou
+qualquer superfície aberta de face única some vista por trás e vira "caixa fechada": dê espessura (Solidify) no bpy.
+Plantas de jardim (pervinca) não vão na areia da praia; capim marinho em água rasa (< 2,5 m) faz o mar parecer gramado
+com o sol baixo. Sem `r.Streaming.PoolSize` por nível de textura o executável avisava "Video memory has been exhausted"
+numa placa de 8 GB (`Config/DefaultScalability.ini`). Cliente saindo do quiosque: o ponto de saída único caía fora da
+navegação e ele ficava parado na pose de andar até sumir na frente do jogador (`UMareKioskWorld::WalkAway`).
+
+## UE5.8 — ilha completa e chegada de barco (08/11)
+
+Pedestres longe do herói ficam escondidos e PAUSADOS (`bHiddenByDistance`): quando a chegada passou a terminar no píer
+(85 m da vila), o portão viu "0 andando" de dia e parecia defeito dos pedestres. Antes de culpar o sistema, ver onde o
+herói está; o portão encerra a chegada (`mare.ShowUI close`) e põe o herói na vila antes de medir a marcha. Perfil de
+save usado pela minha própria QA (chegada já vista) faz a checagem do barqueiro falhar: reiniciar o editor (perfil novo).
+`i18n_extract.py` grava chaves VAZIAS em todos os `<idioma>.json` e o portão reprova ("tradução ausente"): desfazer os
+arquivos de idioma (`git checkout`) e mandar os textos novos ao GPT pelo `I18N_TODO_<data>.json`. Frases de teste em
+C++ precisam de `// i18n:skip` (viraram chave de tradução). Barco que passa pela costa em y −52 m atravessava o píer:
+rota de barco/ator móvel conferida contra o píer e o campo da costa (`island_sdf.bin`), não só contra a praia.
+Lancha: costado que termina a 1,5 cm do eixo deixa a proa aberta; a última seção do casco fecha no eixo e as tábuas do
+convés são cortadas pela largura do casco na altura do convés (passavam pelo costado e apareciam pela água).
+Câmera a bordo atrás da capota só vê a capota: câmera e desembarque começam na proa. Corpo do herói fica visível no
+mundo durante a cena (estava em pé no píer nas fotos): esconder até o desembarque.
+Vegetação rasteira de ~440 mil touceiras (HISM, sem sombra, culling 25–40 m) gerada por traços com o PIE parado leva
+~30 s; o editor não ficou mais lento a ponto de travar o tempo de jogo (`mare_title_probe.state` compara segundos de jogo
+e reais).
+
+## UE5.8 — tsunami de dia (08/11)
+
+Comando de QA que o código zera com `Set(0,ECVF_SetByCode)` depois de o console ter gravado um valor NÃO zera: a
+prioridade de código é menor que a do console e a escrita é ignorada em silêncio. O `mare.TsunamiNow 2` ficou preso e
+cada PIE novo disparava a onda sozinho ~50 s depois de abrir; as "fotos estranhas" eram o pós-game-over. Zere com
+`ECVF_SetByConsole`. Antes de concluir que um visual está errado, confira no log (`MARE_TSUNAMI`, `GAME_OVER`) em que
+estado o jogo estava na hora da foto. Teste com relógio acelerado passa das 16h e dispara a onda de verdade (perfil que
+já conheceu o Seu Tibúrcio): use `mare.Tsunami 0`. Céu azul-marinho "de noite" no temporal não se resolve com nuvens:
+era o sol quase apagado (`.998*Rain`) escurecendo a atmosfera; o céu cinza de tempestade vem de pouco Rayleigh (.006) e
+muita Mie (.12) com o sol a ~45% (`mare.Gloom*`). As nuvens volumetricas com cobertura alta SOMEM em vez de cobrir.
+Mar inteiro subindo (drawback negativo) mostra as bordas retas da malha da água sobre a praia: só abaixar o mar.
+Ondulações de normal muito esticadas numa face de onda viram "riscas"; manter proporção ~1:2. Para julgar uma quebra,
+congele a onda (`mare.TsunamiFreeze 1`) e force `mare.TsunamiBreakQA` de 0 a 1, fotografando de praia, lado e perfil
+(`tsu_break.py`).
+
+## UE5.8 — mar no horizonte, folhas de longe, palha e tradução (09/11)
+
+Árvore Nanite com folha de máscara precisa de `shape_preservation = PRESERVE_AREA`: com "nenhuma", a 1 km a Nanite
+simplifica os cartões de folha até sumirem e a mata vira galho seco. Malha do mar tem de chegar ao horizonte: depois da
+borda aparece o chão azul-marinho da atmosfera (a "borda reta" vista do alto); o anel distante (`gen_ocean.py`) é plano e
+as ondas zeram nos últimos 150 m do mar detalhado (material e `AMarePerson::SeaHeight` juntos). Água com espalhamento
+verde ≥ azul fica esmeralda com o sol amarelo da tarde; em ângulo rasante o espalhamento some (só o reflexo). Para julgar
+cor ao fim da tarde, fixe o relógio antes de CADA foto (1 min de jogo por segundo: em 30 s o sol já se pôs).
+`HighResShot` deixa faixas verticais nas bordas (~6% da largura) ao entardecer: é da captura, compare com `mare.Shot`.
+A simulação (`simulate_game.py`) media marcha com a pose de quem está fora da tela parada (`mare.OffscreenPose`) e acusava
+moradores "deslizando": meça como o portão, com todos animados. Textura exportada do Godot esticada (uma foto por água do
+telhado): material próprio com projeção por face (`mare_thatch.py`) e tinta por multiplicação, não por mistura (a mistura
+com cor fixa apagou os fios). Tradução: pedaços que o código cola em tempo de execução vão em `Data/i18n_pieces.json`
+(o extrator apaga chave que não está no código nem nos dados); `tools/ue58/loc_emulate.py` repete o `MareLoc` em Python e
+diz qual pedaço falta. Valor de modelo nunca contém outra frase (o resumo do dia engolia "Jogo salvo..." no `{3}`).
+Patch de C++/Python com `\n`, `\r\n` ou `\d` dentro de heredoc + `python -c` corrompe a string: grave o script com Write.
+Lote 2 (09/11): planta "em cima do caminho" pode estar plantada na BEIRA, com a copa (escala 1,5) por cima do cimento;
+teste a borda da copa, não só o pivô (`mare_lawn.fix_0911`). Os caminhos de cimento são instâncias nos mesmos atores ISM
+do Godot que os blocos dos morros (caixa alta = "terreno" para o gerador): reconheça pelo material de cimento. Para
+achar o que está num pixel da foto, `mare_probe_near.pie_pick` projeta o ponto da tela no mundo do PIE; para isolar um
+defeito, esconda um grupo por vez (`pie_hide`). "Laje lisa" pode ser um modelo real do Poly Haven ampliado
+(`coast_rocks_02` é uma plataforma de 30 x 21 m e 1,6 m): material novo não muda a forma; rochas por cima, sim. Voo de
+câmera (tela inicial): fotografe 16 pontos do percurso com a mesma interpolação do jogo (`title_path.py`); copas de
+coqueiro e mastros não têm colisão, então traços não acham o raspão. `coast pie` posiciona o PAWN (olho ~70 cm acima).
+Lote 3 (09/11): virar uma pose deitada de costas para de bruços não é só girar o ator: a postura em pé com um pé à
+frente enterrou uma perna na areia, e os ajustes feitos para quem está de costas (mãos na barriga, joelho "para o céu")
+apontam para dentro do chão. Desligue-os para quem está de bruços e confira de perto, de lado. Texturas de 8K/4K das
+MetaHumans (~4 GB do pacote): `MaxTextureSize` 2048 por textura (`mare_probe_near.cap_textures`) reduz o cozido sem
+mexer no grupo de LOD do resto do jogo. A tela de troco (`OpenPayment`) só lança gorjeta/diferença: a venda já foi
+lançada, então ela pode ser reaproveitada em outros balcões sem contar dinheiro em dobro.
+Pente fino (09/11): material de terreno com muitas texturas pode passar do limite de 16 amostradores do SM5 sem erro
+no editor (SM6) e o jogo cozido acusa "material resource None with an invalid ShaderMap"; o log de cozimento diz qual
+("Cooking a material resource (in X hierarchy) that doesn't have a valid ShaderMap"). Variação extra: procedural, sem
+textura nova. Volta de fotos de todo o mapa: `D:/CodexTemp/claude/ue/tour.py` (46 poses); câmera dentro de parede ou
+terreno é pose ruim, não defeito; confirme com `pie_pick`.
+
+## UE5.8 — lote visual de 09–10/11 (água rasa, quiosque, idioma, dicas)
+
+"Retângulos em degrau" na água rasa tinham TRÊS causas e só o teste de esconder um ator por vez (`pie_hide` + foto) separou:
+o fundo de areia (`M_IslandSeabed_PBR`) ainda usava a máscara `sea` da praia reta antiga (fora da baía era areia molhada
+escura, sem cáusticas), o terreno novo fazia prateleiras sobre os blocos de morro submersos e a saia desses blocos descia a
+-2,2 m. Recortar a saia (máscara) e costurar o terreno no morro pioraram; medir camadas com `mare_probe_near.cam_pick`
+(raios da própria câmera da foto, descascando ator por ator) antes de mexer. `pie_pick` só vale com o pawn na pose
+(`coast pie nome,x,y,z,pitch,yaw` exige o nome). Nó Custom de material: nome de variável repetido ("cw" float2 e float)
+só aparece no erro do shader; `recompile_material` devolve a lista de erros, ler. Material novo em tudo muda a ilha vista de
+longe (folhas secas deixaram os morros marrons do alto): restringir por distância da costa (T_IslandSDF) e da câmera.
+`HighResShot` também faz faixas verticais a ~17% e ~83% da largura (de dia e de noite): conferir com `mare.Shot` antes de
+tratar como sombra. Trocar material de ~35 malhas em sequência travou o editor uma vez em "InternalPromptForCheckoutAndSave"
+(processo vivo, sem resposta): reiniciar e repetir; a função deve ser reexecutável e ter um `revert`.
+Poly Haven recusa o `urllib` do Python (403): baixar com `curl -A`. Texto C++ com `
+` gravado por heredoc vira quebra de
+linha real no fonte: gravar o script de patch com Write. Tela nova de Slate que mostra o nome de cada idioma: os kanji fora
+da cultura `ja` vêm da fonte chinesa recortada, então `i18n_fonts.py` precisa incluir os textos japoneses dessa tela.
+`ApplyCulture` não roda no editor: testar no exe com `-MareLangQA=<cultura>` (escolhe e confirma sozinho; log
+`MARE_LANGUAGE chosen=... now=... loading_text=...`). Páginas de espera: `mare.ShowUI loading|warmup|language[:cultura]`.
+
+## UE5.8 — rochas do farol e bordas do terreno (10/11)
+
+Laje "flutuando" pode ser uma laje fina com beiral oco: o traço de cima para baixo só acha o topo, e o traço de baixo
+para cima não acerta a face de baixo. Meça com traços horizontais em várias alturas (`mare_probe_near.side_hits`): se a
+uma altura abaixo do topo o traço atravessa metros sem bater, há vão. Grade de 5 m não segue laje: o gerador troca as
+células em volta por uma malha de 50 cm com a borda casando com as vizinhas (`shelf_dune`); sobrepor uma malha fina ao
+terreno grosso na mesma malha deu triângulos pretos. No mínimo por vizinhança, conte só a MESMA laje (alturas
+próximas): uma laje baixa ao lado puxava a areia para baixo da beirada da alta. Linha fina e reta na água vista do
+alto = borda de malha cortada numa linha da grade acima do fundo; fazer a borda mergulhar sob o fundo. Antes de mexer
+num material para corrigir uma linha, descasque as camadas no pixel (`cam_pick`): mudei o WPO do morro à toa.
+`mare_island.terrain` recusa importar com o PIE aberto ("Stop PIE first") e o `shots.py` deixa o PIE ligado.
+Fogo de fluido 2D da Niagara (`Grid2D_Gas_SmokeFire`): a grade fica no plano XY local, deitada no chão, e lia como um
+tapete de brasas. Em pé com pitch 90, e duas folhas cruzadas (uma some de perfil). `HighResShot` pode não mostrar efeito
+de fluido: confira com `mare.Shot`. Pessoa que nasce ao lado de outra (grupo) herda o ponto bloqueado do líder parado:
+toda criação que pode falhar precisa mudar de ponto na tentativa seguinte, senão o aviso de spawn enche o log a cada tique.
+Faixa de areia reta com água dos dois lados na beira da praia (foto do Sergio, 10/11) não era o chão: o "swell de costa"
+do material do mar (faixas paralelas à praia a cada ~7 m, 15–20 cm, mais 7–12 cm de subida) numa praia de 1:30 expunha
+uma faixa na cava e inundava a areia atrás na crista. Descasque a geometria primeiro (`cam_pick`): era um declive liso.
+Subir o terreno por cima do chão antigo criou uma barra igual; afundar o chão pelo material criou um contorno novo. A
+mudança certa foi no mar (6 cm, 2–4 cm de subida), com `AMarePerson::SeaHeight` junto. O `shots.py` força tempo bom
+(`mare.Weather 1`), que zera as ondas: para ver maré alta ou tempestade use `PRECMD="mare.Weather 0|mare.Event mare"`.
+
+## UE5.8 — mata clara e quem senta sem ninguém ver (10/11)
+
+Mata "muito clara, sem sombras": tirar a floresta do Lumen (`forest_lumen 0`) tirou junto o campo de distância e a luz do
+céu passou a atravessar as copas; as árvores que projetam sombra ficam no campo de distância mesmo fora dos cartões
+(`mare_forest_light.canopy_df`). E o olho abria igual à praia: sob copa densa fecha 0,7 stop de dia (`mare.ForestEV`,
+árvores contadas em volta da câmera). Testar exposição com `r.ExposureOffset` antes de escrever código.
+Alinhamento por pose (sentar, deitar) feito com a pessoa fora da tela lê a pose EM PÉ: o esqueleto de quem ninguém vê
+fica pausado (`mare.OffscreenPose`, `SetDistanceHidden`) e `TickAnimation(0)`/`RefreshBoneTransforms` forçados não
+mudam nada (medido: bacia antes = depois). Acordar o esqueleto de verdade enquanto o alinhamento está pendente
+(`PoseAwake`) e esperar quadros avaliados. Assinatura do defeito: várias pessoas com o MESMO erro (28 cm abaixo, 35 cm
+atrás): quando o número se repete igual em gente diferente, a causa é o código comum, não cada cadeira.
+A auditoria `seataudit` só enxerga móveis do tamanho de cadeira (banco = "sentado no ar") e lê vértices (perigo em
+malha Nanite): a medida que vale é `mare.QA seats wake` + `seats all` (bacia contra o ponto do assento).
+`mare.QA buy` compra também o que é do jogo completo: na demo não use para testar bloqueio. Foto noturna: esperar 30 s
+com a câmera JÁ no lugar (a luz indireta só se atualiza perto da câmera). `restart_editor.ps1` pelo Bash é recusado
+(política de execução): `powershell -ExecutionPolicy Bypass -File ...` pela ferramenta PowerShell. O portão reprova
+`driver` em perfil de save já usado nas minhas fotos: reiniciar o editor antes do portão.
+Material em malha instanciada: `TransformPosition` para LOCAL é o espaço do ATOR, não da instância (a chama da tocha
+virou uma velinha: o recorte por altura comeu o resto); use INSTANCE. Emissivo à noite (EV100 -1 a -2): 26 sai branco
+chapado, 1 sai marrom; meça os pixels da foto antes de ajustar outra vez. Banhistas nascem só com o herói a mais de 25 m:
+tudo que depende da pose deles acontece fora da tela (medida `MARE_RESTS`).
+Posição fixa de gente no código (`UpdateHotelGuests`) não acompanha o cenário: um par de conversa ficou com a fachada de
+vidro entre os dois ("homem falando com parede"). Antes de pôr alguém num ponto, traço entre ele e o interlocutor e
+`mare_rest_audit.near` (móveis sem colisão a menos de 1 m). Medida permanente: `MARE_TALKERS`. Dinheiro e fama de QA
+aparecem nas telas que o Sergio vê (fim da demo com R$ 189.630): avisar quando a foto usa números de teste.
+Mãos "do avesso": o retarget UAL -> MetaHuman gira os ossos da palma (64-179 graus) em todo clipe importado por
+`import_ual`; a mão relaxada passa despercebida e a fechada vira garra. Medir com `mare_metahuman.finger_report` (0 = mão
+relaxada) depois de importar qualquer clipe; `relax_fingers` corrige. Clipe novo se confere num corpo PARADO no editor
+(`clip_sheet.py`: prévia da MetaHuman no céu + CaptureViewport, corpo e mãos), não em pedestre andando; e o nome do clipe
+não diz o gesto ("Yes" é braço erguido): olhar antes de ligar ao jogo. Baixar do itch.io: o POST do arquivo vai sem
+`key` (com `key` dá "invalid key").
+Foto noturna depois de pular o relógio do dia para a noite: o brilho médio da mesma vista caiu de 168 para 117 e 80 em
+45, 90 e 135 s parado no lugar; antes de 2 minutos a foto sai "de dia" e NÃO é defeito do jogo. Trocar um negócio de
+forma (caminhão -> barraca): manter o id interno (saves, conquistas, missões), a tag `Region_Biz_<id>` nas peças novas e
+os pontos de atendimento do `business_games.json`; texto de letreiro é TextRender traduzido, nunca gravado na malha.
+Filmar uma ação do jogo: câmera FIXA de dentro do quiosque (`coast pie k,3990,-1290,70,-6,212` de lado; `3800,-1150,100,-10,-90`
+por trás), `slomo 0.4` e uma foto a cada 2,6 s; câmera "de lado" chutada caiu em cima do balcão, colada num abacaxi. Gesto de
+funcionário tem de durar menos que o intervalo entre dois passos dele (1,5 s no atendente), senão a caminhada seguinte
+começa na pose do gesto.
+
+## UE5.8 — teste por roteiro no executável e vitrais da igreja (11/11)
+
+O que só foi visto no editor se confere no pacote com `tools/ue58/script_package.ps1 -Script D:/CodexTemp/<roteiro>.txt`
+(`AMareScriptQA`: `pose`, `clock`, `wait`, `shot`, `people`, `hire`, `pastel ...` e comandos de console; fotos e
+`script-qa.json` numa pasta nova). No roteiro a `pose` VOA na altura dada: as poses do editor (`coast pie`) deixam o
+herói cair no piso, então z 60 do editor vira câmera na altura do tampo; use z ~100 dentro do quiosque. Dinheiro ANTES
+de `mare.Restock` (com R$ 150 a reposição é recusada e o estoque acaba no meio da filmagem). Foto noturna: começar às 20h
+(1 min de jogo por segundo: esperas de 2 min por pose passam da meia-noite e o dia fecha).
+Preset Baixo no executável: `bench_package.ps1 -Exec "sg.ViewDistanceQuality 0;...;r.SkeletalMeshLODBias 2"`.
+Face nova do bmesh (`bm.faces.new`) não tem normal até `normal_update()`: o teste `face.normal.y > 0` não virou o vidro
+do vitral, a UE descartou a face de costas e a prévia do Blender (dois lados) escondeu. Peças repetidas em passo fixo ao
+longo de uma parede (pilastras a cada 2,8 m, janelas a cada 3,6 m) coincidem em algum ponto: conferir os dois passos
+juntos, e o que mais ocupa a parede (a torre do sino cobre o trecho da 1ª janela leste). `mare_church.fix` é
+reexecutável (`dry`/`apply`).
+
+## UE5.8 — interior da igreja (11/11, referências da Sé)
+
+A igreja era um bloco maciço do Godot (`World_1176`, 10 x 12 x 7 m). Para entrar andando: o bloco e o barrado viram
+placas de 30 cm feitas da MESMA malha esticada (`mare_church.interior`, guarda material e tags), com o vão da porta; o
+miolo é um modelo só (`mare_church_nave`, `tools/ue58/gen_church_nave.py`) com colisão complexa. As chapas da cornija
+do bloco antigo ficam a 6,7 m e cobrem tudo: o interior inteiro cabe abaixo de 6,62 m (o telhado de quatro águas
+desce nas pontas, então abóbada alta só caberia no meio). Arco ogival só existe com flecha maior que meio vão
+(`arch_pts`: c = (h² − a²) / 2a): vãos largos e pouca altura dão arco quase redondo.
+Bancos compridos + pilares fecham as passagens sem ninguém notar na foto: `mare_church.walk` varre uma cápsula do
+tamanho do herói (raio 34, 176 de altura, 25 cm acima do piso) pelos caminhos; achou também a maçaneta da porta antiga
+pendurada no vão e vitrais com colisão (`set_collision_enabled` sozinho não bastou no editor: usar também o perfil
+`NoCollision`). Passagem mínima: 68 cm de cápsula; deixei 90.
+Vidro visto por dentro acende de DIA (material próprio, `M_ChurchStainedGlassDay`), o de fora acende de noite.
+Captura do viewport do editor mostra textura borrada (mip baixo) e sem as luzes do jogo: julgar vidro e luz no PIE.
+Gente por horário (`church.json`, campo `masses`: o portão exige que todo `hours` seja um par só; missa 7–8h e 17h30–19h): a 1 min de jogo por segundo a sessão de fotos passa da hora
+e as pessoas somem no meio da medição; medir primeiro, fotografar depois. A pose sentada padrão inclina o tronco 20–28 cm
+para a frente (parece "fora do assento" na foto): conferir pela bacia (`mare_church.faithful`), não pelo olho.
+JSON lido com `static` no C++ só é relido ao reiniciar o editor (de novo): não testar mudando o arquivo com o editor aberto.
+Vendedor de negócio (`vendor` em `business_games.json`): `Ground()` traça de 3 m para baixo e pousa no telhado da cabana
+ou no guarda-sol; para quem fica dentro de algo, traçar da altura do peito. Clipe novo de pose sentada: NÃO trocar o
+nome da pose ("Sitting_Idle" comanda alinhamento no assento, sentar e levantar); trocar só o clipe dentro do `PlayPose`.
+Gesto de despedida antes de andar: `Leave(P, atraso)` (tocar gesto e andar ao mesmo tempo faz a pessoa deslizar).
+Script de fotos que usa o `u.py`: `c` é o cliente MCP; não reusar o nome (`c, v = ...` derrubou o roteiro).
+Tarefa em segundo plano morre aos 10 min: cinco rodadas de benchmark (3 min cada) só couberam porque cada uma grava o
+seu arquivo ao terminar.
+
+## UE5.8 — pesca com isca, briga e livro (11/11)
+
+Painel novo = arquivo próprio (`MareFishing.cpp`) com fábrica, modelo puro testável (`FMareFishFight::Step`) e comando de
+QA (`mare.Fish start|bait:1|bite|strike|auto:1|book|state`). Antes de ligar no jogo, rodar o MESMO modelo em Python por
+30 s de conta: a primeira versão não deixava pegar a garoupa nem jogando certo (perdia mais linha nas arrancadas do que
+ganhava entre elas). Teste de minijogo pelo MCP reage com ~1 s de atraso: um "jogador" remoto perde brigas que um humano
+ganha; o modo `auto` joga dentro do próprio jogo. Comando de QA tem de valer em qualquer estado do painel (o `bite` era
+ignorado com o livro aberto ou a linha sendo relançada) e a foto de UI leva 4 s: não fotografar dentro de uma janela de
+1 s. Linha de texto montada de pedaços (iscas, livro): traduzir cada pedaço e mostrar com `FText::FromString`; a linha
+inteira não casa com nenhum modelo de tradução. Nome de campo JSON e literal de teste em C++ viram chave de tradução:
+`// i18n:skip` na linha. Não editar código-fonte nem dados enquanto um pacote está sendo gerado (o de 11/11d saiu com os
+dados novos da pesca e o código antigo; descartado).
+Chamada com efeito dentro de `UE_LOG(...)` some no Shipping (o log e a avaliação dos argumentos são removidos): no pacote
+de 11/11e o `mare.Fish` só obedecia ao `start`. Guardar o resultado numa variável e só então registrar. Vale para
+qualquer comando de QA que precise funcionar no executável. `python tools/ue58/qa/data_lint.py --json` roda sozinho
+(glossário e espaços das traduções) e deve dar 0 erros antes de gastar 5 minutos de portão.
+Final da dívida: quem quitava com UM pagamento que também cruzava um marco (25/50/75 %) via a dica do marco e nunca a
+tela final, porque o `AckDebt` da dica marcava o final como visto. O final tem precedência
+(`DebtMilestoneTipDue`, teste `DebtOnePayment`). Só apareceu ao testar o caminho "tudo de uma vez" (`mare.QA paydebt
+all`); o caminho em parcelas passava. Testar os dois extremos de todo fluxo com marcos. A tela final só abre com o
+celular fechado. Lista única de pendências: seção "Pendências reais" do plano de 08/11; os outros checklists são histórico.
+

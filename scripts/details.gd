@@ -164,21 +164,22 @@ static func towel(parent: Node, p: Vector3, rot: float, a: Color, b: Color) -> v
 		B.box(parent, Vector3(0.9, 0.012, 1.9), p + Vector3(0, 0.01, 0), m(a), false, rot)
 
 static func coconut_pile(parent: Node, p: Vector3, n: = 9) -> void :
-	# cocos reais (Kenney CC0) empilhados em pirâmide
+	# Camadas compactas: cada coco superior fica entre quatro cocos de apoio.
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = int(p.x * 31.0 + p.z)
+	var side: = maxi(2, int(ceil(pow(float(maxi(n, 1)), 1.0 / 3.0))))
 	var layer: = 0
 	var placed: = 0
 	while placed < n:
-		var cnt: = maxi(1, 5 - layer * 2)
-		for k in cnt:
-			if placed >= n:
-				break
-			var a: = TAU * k / cnt + layer
-			var r: = 0.0 if cnt == 1 else 0.3 - layer * 0.1
-			var tint: = Color(1.0, 1.0, 1.0) if rng.randf() < 0.75 else Color(0.85, 0.7, 0.55)
-			Real.place(parent, "k:coconut", p + Vector3(cos(a) * r, layer * 0.2, sin(a) * r), 0.24, rng.randf() * TAU, tint)
-			placed += 1
+		var width: = maxi(1, side - layer)
+		for row in width:
+			for col in width:
+				if placed >= n:
+					break
+				var offset: = Vector3((col - (width - 1) * 0.5) * 0.16, layer * 0.17, (row - (width - 1) * 0.5) * 0.16)
+				var tint: = Color.WHITE if rng.randf() < 0.75 else Color(0.85, 0.7, 0.55)
+				Real.place(parent, "k:coconut", p + offset, 0.24, rng.randf() * TAU, tint)
+				placed += 1
 		layer += 1
 
 static func bananas(parent: Node, p: Vector3) -> void :
@@ -366,25 +367,20 @@ static func mailbox(parent: Node, p: Vector3, rot: float) -> void :
 		B.cyl(parent, 0.04, 0.04, 1.0, p + Vector3(0, 0.5, 0), m(Color(0.4, 0.3, 0.2)), 6)
 		B.box(parent, Vector3(0.3, 0.25, 0.42), p + Vector3(0, 1.1, 0), m(Color(1.0, 0.85, 0.2)), false, rot)
 
-static func cat(parent: Node, p: Vector3, rot: float, col: Color) -> void :
-	# gato real (Quaternius Animal Pack Vol.2, CC0, suavizado no Blender)
-	var piv: = Node3D.new()
-	piv.position = p
-	piv.rotation.y = rot
-	parent.add_child(piv)
-	var h: = Real.place(piv, "g:cat", Vector3.ZERO, 0.42, ANIMAL_YAW, Color.WHITE.lerp(col, 0.35))
-	if h == null:
-		B.sphere(piv, 0.13, Vector3(0, 0.13, 0), m(col), Vector3(1.0, 0.85, 1.4))
+static func cat(parent: Node, p: Vector3, rot: float, col: Color) -> void:
+	_animal(parent,p,rot,col,"cat")
 
-static func dog(parent: Node, p: Vector3, rot: float, col: Color) -> void :
-	# cachorro real (Quaternius Animal Pack Vol.2, CC0, suavizado no Blender)
-	var piv: = Node3D.new()
-	piv.position = p
-	piv.rotation.y = rot
-	parent.add_child(piv)
-	var h: = Real.place(piv, "g:dog", Vector3.ZERO, 0.62, ANIMAL_YAW, Color.WHITE.lerp(col, 0.5))
-	if h == null:
-		B.sphere(piv, 0.18, Vector3(0, 0.32, 0), m(col), Vector3(1.0, 0.9, 1.6))
+static func dog(parent: Node, p: Vector3, rot: float, col: Color) -> void:
+	_animal(parent,p,rot,col,"dog")
+
+static func _animal(parent: Node, p: Vector3, rot: float, col: Color, kind: String) -> void:
+	var animal := Node3D.new()
+	animal.set_script(load("res://scripts/village_animal.gd"))
+	animal.kind=kind
+	animal.tint=col
+	animal.position=p
+	animal.rotation.y=rot
+	parent.add_child(animal)
 
 # ------------------------------------------------------------------ marcos
 ## Píer de madeira mar adentro (from = ponta na areia, para -Z).
@@ -400,15 +396,19 @@ static func pier(parent: Node, from: Vector3, length: float, width: = 2.4) -> vo
 		var sg: = Real.place(parent, "g:pier_segment", from + Vector3(0, -2.8, - i * 3.0), -1.0, 0.0, Color.WHITE, 0.0, false)
 		if sg == null:
 			break
-		sg.rotation.y = PI    # +Y do Blender (mar) vira -Z no glTF; o módulo já aponta para o mar
 		sg.rotation.y = 0.0
 		sg.scale.x = width / 2.4
+		# O modelo visual não inclui colisão; o piso contínuo cobre as emendas.
+		var floor_body := B.wall(parent, Vector3(width, 0.18, 3.02), from + Vector3(0, 0.53, -i * 3.0 - 1.5))
+		floor_body.name = "PierFloor%d" % i
 		ok = true
 	if ok:
 		end = from + Vector3(0, 0.62, - float(segs) * 3.0 - 1.5)
 		var ep: = Real.place(parent, "g:pier_end", end + Vector3(0, -3.42, 0), -1.0, 0.0, Color.WHITE, 0.0, false)
 		if ep:
 			ep.scale.x = (width + 2.0) / 4.4
+			var floor_body := B.wall(parent, Vector3(width + 2.0, 0.18, 3.02), end + Vector3(0, -0.09, 0))
+			floor_body.name = "PierEndFloor"
 	else:
 		B.box(parent, Vector3(width, 0.14, length), c + Vector3(0, 0.55, 0), wood, true)
 		var k: = 0.0

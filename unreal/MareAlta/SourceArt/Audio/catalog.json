@@ -1,0 +1,330 @@
+[
+  {
+    "id": "reggae_praia",
+    "seconds": 48.0,
+    "channels": 2,
+    "peak": 0.3094985783100128,
+    "rms": 0.07154267281293869,
+    "source": "assets/audio/reggae_praia.wav"
+  },
+  {
+    "id": "ocean_loop",
+    "seconds": 24.0,
+    "channels": 1,
+    "peak": 0.4433237314224243,
+    "rms": 0.03865233063697815,
+    "source": "assets/audio/ocean_loop.ogg"
+  },
+  {
+    "id": "wind_loop",
+    "seconds": 10.5,
+    "channels": 1,
+    "peak": 0.870963454246521,
+    "rms": 0.1415691077709198,
+    "source": "assets/audio/wind_loop.ogg"
+  },
+  {
+    "id": "rain_loop",
+    "seconds": 8.5,
+    "channels": 1,
+    "peak": 0.908067524433136,
+    "rms": 0.16406063735485077,
+    "source": "assets/audio/rain_loop.ogg"
+  },
+  {
+    "id": "crickets_loop",
+    "seconds": 22.935510204081634,
+    "channels": 1,
+    "peak": 0.13244755566120148,
+    "rms": 0.02034730836749077,
+    "source": "assets/audio/crickets_loop.ogg"
+  },
+  {
+    "id": "leaves_soft",
+    "seconds": 4.0,
+    "channels": 1,
+    "peak": 0.18535073101520538,
+    "rms": 0.02637847699224949,
+    "source": "assets/audio/leaves_soft.wav"
+  },
+  {
+    "id": "bird1",
+    "seconds": 0.6791836734693878,
+    "channels": 1,
+    "peak": 1.022287130355835,
+    "rms": 0.20985420048236847,
+    "source": "assets/audio/bird1.ogg"
+  },
+  {
+    "id": "bird2",
+    "seconds": 1.1319727891156464,
+    "channels": 1,
+    "peak": 0.9702432155609131,
+    "rms": 0.2368931919336319,
+    "source": "assets/audio/bird2.ogg"
+  },
+  {
+    "id": "seagull1",
+    "seconds": 3.8922448979591837,
+    "channels": 1,
+    "peak": 0.8017444014549255,
+    "rms": 0.13350506126880646,
+    "source": "assets/audio/seagull1.ogg"
+  },
+  {
+    "id": "seagull2",
+    "seconds": 1.555736961451247,
+    "channels": 1,
+    "peak": 0.17841140925884247,
+    "rms": 0.040213536471128464,
+    "source": "assets/audio/seagull2.ogg"
+  },
+  {
+    "id": "dog",
+    "seconds": 2.03859410430839,
+    "channels": 1,
+    "peak": 0.45731762051582336,
+    "rms": 0.051360178738832474,
+    "source": "assets/audio/dog.ogg"
+  },
+  {
+    "id": "bell",
+    "seconds": 0.5419375,
+    "channels": 1,
+    "peak": 0.9463915228843689,
+    "rms": 0.09047188609838486,
+    "source": "assets/audio/bell.ogg"
+  },
+  {
+    "id": "door",
+    "seconds": 0.41491666666666666,
+    "channels": 1,
+    "peak": 0.9099578261375427,
+    "rms": 0.05814734473824501,
+    "source": "assets/audio/door.ogg"
+  },
+  {
+    "id": "glass",
+    "seconds": 0.2355,
+    "channels": 1,
+    "peak": 0.9699479937553406,
+    "rms": 0.10209106653928757,
+    "source": "assets/audio/glass.ogg"
+  },
+  {
+    "id": "clean",
+    "seconds": 0.5703125,
+    "channels": 1,
+    "peak": 0.7068273425102234,
+    "rms": 0.06350092589855194,
+    "source": "assets/audio/clean.ogg"
+  },
+  {
+    "id": "click",
+    "seconds": 0.22725,
+    "channels": 1,
+    "peak": 0.9246265888214111,
+    "rms": 0.027453245595097542,
+    "source": "assets/audio/click.ogg"
+  },
+  {
+    "id": "coin",
+    "seconds": 0.6651458333333333,
+    "channels": 1,
+    "peak": 0.9392505288124084,
+    "rms": 0.09693598002195358,
+    "source": "assets/audio/coin.ogg"
+  },
+  {
+    "id": "swoosh",
+    "seconds": 2.637583333333333,
+    "channels": 1,
+    "peak": 0.43730446696281433,
+    "rms": 0.07159746438264847,
+    "source": "assets/audio/swoosh.ogg"
+  },
+  {
+    "id": "kiosk_pickup",
+    "seconds": 0.18,
+    "channels": 1,
+    "peak": 0.11916040629148483,
+    "rms": 0.02405887469649315,
+    "source": "assets/audio/kiosk_pickup.wav"
+  },
+  {
+    "id": "kiosk_fridge",
+    "seconds": 0.22,
+    "channels": 1,
+    "peak": 0.2241213172674179,
+    "rms": 0.04418734833598137,
+    "source": "assets/audio/kiosk_fridge.wav"
+  },
+  {
+    "id": "kiosk_cash",
+    "seconds": 0.32,
+    "channels": 1,
+    "peak": 0.0823679268360138,
+    "rms": 0.016930576413869858,
+    "source": "assets/audio/kiosk_cash.wav"
+  },
+  {
+    "id": "thunder",
+    "seconds": 5.0,
+    "channels": 1,
+    "peak": 0.7421704530715942,
+    "rms": 0.07831884175539017,
+    "source": "assets/audio/thunder.ogg"
+  },
+  {
+    "id": "whale_splash",
+    "seconds": 3.0,
+    "channels": 1,
+    "peak": 0.3381173014640808,
+    "rms": 0.0393918976187706,
+    "source": "assets/audio/whale_splash.wav"
+  },
+  {
+    "id": "footstep_wood_000",
+    "seconds": 0.24959183673469387,
+    "channels": 1,
+    "peak": 0.42092642188072205,
+    "rms": 0.05196128040552139,
+    "source": "assets/audio/footstep_wood_000.ogg"
+  },
+  {
+    "id": "footstep_wood_001",
+    "seconds": 0.2515646258503401,
+    "channels": 1,
+    "peak": 0.5284541249275208,
+    "rms": 0.06424205750226974,
+    "source": "assets/audio/footstep_wood_001.ogg"
+  },
+  {
+    "id": "footstep_wood_002",
+    "seconds": 0.2513832199546485,
+    "channels": 1,
+    "peak": 0.5650715827941895,
+    "rms": 0.07235612720251083,
+    "source": "assets/audio/footstep_wood_002.ogg"
+  },
+  {
+    "id": "footstep_wood_003",
+    "seconds": 0.25151927437641725,
+    "channels": 1,
+    "peak": 0.3745959997177124,
+    "rms": 0.0420842319726944,
+    "source": "assets/audio/footstep_wood_003.ogg"
+  },
+  {
+    "id": "footstep_wood_004",
+    "seconds": 0.2479138321995465,
+    "channels": 1,
+    "peak": 0.5312215089797974,
+    "rms": 0.06919674575328827,
+    "source": "assets/audio/footstep_wood_004.ogg"
+  },
+  {
+    "id": "footstep_concrete_000",
+    "seconds": 0.10591836734693877,
+    "channels": 1,
+    "peak": 0.18329524993896484,
+    "rms": 0.03359893336892128,
+    "source": "assets/audio/footstep_concrete_000.ogg"
+  },
+  {
+    "id": "footstep_concrete_001",
+    "seconds": 0.10764172335600906,
+    "channels": 1,
+    "peak": 0.16553491353988647,
+    "rms": 0.028650395572185516,
+    "source": "assets/audio/footstep_concrete_001.ogg"
+  },
+  {
+    "id": "footstep_concrete_002",
+    "seconds": 0.1127891156462585,
+    "channels": 1,
+    "peak": 0.168930783867836,
+    "rms": 0.02758336253464222,
+    "source": "assets/audio/footstep_concrete_002.ogg"
+  },
+  {
+    "id": "footstep_concrete_003",
+    "seconds": 0.11049886621315193,
+    "channels": 1,
+    "peak": 0.1880589872598648,
+    "rms": 0.030476665124297142,
+    "source": "assets/audio/footstep_concrete_003.ogg"
+  },
+  {
+    "id": "footstep_concrete_004",
+    "seconds": 0.11435374149659865,
+    "channels": 1,
+    "peak": 0.19432620704174042,
+    "rms": 0.03362099453806877,
+    "source": "assets/audio/footstep_concrete_004.ogg"
+  },
+  {
+    "id": "footstep_carpet_000",
+    "seconds": 0.14478458049886622,
+    "channels": 1,
+    "peak": 0.7309703230857849,
+    "rms": 0.06020116060972214,
+    "source": "assets/audio/footstep_carpet_000.ogg"
+  },
+  {
+    "id": "footstep_carpet_001",
+    "seconds": 0.14478458049886622,
+    "channels": 1,
+    "peak": 0.4342595636844635,
+    "rms": 0.08562465012073517,
+    "source": "assets/audio/footstep_carpet_001.ogg"
+  },
+  {
+    "id": "footstep_carpet_002",
+    "seconds": 0.14478458049886622,
+    "channels": 1,
+    "peak": 0.4342595636844635,
+    "rms": 0.08562465012073517,
+    "source": "assets/audio/footstep_carpet_002.ogg"
+  },
+  {
+    "id": "footstep_carpet_003",
+    "seconds": 0.14478458049886622,
+    "channels": 1,
+    "peak": 0.7470428943634033,
+    "rms": 0.06273721903562546,
+    "source": "assets/audio/footstep_carpet_003.ogg"
+  },
+  {
+    "id": "footstep_carpet_004",
+    "seconds": 0.14478458049886622,
+    "channels": 1,
+    "peak": 0.7470428943634033,
+    "rms": 0.06273721903562546,
+    "source": "assets/audio/footstep_carpet_004.ogg"
+  },
+  {
+    "id": "swim_splash",
+    "seconds": 0.65,
+    "channels": 1,
+    "peak": 0.6,
+    "rms": 0.09780644429046678,
+    "source": "original procedural synthesis: tools/ue58/prepare_audio.py"
+  },
+  {
+    "id": "swim_stroke",
+    "seconds": 0.45,
+    "channels": 1,
+    "peak": 0.6,
+    "rms": 0.1232740715417277,
+    "source": "original procedural synthesis: tools/ue58/prepare_audio.py"
+  },
+  {
+    "id": "underwater_loop",
+    "seconds": 8.0,
+    "channels": 1,
+    "peak": 0.18,
+    "rms": 0.046486199443190164,
+    "source": "original procedural synthesis: tools/ue58/prepare_audio.py"
+  }
+]

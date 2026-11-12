@@ -1,0 +1,21 @@
+{
+  "audible": {
+    "seconds": 7.018666666666666,
+    "rms": 0.005788875896568277,
+    "peak": 0.04119873046875,
+    "pass_": true
+  },
+  "muted": {
+    "seconds": 2.816,
+    "rms": 0.0,
+    "peak": 0.0,
+    "pass_": true
+  },
+  "paused": {
+    "seconds": 2.8586666666666667,
+    "rms": 0.0,
+    "peak": 0.0,
+    "pass_": true
+  },
+  "passed": true
+}

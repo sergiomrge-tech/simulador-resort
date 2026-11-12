@@ -24,7 +24,11 @@ signal tour_done(id: String, pax: int, revenue: int)
 var SAVE_PATH: = "user://save_slot1.json"
 var slot: int = 1
 var proc_props: = false   # --proc: usa os props montados por código (P) em vez dos modelos reais
-const SAVE_VERSION: = 6
+const SAVE_VERSION: = 7
+const CompanyRules = preload("res://scripts/company_rules.gd")
+signal company_changed
+var company: Dictionary = CompanyRules.defaults()
+var service_station: String = "cozinha"
 const WAKE_MIN: = 390.0
 const SLEEP_FROM: = 20.0 * 60.0
 const MAX_REDES: = Economy.HAMMOCK_MAX
@@ -81,9 +85,11 @@ var _bar_batch_value: = 0
 var _bar_batch_t: = -1.0
 var _maid_acc: = 0.0
 var _helper_acc: = 0.0
+var _quitting := false
 
 func _ready() -> void :
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().auto_accept_quit = false
 	prog = Prog.new()
 	prog.name = "Prog"
 	add_child(prog)
@@ -108,7 +114,10 @@ func _reset_economy() -> void :
 	day_expense = 0
 	last_summary = {}
 	stockouts = 0
-	staff = {"atendente": false, "camareira": false, "bartender": false, "guia": false}
+	staff = {}
+	for role in Economy.STAFF:
+		staff[role] = false
+	company = CompanyRules.defaults()
 	supply_mult = {}
 	contracts = {}
 	forecast_next = ""
@@ -152,6 +161,7 @@ func new_game() -> void :
 		get_tree().call_group("world", "sync_bungalows")
 
 func _emit_all() -> void :
+	company_changed.emit()
 	money_changed.emit(money)
 	stars_changed.emit(stars())
 	time_changed.emit(day, minutes)
@@ -166,6 +176,7 @@ func _process(delta: float) -> void :
 	if minutes >= 1440.0:
 		minutes -= 1440.0
 		day += 1
+		_pay_wages(true)
 		toast.emit(tr("Dia %d começou!") % day, "info")
 	time_changed.emit(day, minutes)
 
@@ -179,11 +190,13 @@ func _process(delta: float) -> void :
 		if _maid_acc >= Economy.MAID_MINUTES:
 			_maid_acc = 0.0
 			_maid_sweep()
-	if prog.staff_eff("atendente") > 0.0:
+	if not company_enabled() and prog.staff_eff("atendente") > 0.0:
 		_helper_acc += delta * minutes_per_sec * speed_mult * prog.staff_eff("atendente")
 		if _helper_acc >= Economy.HELPER_MINUTES:
 			_helper_acc = 0.0
 			get_tree().call_group("kiosk", "helper_serve")
+	CompanyRules.Simulation.tick(self, delta * minutes_per_sec * speed_mult)
+	tick_company(delta)
 	_check_tours()
 	_autosave_t += delta
 	if _autosave_t > 45.0 and in_game:
@@ -237,6 +250,11 @@ func book(v: int, reason: String, cat: String, do_toast: = true) -> void :
 		ledger_today.append({"a": v, "r": reason, "c": cat})
 		if ledger_today.size() > 40:
 			ledger_today.pop_front()
+	if company.created:
+		if cat == "quiosque" and v > 0:
+			CompanyRules.Simulation.record(self, "cash_in", v)
+		elif cat == "insumo" and v < 0:
+			CompanyRules.Simulation.record(self, "supplies", -v)
 	money_changed.emit(money)
 	ledger_changed.emit()
 	if prog:
@@ -327,7 +345,9 @@ func sleep() -> void :
 	if minutes >= 12.0 * 60.0:
 		day += 1
 	minutes = WAKE_MIN
+	company.kiosk_open = false
 	_pay_wages()
+	CompanyRules.Simulation.rollover(self)
 	prog.on_new_day()
 	force_flush_bar()
 	spoil_stock()
@@ -339,17 +359,29 @@ func sleep() -> void :
 	toast.emit(tr("Bom dia! Dia %d") % day, "info")
 	roll_supply_prices()
 	roll_day_event()
+	CompanyRules.Simulation.run_auto_order(self)
 	tours_done = {}
 	save_game()
 
-func _pay_wages() -> void :
+func _pay_wages(company_only: bool = false) -> void :
+	consolidate_kiosk_staff()
 	var total: = 0
+	var pay_day: int = day - 1
 	for role in staff:
+		var company_role: bool = company.created and role in CompanyRules.Simulation.ROLES
+		if company_only and not company_role:
+			continue
+		if company_role and int(company.sim.wage_day) >= pay_day:
+			continue
 		if not bool(staff[role]) or not Economy.STAFF.has(role):
 			continue
 		var w: = prog.staff_wage(role)
 		total += w
 		book( - w, tr("Salário: %s") % tr(str(Economy.STAFF[role].name)), "folha", false)
+		if role in CompanyRules.Simulation.ROLES:
+			CompanyRules.Simulation.record(self, "payroll", w)
+	if company.created:
+		company.sim.wage_day = maxi(int(company.sim.wage_day), pay_day)
 	if total > 0:
 		toast.emit("%s  %s" % [tr("Salários do dia"), fmt_money( - total)], "bad")
 
@@ -475,7 +507,12 @@ func kiosk_menu() -> Array:
 func bar_menu() -> Array:
 	return Economy.BAR_MENU.filter(func(d): return dish_unlocked(d))
 
+func kiosk_open_min() -> float:
+	return float(company.sim.start) * 60.0 if bool(company.sim.custom_hours) else 8.0 * 60.0
+
 func kiosk_close_min() -> float:
+	if bool(company.sim.custom_hours):
+		return float(company.sim.end) * 60.0
 	return (Economy.KIOSK_CLOSE_NEON_H if has("neon") else Economy.KIOSK_CLOSE_H) * 60.0
 
 ## "owned" | "ready" (pode comprar agora) | "money" (falta dinheiro) | "locked" (falta requisito). Motivo em [1].
@@ -540,6 +577,7 @@ func menu_blocked() -> bool:
 	return false
 
 func note_stockout(id: String) -> void :
+	CompanyRules.Simulation.record(self, "stockouts", 1)
 	stockouts += 1
 	add_rating(Economy.STOCKOUT_RATING)
 	var name: = id
@@ -905,8 +943,36 @@ func build_bungalow() -> bool:
 	room_changed.emit(id)
 	return true
 
-func hire(role: String) -> bool:
+const KIOSK_STAFF_ROLES=["atendente","garcom","caixa","limpeza","cozinheiro"]
+
+func consolidate_kiosk_staff() -> void:
+	var source: String="atendente" if staff.get("atendente",false) else ""
+	for role in KIOSK_STAFF_ROLES:
+		if not staff.get(role,false): continue
+		if source=="": source=role
+		else:
+			var current: Dictionary=prog.staff_rec(role)
+			var best: Dictionary=prog.staff_rec(source)
+			if int(current.lvl)>int(best.lvl) or (int(current.lvl)==int(best.lvl) and int(current.xp)>int(best.xp)): source=role
+	if source=="": return
+	if source!="atendente":
+		prog.staff_info["atendente"]=prog.staff_rec(source).duplicate(true)
+		for records in [company.sim.shifts,company.sim.management.profiles]:
+			if records.has(source): records["atendente"]=records[source].duplicate(true)
+	staff.atendente=true
+	# Registros históricos de treinamento/contratos continuam no save, sem cargos ativos duplicados.
+	for role in KIOSK_STAFF_ROLES:
+		if role!="atendente": staff[role]=false
+
+func hire(role: String, offered_fee: int = -1) -> bool:
+	if role in KIOSK_STAFF_ROLES and role!="atendente":
+		toast.emit("O quiosque usa um único atendente para pedidos, entregas, caixa e limpeza.","info")
+		return false
+	consolidate_kiosk_staff()
 	if not Economy.STAFF.has(role):
+		return false
+	if bool(Economy.STAFF[role].get("company", false)) and not bool(company.created):
+		toast.emit(tr("Crie sua empresa no celular primeiro."), "bad")
 		return false
 	if bool(staff.get(role, false)):
 		toast.emit(tr("Já contratado: %s") % tr(str(Economy.STAFF[role].name)), "info")
@@ -915,13 +981,17 @@ func hire(role: String) -> bool:
 	if need != "" and not has(need):
 		toast.emit(tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), "bad")
 		return false
-	var cost: = int(Economy.STAFF[role].hire)
+	var cost: int = offered_fee if offered_fee >= 0 else int(Economy.STAFF[role].hire)
 	if money < cost:
 		toast.emit(tr("Dinheiro insuficiente para contratar (%s).") % fmt_money(cost), "bad")
 		return false
 	staff[role] = true
+	if role in CompanyRules.Simulation.ROLES and company.created:
+		company.sim.shifts.erase(role) # Segue todo o expediente; turno personalizado continua opcional.
+		CompanyRules.Simulation.record(self, "investment", cost)
 	book( - cost, tr("Contratação: %s") % tr(str(Economy.STAFF[role].name)), "folha", true)
 	staff_changed.emit()
+	company_changed.emit()
 	return true
 
 func accept_quest(id: String) -> void :
@@ -956,7 +1026,7 @@ func set_weather(kind: String) -> void :
 
 func save_game() -> void :
 	var data: = {
-		"v": SAVE_VERSION, "money": money, "ratings": ratings, "day": day, 
+		"company": company.duplicate(true), "v": SAVE_VERSION, "money": money, "ratings": ratings, "day": day,
 		"minutes": minutes, "redes": redes, "served": guests_served, 
 		"bar": bar_sales_total, "tut": tutorial_step, "rooms": [], 
 		"kiosk": kiosk_sales_total, "kiosk_n": kiosk_sales_count, 
@@ -972,7 +1042,7 @@ func save_game() -> void :
 	}
 	if is_instance_valid(player_ref) and player_ref.is_inside_tree():
 		var pp: = player_ref.global_position
-		data["player"] = {"x": pp.x, "y": pp.y, "z": pp.z, "yaw": player_ref.rotation.y}
+		data["player"] = {"x": pp.x, "y": pp.y, "z": pp.z, "yaw": player_ref.rotation.y, "kiosk_facing": "beach"}
 	for r in rooms:
 		var st: String = r.state
 		var dirty: Dictionary = r.dirty.duplicate()
@@ -1011,6 +1081,7 @@ func load_game() -> bool:
 	stockouts = int(data.get("stockouts", 0))
 	loaded_player = data.get("player", {})
 	_reset_economy()
+	company = CompanyRules.sanitize(data.get("company", {}))
 	weather = str(data.get("weather", "sun"))
 	var sk = data.get("stock", {})
 	if typeof(sk) == TYPE_DICTIONARY:
@@ -1059,6 +1130,7 @@ func load_game() -> bool:
 					unlocked[k] = bool(ul[k])
 	var pd = data.get("prog", {})
 	prog.from_dict(pd if typeof(pd) == TYPE_DICTIONARY else {})
+	consolidate_kiosk_staff()
 	reset_rooms(data.rooms.size())
 	for i in data.rooms.size():
 		rooms[i].state = data.rooms[i].state
@@ -1071,12 +1143,14 @@ func load_game() -> bool:
 	_emit_all()
 	stock_changed.emit()
 	staff_changed.emit()
+	company_changed.emit()
 	market_changed.emit()
 	event_changed.emit()
 	weather_changed.emit(weather)
 	expansion_bought.emit("")
 	if is_inside_tree():
 		get_tree().call_group("world", "sync_bungalows")
+	if company_enabled() and not company.receivables.is_empty(): collect_company_payments()
 	return true
 
 func delete_save() -> void :
@@ -1087,3 +1161,290 @@ func _notification(what: int) -> void :
 	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		if in_game:
 			save_game()
+	if what == NOTIFICATION_WM_CLOSE_REQUEST: quit_game()
+
+## Deixa o renderer terminar o quadro antes de liberar a cena e suas texturas.
+func quit_game(exit_code: int = 0) -> void:
+	if _quitting: return
+	_quitting=true
+	in_game=false
+	paused=true
+	var tree := get_tree()
+	tree.paused=false
+	var scene := tree.current_scene
+	var retained: Array[Resource] = []
+	if is_instance_valid(scene): _retain_render_resources(scene,retained)
+	if is_instance_valid(scene):
+		scene.process_mode=Node.PROCESS_MODE_DISABLED
+		if scene is Node3D: scene.visible=false
+	for i in 3: await tree.process_frame
+	if DisplayServer.get_name()!="headless": await RenderingServer.frame_post_draw
+	tree.current_scene=null
+	if is_instance_valid(scene): scene.queue_free()
+	for i in 3: await tree.process_frame
+	if DisplayServer.get_name()!="headless": await RenderingServer.frame_post_draw
+	retained.clear()
+	for i in 2: await tree.process_frame
+	print("SHUTDOWN_COMPLETE code=",exit_code)
+	tree.quit(exit_code)
+
+func _retain_render_resources(node: Node, retained: Array[Resource]) -> void:
+	if node is GeometryInstance3D:
+		if node.material_override: retained.append(node.material_override)
+		if node.material_overlay: retained.append(node.material_overlay)
+	if node is MeshInstance3D and node.mesh:
+		retained.append(node.mesh)
+		for i in node.mesh.get_surface_count():
+			var material: Material = node.get_surface_override_material(i)
+			if material: retained.append(material)
+	if node is MultiMeshInstance3D and node.multimesh: retained.append(node.multimesh)
+	if node is GPUParticles3D:
+		if node.process_material: retained.append(node.process_material)
+		for i in node.draw_passes:
+			var mesh: Mesh = node.get_draw_pass_mesh(i)
+			if mesh: retained.append(mesh)
+	for child in node.get_children(): _retain_render_resources(child,retained)
+
+## Produtos/NPCs também podem sair durante o jogo. Manter os materiais vivos
+## até o renderer processar a remoção da instância evita RIDs inválidos.
+func release_visual(node: Node) -> void:
+	if not is_instance_valid(node) or node.is_queued_for_deletion(): return
+	var retained: Array[Resource] = []
+	_retain_render_resources(node,retained)
+	if node is Node3D: node.hide()
+	node.queue_free()
+	for i in 3: await get_tree().process_frame
+	retained.clear()
+
+# ================================================================ empresa / operação física
+func kiosk_is_within_hours() -> bool:
+	return CompanyRules.Simulation.is_workday(self) and minutes >= kiosk_open_min() and minutes < kiosk_close_min()
+
+func kiosk_accepting_customers() -> bool:
+	return kiosk_is_within_hours() and bool(company.get("kiosk_open", false)) and CompanyRules.Simulation.Management.opening_ready(self)
+
+func set_kiosk_open(value: bool) -> void:
+	if value and not CompanyRules.Simulation.Management.opening_ready(self):
+		toast.emit("Conclua o checklist de abertura em Quiosque → Horários e rotina.", "info")
+		return
+	company.kiosk_open = value
+	company_changed.emit()
+	save_game()
+	if value:
+		toast.emit(tr("Quiosque aberto!") if kiosk_is_within_hours() else tr("Quiosque preparado para abrir no próximo horário programado."), "good")
+	else:
+		toast.emit(tr("Quiosque fechado para novas chegadas. Conclua os pedidos dos clientes que já estão aqui."), "info")
+
+func set_kiosk_schedule(start: int, end: int, days: Array) -> bool:
+	if start < 6 or end > 23 or start >= end or days.is_empty():
+		toast.emit("Escolha abertura entre 06h e 22h, fechamento até 23h e ao menos um dia.", "bad")
+		return false
+	for index in days:
+		if not index is int or index < 0 or index > 6:
+			return false
+	company.sim.start = start
+	company.sim.end = end
+	company.sim.days = days.duplicate()
+	company.sim.custom_hours = true
+	company_changed.emit()
+	save_game()
+	return true
+
+func set_kiosk_shift(role: String, start: int, end: int) -> bool:
+	if role not in CompanyRules.Simulation.ROLES or not bool(staff.get(role, false)) or start < 6 or start >= end or end > 23:
+		toast.emit("Escolha um turno válido, com entrada antes da saída, entre 06h e 23h.", "bad")
+		return false
+	company.sim.shifts[role] = {"start": start, "end": end}
+	staff_changed.emit()
+	save_game()
+	return true
+
+func kiosk_staff_on_shift(role: String) -> bool:
+	return CompanyRules.Simulation.staff_on_shift(self, role)
+
+func dismiss_kiosk_staff(role: String) -> bool:
+	if role not in CompanyRules.Simulation.ROLES or not bool(staff.get(role, false)):
+		return false
+	var fee: int = prog.staff_wage(role) * 3
+	if money < fee:
+		toast.emit("Saldo insuficiente para a rescisão de três diárias.", "bad")
+		return false
+	if role in ["garcom", "atendente"] and company.staff_carry != "" and not return_company_staff_dish():
+		toast.emit("Libere espaço para devolver o produto do funcionário.", "bad")
+		return false
+	staff[role] = false
+	company.sim.shifts.erase(role)
+	company.sim.management.profiles.erase(role)
+	prog.staff_info.erase(role)
+	CompanyRules.Simulation.record(self, "investment", fee)
+	book(-fee, "Rescisão: " + str(Economy.STAFF[role].name), "folha", true)
+	staff_changed.emit()
+	company_changed.emit()
+	save_game()
+	return true
+
+func set_kiosk_reorder(enabled: bool, target: int) -> void:
+	company.sim.auto_order = enabled
+	company.sim.target = clampi(target, 1, 48)
+	company_changed.emit()
+	save_game()
+
+func restock_kiosk() -> bool:
+	var okay: bool = CompanyRules.Simulation.reorder(self)
+	if okay:
+		save_game()
+	return okay
+
+func company_enabled() -> bool:
+	return bool(company.created) and bool(company.physical)
+
+func configure_company(title: String, font_id: String, color_id: String = "creme") -> bool:
+	title = title.strip_edges()
+	if not CompanyRules.valid_name(title) or not CompanyRules.FONTS.has(font_id) or not CompanyRules.COLORS.has(color_id):
+		toast.emit(tr("Use um nome de 1 a 24 caracteres e uma fonte da lista."), "bad")
+		return false
+	if int(company.sim.day) == 0:
+		company.sim.day = day
+	company.created = true
+	company.name = title
+	company.font = font_id
+	company.color = color_id
+	consolidate_kiosk_staff()
+	company_changed.emit()
+	save_game()
+	return true
+
+func set_company_service(enabled: bool) -> bool:
+	if not company.created:
+		return false
+	if not enabled and (company.carry != "" or company.staff_carry != "" or not company.production.is_empty() or not company.receivables.is_empty() or not company.dirty_seats.is_empty()):
+		toast.emit(tr("Entregue o item, receba as contas e limpe as mesas primeiro."), "bad")
+		return false
+	company.physical = enabled
+	company_changed.emit()
+	save_game()
+	return true
+
+# Produtos são retirados prontos. O estoque compartilhado é debitado uma vez.
+func company_available(id: String) -> int:
+	if id not in Economy.KIOSK_MENU or not dish_unlocked(id):
+		return 0
+	var count := 9999
+	for ing in Economy.dish(id).uses:
+		count = mini(count, int(stock.get(ing, 0)) / int(Economy.dish(id).uses[ing]))
+	return int(company.ready.get(id, 0)) + count
+
+func _take_company_unit(id: String) -> bool:
+	if company_available(id) <= 0:
+		return false
+	if int(company.ready.get(id, 0)) > 0:
+		company.ready[id] = int(company.ready[id]) - 1
+	else:
+		for ing in Economy.dish(id).uses:
+			stock[ing] = int(stock[ing]) - int(Economy.dish(id).uses[ing])
+	return true
+
+func prepare_company_dish(_id: String) -> bool:
+	# Compatibility entry point for old saves/extensions; preparation is removed.
+	return false
+
+func tick_company(_delta: float) -> void:
+	# Recover an already-paid unit from an older save without another stock debit.
+	if company.production.is_empty():
+		return
+	var id: String = str(company.production.get("dish", ""))
+	company.production = {}
+	if id in Economy.KIOSK_MENU:
+		company.ready[id] = int(company.ready.get(id, 0)) + 1
+	company_changed.emit()
+
+func pickup_company_dish(id: String) -> bool:
+	if not company_enabled() or company.carry != "" or not _take_company_unit(id):
+		return false
+	company.carry = id
+	stock_changed.emit()
+	company_changed.emit()
+	return true
+
+func return_company_dish() -> bool:
+	var id: String = str(company.carry)
+	if id == "" or int(company.ready.get(id, 0)) + (1 if company.production.get("dish", "") == id else 0) >= CompanyRules.MAX_READY:
+		return false
+	company.ready[id] = int(company.ready.get(id, 0)) + 1
+	company.carry = ""
+	company_changed.emit()
+	return true
+
+func sell_company_dish(id: String, by_staff: bool = false) -> int:
+	var source: String = "staff_carry" if by_staff else "carry"
+	if not company_enabled() or company[source] != id or id not in Economy.KIOSK_MENU:
+		return -1
+	if company.receivables.size() >= 256:
+		return -1
+	var price: int = price_of(id)
+	company[source] = ""
+	company.receivables.append({"dish": id, "value": price})
+	collect_company_payments()
+	company_changed.emit()
+	return price
+
+func collect_company_payments() -> int:
+	if not company_enabled():
+		return 0
+	var bills: Array = company.receivables.duplicate(true)
+	company.receivables.clear()
+	var total := 0
+	for bill in bills:
+		kiosk_sale(str(Economy.dish(str(bill.dish)).name), int(bill.value))
+		prog.on_sale(str(bill.dish), "kiosk")
+		total += int(bill.value)
+	company_changed.emit()
+	return total
+
+func clean_company_seat(index: int) -> bool:
+	if index not in company.dirty_seats:
+		return false
+	company.dirty_seats.erase(index)
+	company.dirty_items.erase(str(index))
+	company_changed.emit()
+	return true
+
+func reserve_company_staff_dish(id: String) -> bool:
+	if not company_enabled() or company.staff_carry != "" or not _take_company_unit(id):
+		return false
+	company.staff_carry = id
+	stock_changed.emit()
+	company_changed.emit()
+	return true
+
+func return_company_staff_dish() -> bool:
+	var id: String = str(company.staff_carry)
+	if id == "" or int(company.ready.get(id, 0)) + (1 if company.production.get("dish", "") == id else 0) >= CompanyRules.MAX_READY:
+		return false
+	company.ready[id] = int(company.ready.get(id, 0)) + 1
+	company.staff_carry = ""
+	company_changed.emit()
+	return true
+
+## Quote only the missing ingredients for a target number of ready portions.
+func company_restock_quote(id: String, servings: int = 10) -> Dictionary:
+	var result := {"items":{},"cost":0,"servings":servings}
+	if not company_enabled() or id not in kiosk_menu() or servings < 1 or servings > 100: return result
+	for ingredient in Economy.dish(id).uses:
+		var missing := maxi(0,int(Economy.dish(id).uses[ingredient])*servings-int(stock.get(ingredient,0)))
+		if missing > 0:
+			result.items[ingredient] = missing
+			result.cost += supply_total(ingredient,missing)
+	return result
+
+func restock_company_dish(id: String, servings: int = 10) -> bool:
+	var quote := company_restock_quote(id,servings)
+	if quote.items.is_empty(): return false
+	if money < int(quote.cost):
+		toast.emit("Saldo insuficiente para repor: " + fmt_money(int(quote.cost)), "bad")
+		return false
+	# Check the entire basket first, avoiding a partially purchased recipe.
+	for ingredient in quote.items:
+		buy_supply(ingredient,int(quote.items[ingredient]))
+	toast.emit("Estoque reposto para " + str(servings) + " unidades de " + str(Economy.dish(id).name), "good")
+	return true

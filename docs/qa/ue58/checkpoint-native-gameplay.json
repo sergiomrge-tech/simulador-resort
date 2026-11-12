@@ -1,0 +1,28 @@
+{
+  "checkpoint": "2026-10-27",
+  "build": "Succeeded",
+  "native_economy": {
+    "state": "Success",
+    "duration": 0.0450033,
+    "errors": [],
+    "warnings": []
+  },
+  "imported_models": 730,
+  "missing_models": 890,
+  "visual_approval": false,
+  "pie_fridge": {
+    "panel_open": true,
+    "player_z_cm": 100.4,
+    "velocity": [
+      0,
+      0,
+      0
+    ]
+  },
+  "customer_navigation": {
+    "passed": false,
+    "projected_z_cm": 910,
+    "status": "blocked"
+  },
+  "packaged_executable_tested": false
+}

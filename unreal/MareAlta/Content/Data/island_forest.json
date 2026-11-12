@@ -1,0 +1,34 @@
+{
+ "seed": "20261108",
+ "instances": {
+  "World_0507": 499,
+  "tree_small_02": 2415,
+  "World_0505": 3582,
+  "jacaranda_tree": 1177,
+  "World_0504": 3537,
+  "World_1206": 2455,
+  "shrub_04": 3123,
+  "shrub_02": 4752,
+  "shrub_03": 3069,
+  "shrub_01": 4812,
+  "fern_02": 3154,
+  "rock_coast_rocks_05": 43,
+  "rock_rock_face_01": 62,
+  "rock_coast_rocks_02": 55,
+  "rock_rock_face_02": 57,
+  "rock_coast_rocks_03": 31,
+  "rock_coast_rocks_01": 39
+ },
+ "total": 32862,
+ "rejected": {
+  "gap": 307,
+  "wet": 63,
+  "trail": 1067,
+  "old beach": 327,
+  "other": 626,
+  "clearing": 310,
+  "steep": 956,
+  "village": 858,
+  "summit house": 69
+ }
+}

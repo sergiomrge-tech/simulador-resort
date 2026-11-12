@@ -1,7 +1,51 @@
-MARÉ ALTA RESORT — v0.8.0
+MARÉ ALTA RESORT — v1.1.0 (gestão ampliada, cópia local)
 =========================
 Abra pelo atalho "Maré Alta Resort" na área de trabalho ou no menu Iniciar.
 Saves, configurações e cache ficam em userdata\ dentro da pasta do jogo.
+
+NOVO NA 1.1.0 RC2
+- Seis áreas novas: Rotina do dia, Candidatos, Entregas, Equipamentos,
+  Personalizar e Movimento. Todas ficam no celular (B), após criar a empresa.
+  Checklist de abertura opcional, fechamento/conferência de caixa, bebidas guardadas
+  no freezer por uma noite, candidatos com salários/habilidades e satisfação,
+  entregas com prazo, limpeza/reparo/melhoria de equipamentos e prévia de decoração.
+  Horário e chuva mudam o movimento e as mesas disponíveis.
+  Leia ROTINAS_DO_QUIOSQUE.md nesta pasta para custos, prazos e validade.
+- Celular mais compacto, apps em três colunas e textos ajustados à largura.
+  A tela acompanha o tamanho da janela; use a rolagem para ver os demais apps.
+- Vidros das janelas transparentes e sem cor; barcos afastados do piso do cais.
+  Passos novos, mais suaves, com cinco variações por tipo de piso e cadência natural.
+- Cais corrigido: piso físico nas tábuas e na plataforma, acesso pela rampa
+  e recuperação automática se o personagem cair abaixo do mapa.
+- Gestão ampliada no celular: Horários, Estoque e perdas, Escala e equipe e Resultado.
+  Escolha expediente entre 06h e 23h e dias da semana. Personalize a placa em Meu Quiosque.
+  A reposição usa os preços e contratos do Mercado, com meta e compra automática opcional.
+  Produtos preparados vencem na virada do dia: evite preparar mais do que vende.
+  Configure turnos, treine, dê folgas e contrate/dispense a equipe. Salários e cansaço variam com a escala.
+  Estrutura custa R$ 12 por dia com operação mais R$ 2 por hora aberta, além dos salários.
+  Resultado mostra caixa e sete fechamentos. Compras da despensa são compartilhadas com o bar.
+  Leia GESTAO_DO_QUIOSQUE.md nesta pasta para as regras detalhadas.
+- No celular (B), abra Meu Quiosque para abrir/fechar e personalizar a placa.
+  Também é possível mirar na placa frontal e apertar E para abrir essa tela.
+  Escolha "Abrir quiosque" ou "Fechar quiosque". Fechar impede novas chegadas,
+  mas permite concluir os pedidos até o fim do expediente. Fora do horário, programe a próxima abertura.
+  O estado fica salvo. Use "Salvar nome e placa" para aplicar o nome escolhido.
+  Nome de até 24 caracteres,
+  três estilos de fonte e três cores. As letras se ajustam à largura das placas.
+- Ative atendimento com retirada: contorne a lateral do quiosque até o anexo de trás.
+  Na geladeira, prepare/retire bebidas. Na cozinha, prepare alimentos; retire-os
+  prontos no armário. Use E no cliente para entregar um item que ele pediu.
+- Ingredientes são gastos no preparo. O produto pronto vai para a prateleira
+  (até 4 de cada); carregar ou entregar não gasta ingredientes novamente.
+- Use o terminal no balcão para receber as contas. Após o consumo e a saída,
+  recolha a louça com E para liberar o lugar.
+- Contrate garçom, operador de caixa, cozinheiro e auxiliar de limpeza em Equipe.
+  Há contratação, salários diários, treinamento, energia e folgas.
+- Saves antigos continuam com o atendimento anterior até criar/ativar a empresa.
+  O save novo também guarda marca, produtos, preparo e contas a receber.
+- Prévia de testes: instalação, controles e desempenho no Windows precisam
+  de verificação no computador do jogador. Faça uma cópia de userdata antes de
+  voltar para uma versão anterior (ela não reconhece a empresa do save novo).
 
 NOVO NA 0.8.0
 - MODELOS REAIS (CC0, Poly Haven e Kenney) no lugar de bolas e caixas: frutas, garrafas, jarros, cocos, taças e drinques,

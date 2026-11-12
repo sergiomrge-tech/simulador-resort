@@ -2,6 +2,9 @@ extends Node3D
 
 
 
+const DishPresentation = preload("res://scripts/dish_presentation.gd")
+var prep_visual: Node3D
+
 const GuestScript: = preload("res://scripts/guest.gd")
 const KIOSK_OPEN: = 8.0 * 60.0
 const KIOSK_CLOSE: = 18.0 * 60.0
@@ -70,16 +73,16 @@ func _ready() -> void :
 	add_to_group("kiosk")
 	_load_regulars()
 	rng.seed = 7171
-	var n_walk: = 12 if Quality.hd else 5
+	var n_walk: int=Quality.people_limit()
 	for i in n_walk:
 		var g: = _make()
-		var path: Array = world.village_paths[i % world.village_paths.size()]
+		var path: Array = world.village_paths[mini(world.village_paths.size()-1, floori(float(i)*world.village_paths.size()/n_walk))]
 		g.set_meta("path", path)
 		g.set_meta("dir", 1 if i % 2 == 0 else -1)
 		var k: = rng.randi() % path.size()
 		g.set_meta("idx", k)
 		g.set_meta("wait", rng.randf_range(0.0, 4.0))
-		g.position = path[k]
+		g.position = _outside_blocks(path[k])
 		g.speed = rng.randf_range(0.95, 1.3)
 		walkers.append(g)
 	var sit_n: = mini(3 if Quality.hd else 1, world.bench_spots.size())
@@ -146,6 +149,7 @@ func _process(delta: float) -> void :
 					if (dp as Vector3).distance_to(g.position) < best.distance_to(g.position):
 						best = dp
 				if best != Vector3.INF and best.distance_to(g.position) < 40.0:
+					best = _outside_blocks(best)
 					g.set_meta("home_target", best)
 					g.go([best])
 				else:
@@ -161,6 +165,7 @@ func _process(delta: float) -> void :
 			continue
 		if g.is_moving():
 			continue
+		if _day_routine(g,i,delta):continue
 		if g.get_meta("shelter", false):
 			# tempestade: fica abrigado sob o beiral até a chuva passar (EventFX)
 			g.play("Idle_Talking_Loop" if i % 2 else "Idle_Loop")
@@ -182,6 +187,8 @@ func _process(delta: float) -> void :
 		g.set_meta("idx", nxt)
 		var jitter: = Vector3(rng.randf_range(-0.35, 0.35), 0, rng.randf_range(-0.35, 0.35))
 		g.go([_outside_blocks(path[nxt] + jitter)])
+	if prep.is_empty():
+		_clear_prep_visual()
 	_kiosk_tick(dmin)
 	_prep_tick(delta)
 	_fish_tick(delta)
@@ -224,6 +231,7 @@ func fish_catch(r: float) -> int:
 	if n == 0:
 		Core.toast.emit(tr("Você pescou uma bota velha. Tente de novo!"), "info")
 		return 0
+	Core.prog.campaign.fish+=n
 	Core.stock["peixe"] = int(Core.stock.get("peixe", 0)) + n
 	Core.stock_changed.emit()
 	Core.toast.emit((tr("Peixe grande! +%d peixes") % n) if n == 3 else (tr("Você pescou +%d peixe") % n if n == 1 else tr("Você pescou +%d peixes") % n), "good")
@@ -254,7 +262,7 @@ func _outside_blocks(p: Vector3) -> Vector3:
 	var q: = p
 	for _pass in 2:
 		for r in rects:
-			var rect: Rect2 = r
+			var rect: Rect2 = (r as Rect2).grow(0.38)
 			if not rect.has_point(Vector2(q.x, q.z)):
 				continue
 			var dl: = q.x - rect.position.x
@@ -273,17 +281,22 @@ func _outside_blocks(p: Vector3) -> Vector3:
 
 
 func kiosk_open() -> bool:
-	return Core.minutes >= KIOSK_OPEN and Core.minutes < Core.kiosk_close_min()
+	return Core.kiosk_is_within_hours()
 
 func waiting_customers() -> Array:
-	return customers.filter( func(c): return c.state == "kwait")
+	return customers.filter( func(c): return c.state == "kwait" and (not Core.company_enabled() or bool(c.get_meta("order_taken", true))))
+
+func customers_to_order() -> Array:
+	return customers.filter(func(c): return c.state == "kwait" and not bool(c.get_meta("order_taken", true)))
 
 func _free_spot() -> int:
 	var free: = []
 	for i in world.kiosk_spots.size():
 		var sp: Dictionary = world.kiosk_spots[i]
+		# Balcão fica livre para retirada; no modo físico o consumo usa as mesas.
+		if Core.company_enabled() and not sp.get("table",false): continue
 		var need: = str(sp.get("need", ""))
-		if not sp.busy and (need == "" or Core.has(need)):
+		if not sp.busy and (need == "" or Core.has(need)) and (not Core.company_enabled() or i not in Core.company.dirty_seats) and Core.CompanyRules.Simulation.Management.sheltered(Core, sp):
 			free.append(i)
 	if free.is_empty():
 		return -1
@@ -296,8 +309,10 @@ func _free_spot() -> int:
 
 func spawn_customer() -> Node3D:
 	var si: = _free_spot()
-	var queued: Array = customers.filter(func(c): return c.state == "kqueue")
+	var queued: Array = customers.filter(func(c): return c.state in ["kqueue", "kcounter_queue"])
 	if si < 0 and queued.size() >= MAX_QUEUE:
+		return null
+	if Core.company_enabled() and queued.size()>=MAX_QUEUE and customers.filter(func(c):return c.has_meta("counter_slot")).size()>=2:
 		return null
 	var g: = _make()
 	var from_beach: = rng.randf() < Core.beach_share()
@@ -308,20 +323,34 @@ func spawn_customer() -> Node3D:
 		spot.busy = true
 		spot["owner"] = g.get_instance_id()
 	g.spot = spot
+	g.set_meta("counter_first", Core.company_enabled())
 	g.state = "kwalk" if si >= 0 else "kqueue"
 	g.timer = KIOSK_PATIENCE
 	var menu: Array = Core.kiosk_menu()
-	var dish: String = _pick_dish(menu)
+	var profile: String=["refrescos","sorvetes","porcoes"][rng.randi()%3]
+	g.set_meta("preference",profile)
+	var preferred: Array=menu.filter(func(id):return (str(id).begins_with("sorvete_") if profile=="sorvetes" else str(id) in (["batata_frita","porcao_peixe","petiscos"] if profile=="porcoes" else ["suco","coco_gelado"])))
+	var dish: String = _pick_dish(preferred if not preferred.is_empty() and rng.randf()<.8 else menu)
 	var reg: Dictionary = _pick_regular(menu, bool(g.get("_female"))) if rng.randf() < 0.25 and not Core.day_event == "show_dj" else {}
 	if not reg.is_empty():
 		dish = str(reg.fav)
 		g.set_meta("regular", reg.id)
+		g.gname=str(reg.name)
 		g.set_colors(reg.skin, reg.shirt, Color(0.2, 0.25, 0.4), reg.hair)
 		var visits: = int(regulars.get(reg.id, 0))
-		var rl: = B.label(g, "%s ♥%d" % [reg.name, visits] if visits > 0 else str(reg.name), Vector3(0, 2.5, 0), 40, Color(0.75, 1.0, 0.75), Color(0.05, 0.25, 0.08, 1))
+		var rl: = B.label(g, "%s ♥%d" % [reg.name, visits] if visits > 0 else str(reg.name), Vector3(0, 2.1, 0), 20, Color(0.75, 1.0, 0.75), Color(0.05, 0.25, 0.08, 1))
 		rl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		rl.pixel_size = 0.004
-		rl.no_depth_test = true
+		rl.pixel_size = 0.0025
+		rl.no_depth_test = false
+		rl.visible = not Core.company_enabled()
+	if reg.is_empty():
+		var names: Array=["Ana","Camila","Luiza","Fernanda"] if bool(g.get("_female")) else ["João","Pedro","Bruno","Rafael"]
+		var surnames: Array=["Silva","Costa","Santos","Lima","Mendes","Alves"]
+		g.gname=str(names[rng.randi()%names.size()])+" "+str(surnames[rng.randi()%surnames.size()])
+		var suffix: int=0
+		while customers.any(func(other):return is_instance_valid(other) and other.gname==g.gname):
+			suffix+=1
+			g.gname=str(names[rng.randi()%names.size()])+" "+str(surnames[suffix%surnames.size()])
 	g.set_meta("dish", dish)
 	# quiosque cheio (ou mesas compradas) = pedidos maiores
 	var items: Array = [dish]
@@ -344,11 +373,12 @@ func spawn_customer() -> Node3D:
 		if dj_now:
 			_dj_came = true
 		g.set_meta("vip_id", vid)
-		var vl: = B.label(g, _vip_name(vid), Vector3(0, 2.55, 0), 44, Color(1.0, 0.88, 0.3), Color(0.25, 0.15, 0.02, 1))
+		var vl: = B.label(g, _vip_name(vid), Vector3(0, 2.15, 0), 22, Color(1.0, 0.88, 0.3), Color(0.25, 0.15, 0.02, 1))
 		vl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		vl.double_sided = true
-		vl.pixel_size = 0.0045
-		vl.no_depth_test = true
+		vl.pixel_size = 0.0025
+		vl.no_depth_test = false
+		vl.visible = not Core.company_enabled()
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
 	if si < 0:
 		var used: Array = queued.map(func(c): return int(c.get_meta("queue_slot")))
@@ -357,15 +387,15 @@ func spawn_customer() -> Node3D:
 			slot += 1
 		g.set_meta("queue_slot", slot)
 		# Fila a leste das mesas, fora das cadeiras e do corredor de acesso ao balcão.
-		g.go([world.KIOSK_C + Vector3(7.5, 0.1, 5.0 + slot * 1.1)])
+		g.go([world.kiosk_point(Vector3(7.5, 0.1, 5.0 + slot * 1.1))])
 		customers.append(g)
 		return g
+	if bool(g.get_meta("counter_first", false)):
+		customers.append(g)
+		_join_counter(g, route)
+		return g
 	if from_beach:
-		# contorna o quiosque pela lateral em vez de atravessar o balcão
-		var kc: Vector3 = world.KIOSK_C
-		var sx: = 1.0 if start.x >= kc.x else -1.0
-		route.append(Vector3(kc.x + sx * 5.2, 0.05, kc.z - 3.8))
-		route.append(Vector3(kc.x + sx * 5.2, 0.05, kc.z + 3.6))
+		route.append(world.kiosk_point(Vector3(-7.5,.05,12)))
 	# Chega por trás da cadeira, sem cruzar o tampo para alcançar a raiz da animação.
 	var front: Vector3 = spot.get("approach", Vector3(spot.pos.x, 0.1, spot.pos.z + 0.85))
 	route.append(front)
@@ -373,21 +403,69 @@ func spawn_customer() -> Node3D:
 	customers.append(g)
 	return g
 
+func _join_counter(g, route: Array = []) -> void:
+	if not g.has_meta("dining_spot"): g.set_meta("dining_spot", g.spot)
+	var occupied: Array = customers.filter(func(c): return c != g and c.has_meta("counter_slot")).map(func(c): return int(c.get_meta("counter_slot")))
+	var slot := -1
+	for i in 2:
+		if i not in occupied: slot = i; break
+	if slot < 0:
+		g.state = "kcounter_queue"
+		var queued: Array = customers.filter(func(c): return c != g and c.state in ["kqueue", "kcounter_queue"])
+		var used: Array = queued.map(func(c): return int(c.get_meta("queue_slot", 0)))
+		var queue_slot := 0
+		while queue_slot in used: queue_slot += 1
+		g.set_meta("queue_slot", queue_slot)
+		g.go([world.kiosk_point(Vector3(7.5,.1,5+queue_slot*1.1))])
+		return
+	g.set_meta("counter_slot", slot)
+	var x := -.7+slot*1.4
+	g.spot = {"pos":world.kiosk_point(Vector3(x,.1,3.6)), "approach":world.kiosk_point(Vector3(x,.1,4.3)),
+		"staff_approach":world.kiosk_point(Vector3(x,.1,1.05)), "serve_pos":world.kiosk_point(Vector3(x,1.30,2.15)),
+		"serve_rot":PI, "rot":world.kiosk_spots[slot].rot, "table":false}
+	g.state = "kwalk"
+	var path: Array = route.duplicate()
+	path.append(world.kiosk_point(Vector3(-3.3,.1,4.5)))
+	path.append(g.spot.approach)
+	g.go(path)
+
+func _walk_to_dining(g, dish: String) -> void:
+	clear_served_visuals(g)
+	g.set_meta("counter_departure", g.spot.pos)
+	g.spot = g.get_meta("dining_spot")
+	g.remove_meta("dining_spot")
+	g.set_meta("pickup_dish", dish)
+	g.state = "kto_table"
+	g.show_order("")
+	g.hold_order(_items(g))
+	var local: Vector3 = world.kiosk_local(g.spot.approach)
+	var side := -1.0 if local.x<0 else 1.0
+	g.go([world.kiosk_point(Vector3(side*3.3,.1,4.5)), g.spot.approach])
+
+func _sit_with_order(g, dish: String) -> void:
+	clear_served_visuals(g)
+	g.position = g.spot.pos
+	g.rotation.y = g.spot.rot
+	g.state = "keat"
+	g.set_meta("eat", rng.randf_range(EAT_MIN.x,EAT_MIN.y))
+	for i in _items(g).size(): _show_delivered_visual(g,str(_items(g)[i]),i)
+	g.consume_dish(dish)
+
 func _kiosk_tick(dmin: float) -> void :
 	# v0.7.1: depois do horário ninguém mais chega, e quem estava esperando vai embora (sem perder estrela)
 	if not kiosk_open():
 		var sent: = 0
 		for g in customers:
-			if g.state in ["kqueue", "kwalk", "kchoose", "kwait", "keat"]:
+			if g.state in ["kqueue", "kcounter_queue", "kwalk", "kchoose", "kwait", "kto_table", "keat"]:
 				_leave(g)
 				sent += 1
 		if sent > 0 and Core.in_game:
 			Core.toast.emit(tr("Quiosque fechado por hoje. Os últimos clientes foram embora."), "info")
-	if enabled and kiosk_open():
+	if enabled and Core.kiosk_accepting_customers():
 		kiosk_spawn_in -= dmin
 		if kiosk_spawn_in <= 0.0:
 			var rngv: Vector2 = Economy.KIOSK_SPAWN_TABLES if Core.has("kiosk_tables") else Economy.KIOSK_SPAWN
-			kiosk_spawn_in = rng.randf_range(rngv.x, rngv.y) / Core.demand_factor()
+			kiosk_spawn_in = rng.randf_range(rngv.x, rngv.y) / (Core.demand_factor() * Core.CompanyRules.Simulation.Management.arrival_factor(Core))
 			if Core.day_event == "lua" and Core.minutes >= 17.0 * 60.0:
 				kiosk_spawn_in *= 0.6
 			if rush_left > 0:
@@ -402,7 +480,18 @@ func _kiosk_tick(dmin: float) -> void :
 				kiosk_spawn_in = 1.5
 				Core.toast.emit(tr("Chegou um ônibus de turistas! Vem gente: sirva rápido para manter o combo."), "good")
 	for g in customers.duplicate():
+		if g.has_meta("counter_departure"):
+			if g.position.distance_to(g.get_meta("counter_departure"))>1.2:
+				g.remove_meta("counter_departure")
+				g.remove_meta("counter_slot")
 		match g.state:
+			"kcounter_queue":
+				g.timer -= dmin
+				if g.timer <= 0: _leave(g)
+				elif not g.is_moving():
+					var occupied := customers.filter(func(c): return c.has_meta("counter_slot"))
+					if occupied.size()<2: _join_counter(g)
+					else: g.play("Idle_Loop")
 			"kqueue":
 				g.timer -= dmin
 				if not g.is_moving():
@@ -411,6 +500,9 @@ func _kiosk_tick(dmin: float) -> void :
 						g.spot = world.kiosk_spots[si]
 						g.spot.busy = true
 						g.spot["owner"] = g.get_instance_id()
+						if bool(g.get_meta("counter_first", false)):
+							_join_counter(g)
+							continue
 						g.state = "kwalk"
 						var front: Vector3 = g.spot.get("approach", Vector3(g.spot.pos.x, 0.1, g.spot.pos.z + 0.85))
 						g.go([front])
@@ -424,7 +516,7 @@ func _kiosk_tick(dmin: float) -> void :
 					g.state = "kchoose"
 					g.position = g.spot.pos
 					g.rotation.y = g.spot.rot
-					g.play("Sitting_Idle_Loop")
+					g.play("Idle_Loop" if bool(g.get_meta("counter_first",false)) else "Sitting_Idle_Loop")
 					g.set_meta("choose", rng.randf_range(CHOOSE_MIN.x, CHOOSE_MIN.y))
 					g.show_menu(true)
 			"kchoose":
@@ -438,7 +530,9 @@ func _kiosk_tick(dmin: float) -> void :
 				if urgent and not g.get_meta("urgent", false):
 					g.set_meta("urgent", true)
 					g.show_order(_order_text(g), true)
-				if g.timer < _patience(g) * 0.22:
+				if bool(g.get_meta("counter_first",false)):
+					g.play("Idle_Talking_Loop")
+				elif g.timer < _patience(g) * 0.22:
 					g.play("Sitting_Talking_Loop")
 				else:
 					g.play("Sitting_Idle_Loop")
@@ -448,6 +542,8 @@ func _kiosk_tick(dmin: float) -> void :
 					Core.add_rating(Economy.KIOSK_RATING_LOST)
 					Core.toast.emit(tr("Um cliente cansou de esperar no quiosque. ★%.1f") % Economy.KIOSK_RATING_LOST, "bad")
 					_leave(g)
+			"kto_table":
+				if not g.is_moving(): _sit_with_order(g,str(g.get_meta("pickup_dish")))
 			"keat":
 				var left: float = float(g.get_meta("eat", 0.0)) - dmin
 				g.set_meta("eat", left)
@@ -460,16 +556,21 @@ func _kiosk_tick(dmin: float) -> void :
 				if not g.is_moving():
 					_release_spot(g)
 					customers.erase(g)
-					g.queue_free()
+					Core.release_visual(g)
 
 ## Termina de ler o cardápio e faz o pedido (balão sobre a cabeça).
-func _order(g) -> void :
+func _order(g, recorded: bool = false) -> void :
 	g.show_menu(false)
 	g.state = "kwait"
 	g.timer = _patience(g)
+	g.set_meta("order_taken", recorded or not Core.company_enabled())
 	g.set_meta("urgent", false)
 	g.show_order(_order_text(g))
-	g.play("Sitting_Talking_Loop")
+	g.service_reaction("pedir")
+	if g.has_meta("regular"):
+		var visits: int=int(regulars.get(g.get_meta("regular"),0))
+		Core.toast.emit(g.gname+(": voltei pelo meu favorito!" if visits>0 else ": bom dia! Vou conhecer o cardápio."),"info")
+	g.play("Idle_Talking_Loop" if bool(g.get_meta("counter_first",false)) else "Sitting_Talking_Loop")
 
 ## Sorteia o prato; em dia de calor coco e suco saem muito mais.
 func _pick_dish(menu: Array) -> String:
@@ -482,6 +583,7 @@ func _pick_dish(menu: Array) -> String:
 		# v0.9.5: na tempestade o povo quer comida quente e foge do coco gelado
 		if Core.day_event == "tempestade":
 			w = {"petiscos": 2.6, "coco_gelado": 0.35, "suco": 0.7}.get(d, 1.0)
+		w *= Core.CompanyRules.Simulation.Management.dish_weight(Core, str(d))
 		ws.append(w)
 		total += w
 	var r: = rng.randf() * total
@@ -512,7 +614,7 @@ func _items(g) -> Array:
 
 ## Pedidos maiores dão mais tempo para o cliente esperar.
 func _patience(g) -> float:
-	return KIOSK_PATIENCE * (1.0 + 0.45 * float(_items(g).size() - 1)) * (1.0 + Core.prog.eff("kiosk_patience"))
+	return KIOSK_PATIENCE * (1.8 if Core.company_enabled() else 1.0) * (1.0 + 0.45 * float(_items(g).size() - 1)) * (1.0 + Core.prog.eff("kiosk_patience"))
 
 func _remaining(g) -> Array:
 	return _items(g).slice(int(g.get_meta("delivered", 0)))
@@ -527,6 +629,14 @@ func _order_text(g) -> String:
 	return ("★ " if g.get_meta("vip", false) else "") + " + ".join(names) + "!"
 
 func _release_spot(g) -> void:
+	if g.has_meta("dining_spot"):
+		var dining: Dictionary = g.get_meta("dining_spot")
+		if int(dining.get("owner",-1))==g.get_instance_id():
+			dining.busy = false
+			dining.erase("owner")
+		g.remove_meta("dining_spot")
+	for key in ["counter_slot","counter_departure"]:
+		if g.has_meta(key): g.remove_meta(key)
 	if g.spot.is_empty():
 		return
 	# Uma saída atrasada nunca libera o assento que já pertence a outro cliente.
@@ -536,13 +646,20 @@ func _release_spot(g) -> void:
 	g.spot = {}
 
 func _leave(g) -> void :
-	g.play("Sitting_Idle_Loop")
+	if Core.company_enabled() and g.state == "keat":
+		get_parent().operations.mark_dirty(g)
+	clear_served_visuals(g)
+	if not prep.is_empty() and prep.get("g") == g:
+		prep = {}
+		_clear_prep_visual()
+	var standing: bool = bool(g.get_meta("counter_first",false)) and g.state!="keat"
+	g.play("Idle_Loop" if standing else "Sitting_Idle_Loop")
 	g.show_menu(false)
 	g.show_order("")
 	g.state = "kleave"
 	g.position.y = 0.1
-	var exit: Vector3 = g.spot.get("approach", g.position + Vector3(0, 0, 1.8))
-	g.go([exit, Vector3(world.KIOSK_C.x + 6.0, 0.1, world.KIOSK_C.z + 5.0), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
+	var exit: Vector3 = g.position if standing else g.spot.get("approach", g.position + Vector3(0, 0, 1.8))
+	g.go([exit, world.kiosk_point(Vector3(-7.5,.1,12)), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
 
 func _next_customer():
 	var w: = waiting_customers()
@@ -560,6 +677,13 @@ func _bar(p: float) -> String:
 	return "▰".repeat(n) + "▱".repeat(8 - n)
 
 func kiosk_prompt() -> String:
+	if Core.company_enabled():
+		if not Core.company.receivables.is_empty():
+			return "Caixa · receber %d contas" % Core.company.receivables.size()
+		for index in Core.company.dirty_seats:
+			if index < 2 and not world.kiosk_spots[index].busy:
+				return "Recolher louça do balcão"
+		return tr("Mire no cliente para anotar ou entregar · E")
 	if not prep.is_empty():
 		var st: Array = Economy.DISH_STAGES[prep.dish]
 		return "%s  %s  (%d/%d)  ·  %s" % [tr(str(st[prep.stage][0])), _bar(float(prep.p)), int(prep.stage) + 1, st.size(), tr("segure E")]
@@ -568,8 +692,8 @@ func kiosk_prompt() -> String:
 		if customers.any(func(c): return c.state == "kchoose"):
 			return tr("Cliente olhando o cardápio...")
 		if not kiosk_open():
-			return tr("Quiosque fechado (abre 08:00–18:00)")
-		return tr("Quiosque: aguardando clientes")
+			return tr("Quiosque fechado · horário %02d:00–%02d:00") % [int(Core.kiosk_open_min() / 60.0), int(Core.kiosk_close_min() / 60.0)]
+		return tr("Quiosque fechado · abra no celular") if not Core.kiosk_accepting_customers() else tr("Quiosque: aguardando clientes")
 	var rem: Array = _remaining(g)
 	var dish: String = str(rem[0])
 	var d: Dictionary = Economy.dish(dish)
@@ -583,7 +707,7 @@ func kiosk_prompt() -> String:
 	if combo >= 2:
 		extra += "  ·  Combo x%d" % combo
 	extra += "  ·  " + tr("Meta %d/%d") % [mini(served_today, daily_goal()), daily_goal()]
-	return tr("Preparar %s (%s)") % [tr(str(d.name)), Core.fmt_money(Core.price_of(dish))] + extra
+	return tr("Pegar %s (%s)") % [tr(str(d.name)), Core.fmt_money(Core.price_of(dish))] + extra
 
 ## Quantos clientes atender por dia para ganhar a meta: cresce com as expansões compradas.
 func daily_goal() -> int:
@@ -595,22 +719,20 @@ func daily_goal() -> int:
 
 ## Aperta E no balcão: começa o preparo do próximo prato; com o preparo andando, cada toque adianta um pedaço.
 func kiosk_action() -> bool:
-	if not prep.is_empty() and is_instance_valid(prep.g) and prep.g.state == "kwait":
-		prep_advance(Economy.TAP_BURST * _stage_secs())
-		return true
+	if Core.company_enabled():
+		if not Core.company.receivables.is_empty():
+			get_parent().operations.collect_payments()
+			return true
+		for index in Core.company.dirty_seats.duplicate():
+			if index < 2 and not world.kiosk_spots[index].busy:
+				return Core.clean_company_seat(index)
+		Core.toast.emit(kiosk_prompt(), "info")
+		return false
 	prep = {}
 	var g = _next_customer()
 	if g == null:
 		return false
-	var dish: String = str(_remaining(g)[0])
-	if not Core.can_make(dish):
-		Core.note_stockout(dish)
-		combo = 0
-		_leave(g)
-		return false
-	prep = {"g": g, "dish": dish, "stage": 0, "p": 0.0, "away": 0.0}
-	prep_advance(Economy.TAP_BURST * _stage_secs())
-	return true
+	return _deliver_item(g, str(_remaining(g)[0]))
 
 func _stage_secs() -> float:
 	if prep.is_empty():
@@ -632,17 +754,33 @@ func prep_advance(sec: float) -> void :
 			var g = prep.g
 			var dish: String = prep.dish
 			prep = {}
+			_clear_prep_visual()
 			_deliver_item(g, dish)
 			return
 
 ## Entrega um prato do pedido; o último fecha o atendimento (nota, gorjeta, combo, meta).
-func _deliver_item(g, dish: String) -> bool:
-	if not Core.can_make(dish):
+func _deliver_item(g, dish: String, prepared: bool = false, by_staff: bool = false) -> bool:
+	if not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait" or dish not in _remaining(g):
+		return false
+	if Core.company_enabled() != prepared:
+		return false
+	if not prepared and not Core.can_make(dish):
 		Core.note_stockout(dish)
 		combo = 0
 		_leave(g)
 		return false
-	var price: = Core.sell_dish(dish, "kiosk")
+	var price: int = Core.sell_company_dish(dish, by_staff) if prepared else Core.sell_dish(dish, "kiosk")
+	if price < 0:
+		return false
+	var items: Array = _items(g).duplicate()
+	var delivered: int = int(g.get_meta("delivered", 0))
+	var index: int = items.find(dish, delivered)
+	var previous: String = str(items[delivered])
+	items[delivered] = dish
+	items[index] = previous
+	g.set_meta("items", items)
+	_show_delivered_visual(g, dish)
+	g.service_reaction("receber")
 	g.set_meta("revenue", int(g.get_meta("revenue", 0)) + maxi(price, 0))
 	g.set_meta("delivered", int(g.get_meta("delivered", 0)) + 1)
 	get_tree().call_group("audio", "sfx", "glass", -8.0)
@@ -653,6 +791,7 @@ func _deliver_item(g, dish: String) -> bool:
 	return true
 
 func _complete_order(g, last_dish: String) -> void :
+	g.service_reaction("agradecer")
 	var fast: bool = g.timer > _patience(g) * 0.6
 	var tip: = (2 if fast else 0) * _items(g).size()
 	if Core.has("kiosk_tables") and fast:
@@ -667,6 +806,9 @@ func _complete_order(g, last_dish: String) -> void :
 			Core.toast.emit(tr("Combo x%d! +R$ %d de gorjeta") % [combo, tip], "good")
 	else:
 		combo = maxi(0, combo - 1)
+	if Core.company.created:
+		var social: float = Core.CompanyRules.Simulation.Management.profile_factor(Core, "atendente", "social")
+		tip = int(round(tip * social))
 	var adj: = Core.price_rating_adjust()
 	Core.add_rating(clampf((Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW) + adj, 1.0, 5.0))
 	if adj <= -0.3 and rng.randf() < 0.4:
@@ -696,16 +838,21 @@ func _complete_order(g, last_dish: String) -> void :
 		Core.book(GOAL_REWARD, tr("Meta do dia"), "missao", false)
 		Core.toast.emit(tr("Meta do dia cumprida: %d clientes! +R$ %d") % [daily_goal(), GOAL_REWARD], "good")
 	get_tree().call_group("audio", "sfx", "coin", -8.0)
+	if bool(g.get_meta("counter_first",false)) and g.has_meta("dining_spot"):
+		_walk_to_dining(g,last_dish)
+		return
 	# v0.7.1: o cliente fica sentado consumindo antes de ir embora (o lugar continua ocupado)
 	g.position = g.spot.pos
 	g.rotation.y = g.spot.rot
 	g.show_order("")
 	g.state = "keat"
 	g.set_meta("eat", rng.randf_range(EAT_MIN.x, EAT_MIN.y))
-	g.consume(last_dish != "petiscos")
+	g.consume_dish(last_dish)
 
 ## Serve o pedido inteiro de uma vez (atendente contratado e testes).
 func kiosk_serve() -> bool:
+	if Core.company_enabled():
+		return false
 	var g = _next_customer()
 	if g == null:
 		return false
@@ -722,10 +869,12 @@ func helper_serve() -> void :
 	kiosk_serve()
 
 func _on_slept(_d: int) -> void :
+	_clear_prep_visual()
 	for g in customers.duplicate():
+		clear_served_visuals(g)
 		_release_spot(g)
 		customers.erase(g)
-		g.queue_free()
+		Core.release_visual(g)
 	kiosk_spawn_in = 10.0
 	_dj_came = false
 	combo = 0
@@ -737,3 +886,117 @@ func _on_slept(_d: int) -> void :
 	fish = {}
 	fish_casts = 0
 	world.reset_coco_piles()
+
+## Apresentação vinculada ao proprietário do pedido e à superfície do assento.
+func _prep_position() -> Vector3:
+	return world.kiosk_point(Vector3(0, 1.28, 1.85))
+
+func _clear_prep_visual() -> void:
+	if is_instance_valid(prep_visual):
+		prep_visual.visible = false
+		Core.release_visual(prep_visual)
+	prep_visual = null
+
+func _show_prep_visual(dish: String) -> void:
+	_clear_prep_visual()
+	prep_visual = DishPresentation.build(world, dish)
+	if prep_visual != null:
+		prep_visual.name = "PreparingDish"
+		prep_visual.global_position = _prep_position()
+		prep_visual.scale = Vector3.ONE * 0.85
+
+func served_dishes(g) -> Array:
+	var result: Array = []
+	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
+	if is_instance_valid(root):
+		for child in root.get_children():
+			if child.has_meta("dish_id"):
+				result.append(str(child.get_meta("dish_id")))
+	return result
+
+func clear_served_visuals(g) -> void:
+	g.clear_held_order()
+	for key in ["work_target","work_kind"]:
+		if g.has_meta(key): g.remove_meta(key)
+	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
+	if is_instance_valid(root):
+		root.visible = false
+		Core.release_visual(root)
+	if g.has_meta("served_visuals"):
+		g.remove_meta("served_visuals")
+
+func _show_delivered_visual(g, dish: String, index_override: int = -1) -> void:
+	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
+	if not is_instance_valid(root):
+		root = Node3D.new()
+		root.name = "ServedOrder_%d" % g.get_instance_id()
+		root.set_meta("customer_id", g.get_instance_id())
+		world.add_child(root)
+		root.global_position = g.spot.get("serve_pos", _prep_position())
+		root.rotation.y = float(g.spot.get("serve_rot", 0.0))
+		g.set_meta("served_visuals", root)
+		# Callable de método: não captura um Node em lambda que possa ser liberado.
+		g.tree_exiting.connect(root.queue_free)
+	var index: int = index_override if index_override>=0 else int(g.get_meta("delivered", 0))
+	var count: int = _items(g).size()
+	var food: Node3D = DishPresentation.build(root, dish)
+	if food == null:
+		return
+	var target := Vector3((index - (count - 1) * 0.5) * 0.225, 0, 0)
+	food.scale = Vector3.ONE * (0.72 if bool(g.spot.get("table", false)) else 0.86)
+	if index_override>=0:
+		food.position = target
+		return
+	food.position = root.to_local(_prep_position())
+	var tween: Tween = food.create_tween()
+	tween.tween_property(food, "position", target, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+# Mesmos pedestres alternam passeio, conversa e descanso; sem aumentar população.
+func _day_routine(g, index: int, delta: float) -> bool:
+	if g.has_meta("shelter") and g.get_meta("shelter"):return false
+	if g.has_meta("routine_seat"):
+		var seat: Dictionary=g.get_meta("routine_seat")
+		if g.position.distance_to(seat.pos)>1.5:
+			g.remove_meta("routine_seat")
+			g.set_meta("routine_cooldown",25.0)
+			return false
+		g.set_meta("routine_return",g.position)
+		g.position=seat.pos
+		g.rotation.y=seat.rot
+		g.set_meta("routine_kind","banco")
+		g.set_meta("routine_until",Core.day*1440.0+Core.minutes+12)
+		g.remove_meta("routine_seat")
+		return true
+	if g.has_meta("routine_until"):
+		if Core.day*1440.0+Core.minutes<float(g.get_meta("routine_until")):
+			g.play("Sitting_Idle_Loop" if g.get_meta("routine_kind")=="banco" else "Idle_Talking_Loop")
+			return true
+		if g.has_meta("routine_return"):
+			var approach: Vector3=g.get_meta("routine_return")
+			if g.position.distance_to(approach)<1.5:g.position=approach
+			g.remove_meta("routine_return")
+		g.remove_meta("routine_until")
+		g.set_meta("routine_cooldown",45.0)
+		g.play("Idle_Loop")
+		return false
+	var cooldown: float=float(g.get_meta("routine_cooldown",12.0+index*5))-delta*Core.speed_mult
+	g.set_meta("routine_cooldown",cooldown)
+	if cooldown>0 or Core.weather=="rain":return false
+	if index%3==0 and not world.bench_spots.is_empty():
+		for seat in world.bench_spots:
+			if g.position.distance_to(seat.pos)>3.5:continue
+			var occupied: bool=get_tree().get_nodes_in_group("npc").any(func(other):return other!=g and other.position.distance_to(seat.pos)<1.0)
+			if occupied:continue
+			g.set_meta("routine_seat",seat)
+			g.go([_outside_blocks(seat.pos+Vector3(0,0,.85).rotated(Vector3.UP,seat.rot))])
+			return true
+	for other in walkers:
+		if other==g or other.is_moving() or not other.visible or other.has_meta("home_target"):continue
+		var dist: float=g.position.distance_to(other.position)
+		if dist>.85 and dist<2.8:
+			g.rotation.y=atan2(g.position.x-other.position.x,g.position.z-other.position.z)
+			g.set_meta("routine_kind","conversa")
+			g.set_meta("routine_until",Core.day*1440.0+Core.minutes+8)
+			return true
+	g.set_meta("routine_cooldown",25.0)
+	return false

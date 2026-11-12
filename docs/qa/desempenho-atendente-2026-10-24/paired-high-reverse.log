@@ -1,0 +1,14 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+BENCH_PAIRED {"arm":"optimized","draw_calls":{"mean":1160.67553191489,"p50":1162.0,"p95":1167.0},"fps":125.064405670963,"frame_ms":{"mean":7.98523404255318,"p50":7.763,"p95":10.145},"gpu_ms":{"mean":3.35239096588277,"p50":3.29299998283386,"p95":3.86500000953674},"primitives":{"mean":5359377.125,"p50":5354988.0,"p95":5381110.0},"scene":"quiosque"}
+BENCH_PAIRED {"arm":"original","draw_calls":{"mean":2047.2256097561,"p50":2043.0,"p95":2067.0},"fps":109.043284190605,"frame_ms":{"mean":9.15664939024392,"p50":8.98,"p95":10.984},"gpu_ms":{"mean":4.28734603887651,"p50":4.3289999961853,"p95":4.65299987792969},"primitives":{"mean":9671523.1402439,"p50":9661826.0,"p95":9707072.0},"scene":"quiosque"}
+BENCH_PAIRED {"arm":"optimized","draw_calls":{"mean":1984.14373088685,"p50":1986.0,"p95":1997.0},"fps":108.760010959278,"frame_ms":{"mean":9.18047859327217,"p50":8.886,"p95":11.208},"gpu_ms":{"mean":6.36801529732684,"p50":6.32100009918213,"p95":6.90199995040894},"primitives":{"mean":13116376.1804281,"p50":13126765.0,"p95":13153117.0},"scene":"vila"}
+BENCH_PAIRED {"arm":"original","draw_calls":{"mean":3825.87179487179,"p50":3824.0,"p95":3845.0},"fps":84.2923532009521,"frame_ms":{"mean":11.8399684418146,"p50":10.916,"p95":16.732},"gpu_ms":{"mean":7.72755621170857,"p50":7.7039999961853,"p95":7.73699998855591},"primitives":{"mean":19271038.382643,"p50":19271268.0,"p95":19272340.0},"scene":"vila"}
+BENCH_PAIRED {"arm":"optimized","draw_calls":{"mean":437.728908886389,"p50":438.0,"p95":441.0},"fps":147.85911490668,"frame_ms":{"mean":6.75557930258718,"p50":6.276,"p95":8.775},"gpu_ms":{"mean":2.30143757397466,"p50":2.26200008392334,"p95":2.36400008201599},"primitives":{"mean":2693547.87289089,"p50":2692553.0,"p95":2700553.0},"scene":"praia"}
+BENCH_PAIRED {"arm":"original","draw_calls":{"mean":400.669133192389,"p50":399.0,"p95":409.0},"fps":157.448147076896,"frame_ms":{"mean":6.34457399577167,"p50":6.091,"p95":7.791},"gpu_ms":{"mean":2.34385836174826,"p50":2.29999995231628,"p95":2.69099998474121},"primitives":{"mean":2871856.71987315,"p50":2869785.0,"p95":2885562.0},"scene":"praia"}
+PERFORMANCE_TEST PASS
+SHUTDOWN_COMPLETE code=0

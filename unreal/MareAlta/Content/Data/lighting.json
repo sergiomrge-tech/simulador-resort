@@ -1,0 +1,3274 @@
+{
+ "_doc": "Light fixtures added where a room had light but no lamp (05/11, Sergio: 'a luz precisa vir das lâmpadas'; MareVisualWorld::BuildLamps). Each fixture spawns the mesh at 'at' (world cm, the mesh pivot) with yaw, and a warm point light 'light_up' cm above the pivot that turns on at dusk like the other lamps (candela at full night, reach in cm, colour temperature). The lamps already in the scene (lanterns, street lamps, the kiosk pendants, the house oil lamp and ceiling fan) are listed in BuildLamps by mesh. 'unlock' (optional): the fixture only shows once that expansion is bought (the Grand Hotel suite: ceiling 1151, so at = 1151 - 117; its six old bare lights, tag MareSuitePart, go off at night). 'work': true (08/11, Sergio: 'quiosque continua escuro, coloque uma lâmpada no teto'): a kiosk work lamp, also on by day during the opening hours, several times brighter (mare.KioskDayLight) to read against the daylight exposure under the roof. 'glow' (optional, default 0.15): share of the candela for the faint point light that lights the ceiling around the lamp.",
+ "fixtures": [
+  {
+   "name": "Salão de jogos · luminária da sinuca",
+   "mesh": "/Game/Custom/GameRoom/mare_billiard_lamp/mare_billiard_lamp.mare_billiard_lamp",
+   "at": [
+    -2050,
+    6050,
+    462
+   ],
+   "yaw": 0,
+   "light_up": -222,
+   "candela": 260,
+   "radius": 800,
+   "kelvin": 3000,
+   "unlock": "salao_jogos"
+  },
+  {
+   "name": "Saguão · teto sobre a sinuca (só sem o salão de jogos)",
+   "mesh": "/Game/Hotel/Lobby/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2100,
+    6050,
+    332.74
+   ],
+   "yaw": -90,
+   "light_up": 40,
+   "candela": 250,
+   "radius": 1100,
+   "kelvin": 3500,
+   "unlock": "grand_hotel,!salao_jogos"
+  },
+  {
+   "name": "Casa · cozinha",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    4780,
+    2310,
+    202
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 38,
+   "radius": 750,
+   "kelvin": 4000
+  },
+  {
+   "name": "Casa · banheiro",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    4770,
+    1580,
+    184
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 32,
+   "radius": 650,
+   "kelvin": 4200
+  },
+  {
+   "name": "Suíte · teto 1",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -3400,
+    6292,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 2",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2850,
+    6402,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 3",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2850,
+    5982,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 4",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2230,
+    6622,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 5",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -3200,
+    6772,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 6",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2600,
+    6722,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · corredor 1",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1586,
+    6820,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 80,
+   "radius": 700,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · corredor 2",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -936,
+    6820,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 80,
+   "radius": 700,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · rouparia",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1803,
+    6242,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 70,
+   "radius": 650,
+   "kelvin": 4000,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 302 quarto",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1466,
+    6082,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 110,
+   "radius": 800,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 302 banheiro",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1564,
+    6600,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 70,
+   "radius": 550,
+   "kelvin": 4000,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 303 quarto",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -706,
+    6082,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 110,
+   "radius": 800,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 303 sala",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1046,
+    6002,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 100,
+   "radius": 750,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 303 entrada",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1116,
+    6522,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 70,
+   "radius": 550,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 303 banheiro",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -715,
+    6550,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 70,
+   "radius": 600,
+   "kelvin": 4000,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Quiosque · luminária do teto",
+   "mesh": "/Game/Custom/Lighting/hanging_industrial_lamp/hanging_industrial_lamp1.hanging_industrial_lamp1",
+   "at": [
+    3620,
+    -1340,
+    366
+   ],
+   "yaw": 0,
+   "light_up": -118,
+   "candela": 150,
+   "radius": 900,
+   "kelvin": 3000,
+   "work": true,
+   "glow": 0.5
+  },
+  {
+   "name": "Trilha · poste oeste 1",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    2513,
+    9751,
+    441.2
+   ],
+   "yaw": -94.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 3",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    521,
+    10034,
+    517.3
+   ],
+   "yaw": -88.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 4",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -399,
+    9498,
+    385.0
+   ],
+   "yaw": 107.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 5",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -1448,
+    9499,
+    369.7
+   ],
+   "yaw": -72.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 7",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -3329,
+    9312,
+    321.5
+   ],
+   "yaw": -101.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 8",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -4379,
+    9259,
+    310.5
+   ],
+   "yaw": 70.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 9",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -5210,
+    9918,
+    478.4
+   ],
+   "yaw": -108.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 10",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -6263,
+    9889,
+    469.1
+   ],
+   "yaw": 75.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 11",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -7207,
+    10346,
+    571.1
+   ],
+   "yaw": -90.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 14",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -10148,
+    10730,
+    708.6
+   ],
+   "yaw": 62.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 15",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -10914,
+    11454,
+    574.7
+   ],
+   "yaw": -112.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 16",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -11970,
+    11506,
+    595.0
+   ],
+   "yaw": 69.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 17",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -12770,
+    12211,
+    778.0
+   ],
+   "yaw": -111.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 18",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -13819,
+    12159,
+    648.1
+   ],
+   "yaw": 80.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 19",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -14729,
+    12686,
+    683.4
+   ],
+   "yaw": -104.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 20",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -15778,
+    12720,
+    440.7
+   ],
+   "yaw": 64.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 21",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -16417,
+    13562,
+    435.0
+   ],
+   "yaw": -131.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 22",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -17316,
+    14100,
+    242.5
+   ],
+   "yaw": 33.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 23",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -17695,
+    15089,
+    276.9
+   ],
+   "yaw": -132.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 24",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -18742,
+    15357,
+    181.8
+   ],
+   "yaw": 57.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 25",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -19145,
+    16309,
+    146.0
+   ],
+   "yaw": -155.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 26",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -19930,
+    16989,
+    110.5
+   ],
+   "yaw": 39.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 27",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -20414,
+    17908,
+    88.5
+   ],
+   "yaw": -132.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 28",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -21309,
+    18474,
+    62.9
+   ],
+   "yaw": 27.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 29",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -21332,
+    19527,
+    49.3
+   ],
+   "yaw": -167.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 30",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -21773,
+    20476,
+    44.3
+   ],
+   "yaw": 2.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 31",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -21436,
+    21482,
+    57.4
+   ],
+   "yaw": -179.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 32",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -21891,
+    22432,
+    52.2
+   ],
+   "yaw": 13.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 33",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -21949,
+    23486,
+    67.1
+   ],
+   "yaw": -148.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 34",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -22830,
+    24065,
+    82.2
+   ],
+   "yaw": 44.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 35",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -23309,
+    25003,
+    111.7
+   ],
+   "yaw": -133.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 36",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -24208,
+    25557,
+    96.6
+   ],
+   "yaw": 31.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 37",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -24201,
+    26606,
+    115.3
+   ],
+   "yaw": -173.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 38",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -24427,
+    27612,
+    162.3
+   ],
+   "yaw": -11.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 39",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -23946,
+    28564,
+    388.1
+   ],
+   "yaw": 179.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 40",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -24386,
+    29520,
+    359.8
+   ],
+   "yaw": 12.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 41",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -24361,
+    30577,
+    527.4
+   ],
+   "yaw": -156.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 42",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -25036,
+    31380,
+    259.8
+   ],
+   "yaw": 21.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 43",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -25062,
+    32432,
+    347.3
+   ],
+   "yaw": -162.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 44",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -25597,
+    33350,
+    216.5
+   ],
+   "yaw": 2.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 45",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -25172,
+    34307,
+    207.8
+   ],
+   "yaw": 165.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 46",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -25198,
+    35357,
+    182.8
+   ],
+   "yaw": -18.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 47",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -24718,
+    36299,
+    176.2
+   ],
+   "yaw": -174.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 48",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -25363,
+    37126,
+    137.4
+   ],
+   "yaw": 31.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 49",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -25854,
+    38035,
+    118.0
+   ],
+   "yaw": -121.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 50",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -26901,
+    38196,
+    84.0
+   ],
+   "yaw": 65.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 51",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -27640,
+    38944,
+    57.4
+   ],
+   "yaw": -119.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 52",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -28624,
+    39310,
+    24.6
+   ],
+   "yaw": 42.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 53",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -28915,
+    40329,
+    38.0
+   ],
+   "yaw": -150.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 54",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -29676,
+    41055,
+    45.1
+   ],
+   "yaw": 27.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 55",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -29887,
+    42098,
+    69.8
+   ],
+   "yaw": -144.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 56",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -30828,
+    42571,
+    67.1
+   ],
+   "yaw": 52.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 57",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -31643,
+    43207,
+    84.5
+   ],
+   "yaw": -94.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 58",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -32593,
+    42756,
+    74.1
+   ],
+   "yaw": 106.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 59",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -33638,
+    42832,
+    80.4
+   ],
+   "yaw": -79.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 60",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -34621,
+    42458,
+    56.6
+   ],
+   "yaw": 83.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste oeste 61",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    -35541,
+    42999,
+    35.0
+   ],
+   "yaw": -103.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 2",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    7015,
+    9514,
+    377.2
+   ],
+   "yaw": -96.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 4",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    8969,
+    9520,
+    348.9
+   ],
+   "yaw": -82.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 5",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    10013,
+    9413,
+    314.3
+   ],
+   "yaw": 106.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 6",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    10903,
+    9996,
+    502.8
+   ],
+   "yaw": -80.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 8",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    12932,
+    9727,
+    491.5
+   ],
+   "yaw": -102.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 10",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    14899,
+    9749,
+    397.2
+   ],
+   "yaw": -93.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 12",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    16808,
+    9967,
+    478.3
+   ],
+   "yaw": -72.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 13",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    17858,
+    10044,
+    558.3
+   ],
+   "yaw": 117.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 14",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    18465,
+    10923,
+    754.0
+   ],
+   "yaw": -49.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 16",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    20133,
+    12036,
+    575.1
+   ],
+   "yaw": -52.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 17",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    21065,
+    12271,
+    376.2
+   ],
+   "yaw": 91.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 19",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    23089,
+    12545,
+    279.2
+   ],
+   "yaw": 114.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 20",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    23671,
+    13421,
+    171.8
+   ],
+   "yaw": -40.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 21",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    24525,
+    14020,
+    287.9
+   ],
+   "yaw": 144.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 22",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    24928,
+    14998,
+    647.7
+   ],
+   "yaw": -48.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 24",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    26661,
+    16078,
+    447.1
+   ],
+   "yaw": -64.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 25",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27711,
+    16161,
+    112.4
+   ],
+   "yaw": 110.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 26",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    28478,
+    16873,
+    105.4
+   ],
+   "yaw": -59.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 27",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29463,
+    17244,
+    82.1
+   ],
+   "yaw": 139.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 28",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29644,
+    18283,
+    80.9
+   ],
+   "yaw": -18.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 29",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29963,
+    19269,
+    56.4
+   ],
+   "yaw": -158.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 30",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29109,
+    19852,
+    97.2
+   ],
+   "yaw": 53.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 31",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    28504,
+    20693,
+    229.0
+   ],
+   "yaw": -130.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 32",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27643,
+    21277,
+    124.3
+   ],
+   "yaw": 28.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 33",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27607,
+    22329,
+    71.1
+   ],
+   "yaw": -166.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 34",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27224,
+    23298,
+    77.6
+   ],
+   "yaw": -5.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 35",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27612,
+    24287,
+    49.3
+   ],
+   "yaw": -177.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 36",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27106,
+    25219,
+    44.1
+   ],
+   "yaw": 15.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 37",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27138,
+    26272,
+    31.2
+   ],
+   "yaw": -161.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 38",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    26519,
+    27137,
+    44.6
+   ],
+   "yaw": 12.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 39",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    26723,
+    28160,
+    48.1
+   ],
+   "yaw": 178.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 40",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    26513,
+    29190,
+    67.4
+   ],
+   "yaw": -12.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 41",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27139,
+    30050,
+    52.9
+   ],
+   "yaw": 160.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 42",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27125,
+    31100,
+    64.9
+   ],
+   "yaw": -14.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 43",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27612,
+    32039,
+    62.2
+   ],
+   "yaw": 178.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 44",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27169,
+    32993,
+    91.2
+   ],
+   "yaw": 13.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 45",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27198,
+    34045,
+    118.0
+   ],
+   "yaw": -160.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 46",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    26578,
+    34905,
+    353.2
+   ],
+   "yaw": 13.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 47",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    26937,
+    35886,
+    520.4
+   ],
+   "yaw": 164.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 48",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27126,
+    36910,
+    937.5
+   ],
+   "yaw": -40.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 49",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    28099,
+    37333,
+    258.4
+   ],
+   "yaw": 127.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 50",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    28676,
+    38208,
+    155.6
+   ],
+   "yaw": -49.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 51",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29600,
+    38717,
+    103.0
+   ],
+   "yaw": 145.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 52",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29619,
+    39768,
+    92.7
+   ],
+   "yaw": -6.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 53",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29853,
+    40780,
+    69.8
+   ],
+   "yaw": -164.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 54",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29209,
+    41627,
+    411.3
+   ],
+   "yaw": 19.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 55",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29276,
+    42673,
+    395.4
+   ],
+   "yaw": -171.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 56",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    28918,
+    43666,
+    412.0
+   ],
+   "yaw": -7.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 57",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29485,
+    44556,
+    126.1
+   ],
+   "yaw": 160.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 58",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29502,
+    45609,
+    134.9
+   ],
+   "yaw": -19.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 59",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    30076,
+    46498,
+    113.6
+   ],
+   "yaw": 172.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 60",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29723,
+    47490,
+    140.7
+   ],
+   "yaw": 9.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 61",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29786,
+    48537,
+    147.1
+   ],
+   "yaw": -160.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 62",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29126,
+    49370,
+    149.9
+   ],
+   "yaw": 17.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 63",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29244,
+    50414,
+    128.5
+   ],
+   "yaw": -173.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 64",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    28972,
+    51421,
+    112.6
+   ],
+   "yaw": -10.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 65",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29583,
+    52292,
+    91.2
+   ],
+   "yaw": 160.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 66",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29503,
+    53332,
+    104.5
+   ],
+   "yaw": -6.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 67",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    29668,
+    54364,
+    111.0
+   ],
+   "yaw": -152.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 68",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    28794,
+    54933,
+    153.2
+   ],
+   "yaw": 50.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 69",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    28143,
+    55752,
+    190.3
+   ],
+   "yaw": -118.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 70",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    27091,
+    55905,
+    225.7
+   ],
+   "yaw": 61.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 71",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    26438,
+    56728,
+    246.4
+   ],
+   "yaw": -128.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 72",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    25507,
+    57219,
+    268.6
+   ],
+   "yaw": 35.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 73",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    25289,
+    58253,
+    277.3
+   ],
+   "yaw": -153.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 74",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    24546,
+    59000,
+    286.9
+   ],
+   "yaw": 26.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 75",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    24304,
+    60026,
+    295.6
+   ],
+   "yaw": -142.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 76",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    23347,
+    60478,
+    304.3
+   ],
+   "yaw": 53.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 77",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    22664,
+    61271,
+    313.9
+   ],
+   "yaw": -116.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 78",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    21610,
+    61403,
+    320.6
+   ],
+   "yaw": 62.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 79",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    20943,
+    62209,
+    315.7
+   ],
+   "yaw": -128.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 80",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    20001,
+    62688,
+    309.8
+   ],
+   "yaw": 35.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 81",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    19773,
+    63721,
+    307.2
+   ],
+   "yaw": -152.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 82",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    19030,
+    64464,
+    302.0
+   ],
+   "yaw": 26.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 83",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    18806,
+    65498,
+    304.4
+   ],
+   "yaw": -143.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 84",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    17875,
+    65987,
+    310.8
+   ],
+   "yaw": 51.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 85",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    17228,
+    66815,
+    309.5
+   ],
+   "yaw": -119.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 86",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    16182,
+    67004,
+    297.0
+   ],
+   "yaw": 58.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 87",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    15632,
+    67897,
+    290.9
+   ],
+   "yaw": -138.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 88",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    14954,
+    68665,
+    300.3
+   ],
+   "yaw": 9.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 89",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    15336,
+    69652,
+    303.9
+   ],
+   "yaw": 168.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 90",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    15281,
+    70701,
+    284.6
+   ],
+   "yaw": -18.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 91",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    15909,
+    71559,
+    283.1
+   ],
+   "yaw": 165.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 92",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    15748,
+    72590,
+    286.2
+   ],
+   "yaw": -2.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 93",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    16022,
+    73608,
+    286.9
+   ],
+   "yaw": -170.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 94",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    15434,
+    74493,
+    291.8
+   ],
+   "yaw": 17.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 95",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    15455,
+    75544,
+    294.0
+   ],
+   "yaw": -164.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 96",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    14930,
+    76461,
+    298.6
+   ],
+   "yaw": 5.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 97",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    15257,
+    77472,
+    299.1
+   ],
+   "yaw": 178.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 98",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    14876,
+    78457,
+    303.2
+   ],
+   "yaw": 5.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 99",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    14953,
+    79499,
+    303.7
+   ],
+   "yaw": -159.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 100",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    14196,
+    80247,
+    306.4
+   ],
+   "yaw": 29.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 101",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13988,
+    81257,
+    307.5
+   ],
+   "yaw": -156.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 102",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13305,
+    82062,
+    309.9
+   ],
+   "yaw": 19.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 103",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13353,
+    83116,
+    310.3
+   ],
+   "yaw": -167.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 104",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    12918,
+    84073,
+    312.1
+   ],
+   "yaw": -0.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 105",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13397,
+    85018,
+    311.2
+   ],
+   "yaw": 166.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 106",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13360,
+    86068,
+    311.8
+   ],
+   "yaw": -18.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 107",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13971,
+    86937,
+    310.5
+   ],
+   "yaw": 167.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 108",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13756,
+    87957,
+    311.6
+   ],
+   "yaw": 2.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 109",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13906,
+    88997,
+    311.7
+   ],
+   "yaw": -160.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 110",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    13053,
+    89606,
+    314.5
+   ],
+   "yaw": 50.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 111",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    12426,
+    90444,
+    316.8
+   ],
+   "yaw": -122.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 112",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    11408,
+    90739,
+    320.0
+   ],
+   "yaw": 50.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 113",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    10986,
+    91711,
+    315.7
+   ],
+   "yaw": -144.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 114",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    10196,
+    92401,
+    312.6
+   ],
+   "yaw": 26.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 115",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    10057,
+    93452,
+    314.7
+   ],
+   "yaw": -152.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 116",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    9242,
+    94111,
+    291.2
+   ],
+   "yaw": 39.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 117",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    8758,
+    95050,
+    246.1
+   ],
+   "yaw": -125.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 118",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    7727,
+    95272,
+    224.7
+   ],
+   "yaw": 63.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 119",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    6979,
+    96014,
+    197.2
+   ],
+   "yaw": -116.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 120",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5953,
+    96273,
+    160.8
+   ],
+   "yaw": 49.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste norte 121",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5587,
+    97270,
+    128.4
+   ],
+   "yaw": -148.1,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 2",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4525,
+    9147,
+    242.2
+   ],
+   "yaw": 17.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 3",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4684,
+    10189,
+    563.9
+   ],
+   "yaw": -177.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 4",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4330,
+    11181,
+    814.5
+   ],
+   "yaw": 0.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 5",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4678,
+    12175,
+    888.0
+   ],
+   "yaw": 177.8,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 6",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4495,
+    13222,
+    837.1
+   ],
+   "yaw": -19.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 7",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5234,
+    13995,
+    1180.6
+   ],
+   "yaw": 153.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 8",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5121,
+    15028,
+    1621.7
+   ],
+   "yaw": 2.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 9",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5423,
+    16035,
+    1937.2
+   ],
+   "yaw": -179.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 10",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5080,
+    17034,
+    2138.8
+   ],
+   "yaw": 0.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 11",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5420,
+    18034,
+    2160.9
+   ],
+   "yaw": 180.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 12",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5069,
+    19026,
+    2024.0
+   ],
+   "yaw": 2.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 14",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5011,
+    21046,
+    2224.1
+   ],
+   "yaw": -7.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 15",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5405,
+    22029,
+    2305.3
+   ],
+   "yaw": -177.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 16",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4909,
+    22948,
+    2214.9
+   ],
+   "yaw": 19.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 17",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4823,
+    23992,
+    1856.8
+   ],
+   "yaw": -155.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 18",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4136,
+    24796,
+    1637.3
+   ],
+   "yaw": 17.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 19",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4118,
+    25858,
+    1479.7
+   ],
+   "yaw": -156.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 20",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    3369,
+    26598,
+    1352.9
+   ],
+   "yaw": 30.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 21",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    2998,
+    27592,
+    1511.8
+   ],
+   "yaw": -128.2,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 22",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    1963,
+    27826,
+    1759.4
+   ],
+   "yaw": 62.9,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 23",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    1210,
+    28572,
+    2449.0
+   ],
+   "yaw": -113.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 24",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    167,
+    28534,
+    2517.8
+   ],
+   "yaw": 83.0,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 38",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    7584,
+    36109,
+    8567.8
+   ],
+   "yaw": -33.7,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 39",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    7981,
+    37032,
+    9016.9
+   ],
+   "yaw": -150.3,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 40",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    7045,
+    37335,
+    9274.6
+   ],
+   "yaw": 86.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 41",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    6051,
+    37673,
+    9969.5
+   ],
+   "yaw": -88.5,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 42",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    5033,
+    37298,
+    10435.8
+   ],
+   "yaw": 81.4,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  },
+  {
+   "name": "Trilha · poste cume 43",
+   "mesh": "/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391.World_1391",
+   "at": [
+    4142,
+    37885,
+    10712.0
+   ],
+   "yaw": -106.6,
+   "light_up": 360.0,
+   "candela": 150,
+   "radius": 1600,
+   "kelvin": 2900,
+   "glow": 0.2
+  }
+ ]
+}

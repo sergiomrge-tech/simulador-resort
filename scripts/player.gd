@@ -14,9 +14,11 @@ var cam: Camera3D
 var ray: RayCast3D
 var focus: Interactable = null
 var _step_acc: = 0.0
-var _step_flip: = false
+var _step_variant := 0
 var world: Node3D
 var swimming: = false
+var _safe_position := Vector3.ZERO
+var _has_safe_position := false
 
 func _ready() -> void :
 	var cs: = CollisionShape3D.new()
@@ -60,16 +62,18 @@ func look_delta(d: Vector2, touch: = true) -> void :
 func _apply_look() -> void :
 	rotation.y = yaw
 	if cam:
-		cam.rotation.x = pitch
+		cam.rotation = Vector3(pitch,0,0)
 
 func _unhandled_input(e: InputEvent) -> void :
 	if e is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		look_delta(e.relative, false)
 
 func _physics_process(delta: float) -> void :
-	var inp: = move_input
+	var phone = get_tree().get_first_node_in_group("phone")
+	var writing: bool = phone != null and phone.visible
+	var inp: = Vector2.ZERO if writing else move_input
 	var k: = Vector2(Input.get_axis("move_left", "move_right"), Input.get_axis("move_back", "move_forward"))
-	if k.length() > 0.1:
+	if k.length() > 0.1 and not writing:
 		inp = k.limit_length(1.0)
 	var fwd: = - global_transform.basis.z
 	var right: = global_transform.basis.x
@@ -78,14 +82,20 @@ func _physics_process(delta: float) -> void :
 	var sp: = SPEED * (SPRINT if Input.is_action_pressed("sprint") else 1.0)
 	# v0.9.5: nado/snorkel no mar fundo (mais de 1 m de água): boia com a máscara logo abaixo da superfície; Shift mergulha até o fundo
 	var ground: = float(world.call("_height", global_position.x, global_position.z)) if world and world.has_method("_height") else 0.0
-	swimming = global_position.z < -24.0 and ground < -1.1
+	# Recupera também saves gravados durante uma queda abaixo do mapa.
+	if global_position.y < minf(ground - 4.0, -6.0):
+		global_position = _safe_position if _has_safe_position else (world.home_wake if world else Vector3(38, 0.5, -18))
+		velocity = Vector3.ZERO
+		ground = float(world.call("_height", global_position.x, global_position.z)) if world and world.has_method("_height") else 0.0
+	# A profundidade do mar não torna quem está SOBRE o cais um nadador.
+	swimming = global_position.z < -24.0 and ground < -1.1 and global_position.y < -0.6
 	if swimming:
 		sp = 2.1
 	velocity.x = dir.x * sp
 	velocity.z = dir.z * sp
 
 	var lk: = Input.get_vector("look_left", "look_right", "look_up", "look_down", 0.15)
-	if lk.length() > 0.0:
+	if lk.length() > 0.0 and not writing:
 		var kk: = PAD_LOOK * Quality.sensitivity * delta
 		yaw -= lk.x * kk
 		pitch = clampf(pitch - ( - lk.y if Quality.invert_y else lk.y) * kk * 0.75, deg_to_rad(-80), deg_to_rad(75))
@@ -99,22 +109,54 @@ func _physics_process(delta: float) -> void :
 	else:
 		velocity.y = -0.5
 	move_and_slide()
+	if is_on_floor() and not swimming:
+		_safe_position = global_position
+		_has_safe_position = true
 	var hv: = Vector2(velocity.x, velocity.z).length()
 	if hv > 0.5 and is_on_floor() and not swimming:
 		_step_acc += hv * delta
-		if _step_acc > (0.95 if sp > SPEED else 0.75):
+		if _step_acc > (1.85 if sp > SPEED else 1.5):
 			_step_acc = 0.0
-			_step_flip = not _step_flip
-			var wood: = global_position.y > 0.08
-			get_tree().call_group("audio", "sfx", ("step_wood" if wood else "step") + ("1" if _step_flip else "2"), -14.0)
+			_step_variant = (_step_variant + randi_range(1, 4)) % 5
+			var surface := _footstep_surface()
+			get_tree().call_group("audio", "sfx", "footstep_%s_%03d" % [surface, _step_variant], -18.0)
 
+	refresh_focus()
+
+func refresh_focus() -> void:
 	focus = null
 	ray.force_raycast_update()
 	if ray.is_colliding():
 		var c: = ray.get_collider()
-		if c is Interactable and c.get_prompt() != "":
-			focus = c
+		if c is Interactable and c.get_prompt() != "": focus = c
+	var ops = get_parent().get("operations")
+	if is_instance_valid(ops):
+		focus = ops.resolve_computer_focus(cam,focus)
+		focus = ops.resolve_customer_focus(cam,focus)
+	var refinements=get_parent().get_node_or_null("Refinements")
+	if refinements:focus=refinements.resolve_resident_focus(cam,focus)
 
 func interact() -> void :
 	if focus:
 		focus.use()
+
+# Identifica o piso tocado, em vez de supor madeira pela altura do jogador.
+func _footstep_surface() -> String:
+	var query := PhysicsRayQueryParameters3D.create(global_position + Vector3(0, 0.25, 0), global_position - Vector3(0, 0.65, 0), 1, [get_rid()])
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		return "carpet" # impacto abafado para areia/terra, sem raspagem longa
+	var body: Node = hit.collider
+	if str(body.name).begins_with("Pier"):
+		return "wood"
+	var mesh_node := body.get_parent() as MeshInstance3D
+	if mesh_node:
+		var material := mesh_node.get_active_material(0) as StandardMaterial3D
+		if material:
+			var texture_path := material.albedo_texture.resource_path if material.albedo_texture else ""
+			var key := (material.resource_name + texture_path).to_lower()
+			for wood in ["wood", "plank", "bamboo"]:
+				if wood in key:
+					return "wood"
+			return "concrete"
+	return "carpet"

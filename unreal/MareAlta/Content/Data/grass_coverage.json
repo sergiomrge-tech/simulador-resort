@@ -1,0 +1,24 @@
+{
+  "seed": 20261029,
+  "grid_cm": 30,
+  "max_slope_degrees": 32,
+  "rejected": {
+    "mask": 62519,
+    "surface": 111512,
+    "slope": 111
+  },
+  "instances": 177397,
+  "graphs": [
+    {
+      "graph": "/Game/Graphics/Grass/PCG_Grass_Common_Short",
+      "mesh": "/Game/World/Models/World_2062/World_2062/StaticMeshes/World_2062.World_2062",
+      "points": 88463
+    },
+    {
+      "graph": "/Game/Graphics/Grass/PCG_Grass_Wispy_Short",
+      "mesh": "/Game/World/Models/World_2071/World_2071/StaticMeshes/World_2071.World_2071",
+      "points": 88991
+    }
+  ],
+  "hotel_lobby_removed": 57
+}

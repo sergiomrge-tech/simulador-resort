@@ -1,0 +1,284 @@
+{
+ "_doc": "Staff seen at work (UMareStaffWorld). Each role (definitions.json staff key) is on screen while hired and on duty (UMareSimulation::HasStaff), its expansion (requires) is bought and the game hour is inside hours. It walks its stops in order (navmesh, or a straight glide where the navmesh does not reach) and holds pose (seconds 0 = a waypoint to walk around something (the pool attendant goes round the loungers: the strip between them and the water is too narrow for the navmesh, which then crossed the walkable pool surface); Idle, Idle_Talking, Interact, Skim: the pool skimmer net swept over the water, or Sweep: the broom on the floor, AMarePerson::UpdateTool) for seconds at each; label is what the staff page shows it doing. carry = dish picked up when leaving that stop (Content/Data/actors.json Dish_<id>), drop = hands emptied there. route bungalows = the rented pousada bungalows (deck = point in bungalow space); route reception = behind customization.json operations.<place>.reception. World cm; z is a hint for the ground trace (raised floors).",
+ "roles": {
+  "recepcionista": {
+   "requires": "pousada",
+   "hours": [
+    7,
+    22
+   ],
+   "route": "reception",
+   "place": "pousada",
+   "behind": 55,
+   "pose": "Idle",
+   "seconds": 30,
+   "label": "Atendendo na recepção"
+  },
+  "camareira": {
+   "requires": "pousada",
+   "hours": [
+    8,
+    17
+   ],
+   "route": "bungalows",
+   "deck": [
+    0,
+    260,
+    49
+   ],
+   "pose": "Sweep",
+   "seconds": 9
+  },
+  "piscineiro": {
+   "requires": "pool",
+   "hours": [
+    8,
+    18
+   ],
+   "stops": [
+    {
+     "at": [
+      -420,
+      -70,
+      30
+     ],
+     "yaw": 90,
+     "pose": "Skim",
+     "seconds": 7,
+     "label": "Peneirando as folhas da piscina"
+    },
+    {
+     "at": [
+      420,
+      -70,
+      30
+     ],
+     "yaw": 90,
+     "pose": "Skim",
+     "seconds": 7,
+     "label": "Peneirando as folhas da piscina"
+    },
+    {
+     "at": [
+      640,
+      -60,
+      30
+     ],
+     "yaw": 0,
+     "pose": "Interact",
+     "seconds": 6,
+     "label": "Trocando as toalhas das espreguiçadeiras"
+    },
+    {
+     "at": [
+      700,
+      -150,
+      30
+     ],
+     "yaw": 0,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Indo para o outro lado da piscina"
+    },
+    {
+     "at": [
+      960,
+      -60,
+      30
+     ],
+     "yaw": 90,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Indo para o outro lado da piscina"
+    },
+    {
+     "at": [
+      960,
+      860,
+      30
+     ],
+     "yaw": 90,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Indo para o outro lado da piscina"
+    },
+    {
+     "at": [
+      700,
+      950,
+      30
+     ],
+     "yaw": 180,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Indo para o outro lado da piscina"
+    },
+    {
+     "at": [
+      420,
+      860,
+      30
+     ],
+     "yaw": -90,
+     "pose": "Skim",
+     "seconds": 7,
+     "label": "Peneirando as folhas da piscina"
+    },
+    {
+     "at": [
+      -420,
+      860,
+      30
+     ],
+     "yaw": -90,
+     "pose": "Skim",
+     "seconds": 7,
+     "label": "Peneirando as folhas da piscina"
+    },
+    {
+     "at": [
+      -700,
+      950,
+      30
+     ],
+     "yaw": 180,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Voltando por trás das espreguiçadeiras"
+    },
+    {
+     "at": [
+      -960,
+      860,
+      30
+     ],
+     "yaw": -90,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Voltando por trás das espreguiçadeiras"
+    },
+    {
+     "at": [
+      -960,
+      -60,
+      30
+     ],
+     "yaw": -90,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Voltando por trás das espreguiçadeiras"
+    },
+    {
+     "at": [
+      -700,
+      -150,
+      30
+     ],
+     "yaw": 0,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Voltando por trás das espreguiçadeiras"
+    }
+   ]
+  },
+  "guia": {
+   "requires": "passeios",
+   "hours": [
+    8,
+    18
+   ],
+   "stops": [
+    {
+     "at": [
+      7460,
+      -1960,
+      110
+     ],
+     "yaw": 180,
+     "pose": "Idle_Talking",
+     "seconds": 25,
+     "label": "Vendendo passeios no quiosque"
+    },
+    {
+     "at": [
+      7240,
+      -2150,
+      60
+     ],
+     "yaw": -100,
+     "pose": "Idle_Talking",
+     "seconds": 10,
+     "label": "Explicando o passeio à fila"
+    }
+   ]
+  },
+  "garcom_hotel": {
+   "requires": "grand_hotel",
+   "hours": [
+    11,
+    23
+   ],
+   "stops": [
+    {
+     "at": [
+      -700,
+      4030,
+      200
+     ],
+     "yaw": 0,
+     "pose": "Interact",
+     "seconds": 4,
+     "label": "Pegando pratos na cozinha",
+     "carry": "moqueca"
+    },
+    {
+     "at": [
+      -1060,
+      3860,
+      200
+     ],
+     "yaw": 180,
+     "pose": "Interact",
+     "seconds": 4,
+     "label": "Servindo as mesas",
+     "drop": true
+    },
+    {
+     "at": [
+      -700,
+      4030,
+      200
+     ],
+     "yaw": 0,
+     "pose": "Interact",
+     "seconds": 4,
+     "label": "Pegando pratos na cozinha",
+     "carry": "porcao_peixe"
+    },
+    {
+     "at": [
+      -1060,
+      4540,
+      200
+     ],
+     "yaw": 180,
+     "pose": "Interact",
+     "seconds": 4,
+     "label": "Servindo as mesas",
+     "drop": true
+    },
+    {
+     "at": [
+      -1060,
+      4200,
+      200
+     ],
+     "yaw": 0,
+     "pose": "Idle",
+     "seconds": 6,
+     "label": "Atento ao salão"
+    }
+   ]
+  }
+ }
+}

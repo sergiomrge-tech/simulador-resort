@@ -1,0 +1,13 @@
+{
+  "v": 6,
+  "company": {
+    "name": "Maré Alta",
+    "created": true
+  },
+  "money": 150,
+  "day": 1,
+  "stock": {
+    "coco": 10
+  },
+  "saved_at": "2026-10-01 08:00:00"
+}

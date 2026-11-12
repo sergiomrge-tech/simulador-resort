@@ -1,0 +1,102 @@
+{
+ "_doc": {
+  "status": "PROPOSTA v1: ainda não há consumidor C++; não altera definitions nem saldo do jogo por si só.",
+  "schema_version": "Versão do contrato debt.json, não do save inteiro.",
+  "currency": "Símbolo exibido; sem conversão cambial. R$ até Sergio decidir a pergunta no documento.",
+  "principal": "Reais inteiros, converter uma vez a centavos e congelar no save. Não recalcular dívida de saves existentes ao mudar este arquivo.",
+  "interest_rate": "Taxa de juros; zero nesta versão. Não implementar capitalização.",
+  "weekly_minimum": "Reais obrigatórios por semana; zero nesta versão, nenhum débito automático.",
+  "reminder_every_days": "Dias completos desde o último pagamento, ou desde a criação, para lembrete. No máximo um por intervalo; sem multa, visita física ou bloqueio.",
+  "demo_payment_cap": "Total em reais que pode ser amortizado na demo. Não é o custo de encerrar a demo. Não reverter pagamentos de saves legados acima do teto.",
+  "intro": {
+   "title": "Título da carta única.",
+   "letter": "Revelação do milhão após a chegada.",
+   "comfort": "Explica pagamento livre e prioridade da operação.",
+   "signature": "Assinatura; Dona Dilce é nome próprio."
+  },
+  "phone": {
+   "title": "Título da seção em Finanças, sem nova aba.",
+   "balance": "{0}: saldo restante em reais formatados.",
+   "paid": "{0}: total pago; {1}: principal original.",
+   "pay": "Botão abre valor livre.",
+   "confirm": "{0}: valor; {1}: caixa após pagamento. Não debitar antes de confirmar.",
+   "receipt": "{0}: pagamento confirmado; {1}: saldo restante.",
+   "invalid": "Erro transacional, sem alterar caixa ou dívida.",
+   "settled": "Carimbo de saldo zero.",
+   "demo_limit": "{0}: teto total amortizável na demo; mostrar antes de confirmar."
+  },
+  "reminder": {
+   "title": "Título de mensagem do banco.",
+   "text": "Uma fala leve após intervalo sem pagamento; nenhuma sanção financeira."
+  },
+  "milestones": "Lista ordenada. id: identificador estável; fraction: proporção do principal amortizada; title/text: cartão e fala como recompensa narrativa única, sem dinheiro/fama. Cruzar vários em um pagamento processa todos.",
+  "finale": {
+   "title": "Tela após saldo zero no jogo completo.",
+   "text": "Fecho da história da dívida.",
+   "grandma": "Fala de Dona Dilce, sem presumir que morreu.",
+   "credits": "Botão abre créditos existentes.",
+   "continue": "Retoma o mesmo save e resort, sem reset."
+  },
+  "campaign_texts": "Propostas de substituição apenas de story em definitions.campaign pelos ids chegada/marealta/festa. O código aplica; não modificar kind/item/qty nem adicionar requisito de dívida à festa."
+ },
+ "schema_version": 1,
+ "currency": "R$",
+ "principal": 1000000,
+ "interest_rate": 0,
+ "weekly_minimum": 0,
+ "reminder_every_days": 7,
+ "demo_payment_cap": 250000,
+ "intro": {
+  "title": "Uma carta de Dona Dilce",
+  "letter": "Meu bem, o quiosque é seu. A dívida também: R$ 1.000.000. Eu ia contar no almoço, mas o barco chegou primeiro.",
+  "comfort": "Pague quando puder, pelo celular. Não tem juros nem parcela obrigatória. Primeiro cuide do quiosque; ninguém trabalha bem sem coco gelado.",
+  "signature": "Com carinho, Dona Dilce"
+ },
+ "phone": {
+  "title": "Dívida de Dona Dilce",
+  "balance": "Faltam R$ {0} para quitar",
+  "paid": "Você já pagou R$ {0} de R$ {1}",
+  "pay": "Pagar dívida",
+  "confirm": "Pagar R$ {0}? O caixa ficará com R$ {1}.",
+  "receipt": "Pagamento de R$ {0} recebido. Restam R$ {1}. Um coco de cada vez!",
+  "invalid": "Escolha um valor maior que zero e que caiba no caixa e no saldo da dívida.",
+  "settled": "Dívida quitada",
+  "demo_limit": "Na demo, você pode abater até R$ {0}. O restante acompanha a história no jogo completo."
+ },
+ "reminder": {
+  "title": "Recado do banco",
+  "text": "Faz uma semana sem pagamento. O gerente mandou lembranças e perguntou se aceita coco como garantia. Você paga quando puder."
+ },
+ "milestones": [
+  {
+   "id": "quarter",
+   "fraction": 0.25,
+   "title": "Um quarto mais leve",
+   "text": "R$ 250.000 pagos! Dona Dilce diz que já consegue olhar o extrato com os dois olhos abertos."
+  },
+  {
+   "id": "half",
+   "fraction": 0.5,
+   "title": "Metade da maré",
+   "text": "R$ 500.000 pagos! O gerente trouxe um bolo pela metade. Dona Dilce ficou com a parte maior."
+  },
+  {
+   "id": "three_quarters",
+   "fraction": 0.75,
+   "title": "Quase dá para respirar",
+   "text": "R$ 750.000 pagos! Dona Dilce já ensaia a dança da quitação. O banco pediu que seja longe do balcão."
+  }
+ ],
+ "finale": {
+  "title": "Maré Alta, dívida baixa: zero!",
+  "text": "R$ 1.000.000 pagos. Você cuidou do quiosque, da vila e de uma promessa de família. Agora o próximo sonho não vem com boleto.",
+  "grandma": "Dona Dilce: Eu sabia que você conseguia. Agora vamos tomar um coco? O meu é por conta da casa, né?",
+  "credits": "Créditos",
+  "continue": "Continuar no resort"
+ },
+ "campaign_texts": {
+  "chegada": "Dona Dilce foi morar com as amigas do bingo. Deixou o quiosque, muito carinho e uma dívida de R$ 1.000.000. A carta explica; o celular ajuda a pagar.",
+  "marealta": "O Grand Hotel pode transformar o resort e ajudar a pagar a dívida de Dona Dilce. Ela pediu um quarto com vista. E desconto de família.",
+  "festa": "A vila vai celebrar o que você construiu. A dívida segue no celular até ser quitada; a festa não precisa esperar o último boleto."
+ }
+}

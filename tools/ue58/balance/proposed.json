@@ -1,0 +1,16 @@
+[
+  {
+    "file": "customization.json",
+    "pointer": "/price_mult/4",
+    "current": 260,
+    "new": 220,
+    "reason": "Compensar parte do custo do milhão na cauda de compras: manter o 100% próximo de 40 h sem reduzir a dívida nem preços de expansões."
+  },
+  {
+    "file": "customization.json",
+    "pointer": "/recipes/cost_mult/4",
+    "current": 900,
+    "new": 760,
+    "reason": "Mesma compensação apenas no nível 5 de receitas; manter as 7.000 vendas e o ritmo de campanha. Proposta, não aplicada ao jogo."
+  }
+]
