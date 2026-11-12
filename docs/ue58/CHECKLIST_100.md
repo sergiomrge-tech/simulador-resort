@@ -14,6 +14,30 @@ Cada item fecha com portão de QA PASS, foto analisada, commit e push. Pacote s�
 
 ---
 
+## Bloco 0 — Prioridade do Sergio (12/11): humor e campanha
+
+"Se não foi feito, coloque no topo da lista." / "Faça uma revisão completa da campanha do jogo e faça melhorias."
+
+### 0.1 Eventos cômicos (importante para vender)
+Sete eventos existem no código (`MareComicEvents.cpp`, `comic_events.json`): gaivota ladra de batatas, influenciador
+exigente, guarda-sol levado pelo vento, turista perdido, atendente atrapalhado, Seu Arnaldo reclama, pescador e o peixe.
+O cachorro ladrão de chinelo do desenho original não existe (os cachorros saíram do jogo em 03/11). Os 10 critérios de
+aceite de `HUMOR_EVENTOS_COMICOS.md` nunca foram marcados.
+- [ ] Filmar os 7 eventos no jogo, do começo ao fim, e analisar quadro a quadro (em andamento, 12/11).
+- [ ] Animação própria por evento: hoje quem chama alterna dois gestos genéricos. Cada evento precisa de um gesto que conte a piada sem ler o texto.
+- [ ] Corrigir o que a filmagem reprovar (postura, mãos, objeto na mão, gaivota, guarda-sol, bandeja).
+- [ ] Substituto para o evento do cachorro (ou mais eventos), para a piada não se repetir.
+- [ ] Conferir os 10 critérios de aceite do documento, inclusive 100 ciclos sem travar e capturas no executável.
+- [ ] Clipe de cada evento no executável, para uso em divulgação.
+
+### 0.2 Campanha principal (revisão completa e melhorias)
+- [ ] Mapa da campanha como está: começo, dívida, capítulos da vila, expansões, marcos, final; o que o jogador sabe que tem de fazer a cada momento.
+- [ ] Lista de problemas (buracos de objetivo, trechos sem novidade, textos, recompensas, ritmo) com prova.
+- [ ] Melhorias aprovadas pelo Sergio implementadas, testadas e traduzidas.
+- [ ] Campanha jogada do zero ao fim no executável depois das melhorias (liga com o Bloco 4).
+
+---
+
 ## Bloco 1 — Acabamento do que já existe
 
 ### 1.1 Recife
