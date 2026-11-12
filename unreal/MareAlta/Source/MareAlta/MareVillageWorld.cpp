@@ -1,4 +1,5 @@
 #include "MareVillageWorld.h"
+#include "MareAudioWorld.h"
 #include "MareLoc.h"
 #include "MareOptions.h"
 #include "MareNotebookStyle.h"
@@ -170,6 +171,9 @@ void UMareVillageWorld::UpdateChurch()
    const bool bSeen=Hero && GetWorld()->GetTimeSeconds()>10 && (FVector::Dist2D(Hero->GetActorLocation(),To)<2500 || FVector::Dist2D(Hero->GetActorLocation(),Priest->GetActorLocation())<2500);
    if(!bSeen){Priest->SetActorLocationAndRotation(To,bMass?FRotator(0,(*At)[3]->AsNumber(),0):PriestHome.Rotator(),false,nullptr,ETeleportType::TeleportPhysics);
     Priest->bConversing=bMass;bPriestAtAltar=bMass;}}}
+ // 11/11 (open item "som da igreja"): the organ plays during the mass, heard through the nave (spatial, 8 m around
+ // the middle of the church, Music volume), an original hymn (tools/ue58/gen_church_organ.py).
+ if(auto Sound=GetWorld()->GetSubsystem<UMareAudioWorld>())Sound->SetStereo(TEXT("church"),bMass?FName(TEXT("church_organ")):NAME_None,FVector(7500,5050,300));   // i18n:skip
  if(!bMass){for(auto P:Faithful)if(IsValid(P))P->Destroy();Faithful.Empty();return;}
  if(Faithful.Num())return;
  int32 I=0;

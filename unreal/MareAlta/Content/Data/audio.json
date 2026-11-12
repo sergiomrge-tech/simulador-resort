@@ -192,6 +192,12 @@
   "loop": true
  },
  {
+  "id": "church_organ",
+  "path": "/Game/Audio/church_organ.church_organ",
+  "duration": 48,
+  "loop": true
+ },
+ {
   "id": "music_relax",
   "path": "/Game/Audio/music_relax.music_relax",
   "duration": 30,

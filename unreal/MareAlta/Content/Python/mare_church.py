@@ -533,3 +533,15 @@ def lamps_nanite(arg=''):
         unreal.EditorAssetLibrary.save_loaded_asset(mesh)
         out[slug] = sub.get_nanite_settings(mesh).enabled
     return json.dumps(out)
+
+
+def organ(_=''):
+    """PIE: the audio components playing the church organ (is it on, how loud, where)."""
+    out = []
+    it = unreal.ObjectIterator(unreal.AudioComponent)
+    for c in it:
+        s = c.get_editor_property('sound')
+        if s and s.get_name() == 'church_organ' and c.get_world() and c.get_world().get_name() != 'None':
+            l = c.get_world_location()
+            out.append({'playing': c.is_playing(), 'volume': round(c.get_editor_property('volume_multiplier'), 3), 'at': [round(l.x), round(l.y), round(l.z)]})
+    return json.dumps(out)

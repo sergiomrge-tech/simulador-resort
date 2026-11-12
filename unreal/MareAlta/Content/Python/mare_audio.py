@@ -85,3 +85,7 @@ def import_loop(name=''):
     else:rows.append(row)
     with open(data,'w',encoding='utf-8',newline=CRLF) as f:f.write(json.dumps(rows,indent=1))
     return json.dumps(row)
+
+def import_named(arg):
+    """'a,b': import_tracks for the one-argument module entry (mare_hud 'module')."""
+    return import_tracks([n for n in arg.split(',') if n])
