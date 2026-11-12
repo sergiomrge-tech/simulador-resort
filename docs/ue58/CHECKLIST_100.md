@@ -122,7 +122,8 @@ diária obrigatória até o fim do jogo; Dona Dilce nunca aparece; sem epílogo;
 
 **C2. Textos**
 - [x] Piloto (12/11): P.S. da carta, carta de 25 %, capítulo da Dona Roberta, em [`CAMPANHA_TEXTOS_PILOTO.md`](CAMPANHA_TEXTOS_PILOTO.md). Voz aprovada pelo diretor para seguir (P.S. engraçado, cartas de marco ternas com uma piada, morador que "sempre soube"); o Sergio ainda pode pedir ajuste ao ler.
-- [~] Lote: cartas de 50, 75 e 100 %, quatro capítulos, missões novas, falas por passo e despedidas dos 9 capítulos, falas da Dona Dilce no epílogo.
+- [x] Lote escrito (12/11): 277 textos com id estável em [`CAMPANHA_TEXTOS_LOTE.md`](CAMPANHA_TEXTOS_LOTE.md) (cartas, 9 capítulos com fala por passo, missões novas e reescritas, roteiro da festa, epílogo, oferenda delegada, nomes dos vendedores). 👤 Sergio lê a carta de 100 % e o roteiro da festa.
+- [ ] Passar os 277 textos para os dados do jogo (depois da lógica C1) e conferir cada um na tela.
 - [ ] Reescrever o que conflita com o final único (missões `chegada`, `marealta`, `fregueses`, `festa`, falas da festa, tela final, créditos).
 - [ ] Tratamento único "Meu bem" (hoje: "Meu neto", "Meu bem", "Bem-vinda, bem-vindo", "Vó"/"Vovó").
 - [ ] Tradução nos 12 idiomas, glossário e auditoria no executável.
